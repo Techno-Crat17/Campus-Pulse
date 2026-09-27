@@ -169,8 +169,8 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   };
 
   return (
-    <section id="sec-ask" className="py-32 px-6 sm:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
-      <div className="max-w-[1700px] mx-auto space-y-16">
+    <section id="sec-ask" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
+      <div className="max-w-[1700px] mx-auto space-y-10 sm:space-y-16">
         
         {/* Section Label */}
         <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold">
@@ -179,24 +179,24 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
 
         {/* Section Title */}
         <div>
-          <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
+          <h2 className="text-subgiant font-syne text-[#111111] dark:text-[#F3F3EE] uppercase tracking-tighter leading-none">
             ASK
           </h2>
           <h2 className="text-subgiant font-syne text-[#DC2626] uppercase tracking-tighter leading-none">
             YOUR
           </h2>
-          <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
+          <h2 className="text-subgiant font-syne text-[#111111] dark:text-[#F3F3EE] uppercase tracking-tighter leading-none">
             CAMPUS.
           </h2>
         </div>
 
         {/* Interactive Query Input & Editorial Stream */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-8 border-t border-[#111111]/10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 pt-6 sm:pt-8 border-t border-[#111111]/10 dark:border-white/10 items-start">
           
           {/* Left 6 Cols: Input & Suggestions */}
-          <div className="lg:col-span-6 space-y-8">
-            <div className="space-y-4">
-              <label className="font-mono text-xs text-[#666660] uppercase tracking-widest block">
+          <div className="lg:col-span-6 space-y-6 sm:space-y-8">
+            <div className="space-y-3 sm:space-y-4">
+              <label className="font-mono text-xs text-[#666660] dark:text-[#9CA3AF] uppercase tracking-widest block font-bold">
                 ASK ABOUT MSRIT FACULTY, DEPARTMENTS & LOCATIONS:
               </label>
               
@@ -212,15 +212,17 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="What is Dr. Yogish H K's email?"
-                  className="w-full bg-transparent border-b-2 border-[#111111]/30 py-4 text-2xl sm:text-3xl font-syne font-bold text-[#111111] placeholder-[#666660]/50 focus:outline-none focus:border-[#DC2626] transition-all"
+                  className="w-full bg-transparent border-b-2 border-[#111111]/30 dark:border-white/30 py-3 sm:py-4 text-lg sm:text-2xl md:text-3xl font-syne font-bold text-[#111111] dark:text-[#F3F3EE] placeholder-[#666660]/50 dark:placeholder-[#9CA3AF]/40 focus:outline-none focus:border-[#DC2626] transition-all"
                 />
                 
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-[#666660]">PRESS ENTER TO QUERY VERIFIED MSRIT DATASET</span>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 font-mono text-xs">
+                  <span className="text-[#666660] dark:text-[#9CA3AF] text-[11px] sm:text-xs">
+                    PRESS ENTER TO QUERY VERIFIED MSRIT DATASET
+                  </span>
                   <button
                     type="submit"
                     disabled={isProcessing}
-                    className="px-6 py-3 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center gap-2 transition-all"
+                    className="w-full sm:w-auto px-6 py-3 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all cursor-pointer"
                   >
                     <span>SUBMIT</span>
                     <ArrowRight className="w-4 h-4" />

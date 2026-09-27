@@ -141,13 +141,13 @@ export const EditorialIssues: React.FC = () => {
   };
 
   return (
-    <section id="sec-report" className="py-24 sm:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
-      <div className="max-w-[1700px] mx-auto space-y-16">
+    <section id="sec-report" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
+      <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
         {/* Section Header Breadcrumb */}
         <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>SECTION 08 // COMMUNITY ISSUE DISPATCH</span>
-          <div className="flex items-center gap-2 text-[#111111] bg-white px-3 py-1 border border-[#111111]/15 text-[11px]">
+          <div className="flex items-center gap-2 text-[#111111] bg-white px-3 py-1 border border-[#111111]/15 text-[11px] self-start sm:self-auto">
             <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626]" />
             <span>ANONYMOUS DISPATCH PROTOCOL</span>
           </div>
@@ -169,7 +169,7 @@ export const EditorialIssues: React.FC = () => {
         </div>
 
         {/* Reporting Grid: Form (Left) & Issue Reports Stream (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-4 border-t border-[#111111]/10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 pt-4 border-t border-[#111111]/10 items-start">
           
           {/* Left 6 Cols: Issue Reporting Form */}
           <div className="lg:col-span-6 space-y-6">
@@ -218,7 +218,7 @@ export const EditorialIssues: React.FC = () => {
                       key={cat}
                       type="button"
                       onClick={() => setCategory(cat)}
-                      className={`p-2.5 border text-left transition-all ${
+                      className={`p-2.5 border text-left transition-all cursor-pointer ${
                         category === cat
                           ? 'bg-[#111111] border-[#DC2626] text-white font-bold shadow-2xs'
                           : 'bg-white border-[#111111]/15 text-[#666660] hover:text-[#111111] hover:border-[#111111]'
@@ -241,7 +241,7 @@ export const EditorialIssues: React.FC = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="E.G. FLICKERING OVERHEAD TUBE LIGHT, AC LEAK, ETC."
-                  className="w-full bg-white border border-[#111111]/25 px-3.5 py-2.5 text-sm text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-bold"
+                  className="w-full bg-white border border-[#111111]/25 px-3.5 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-bold"
                   required
                 />
               </div>
@@ -259,7 +259,7 @@ export const EditorialIssues: React.FC = () => {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     placeholder="E.G. LHC BLOCK, ROOM 204 OR ESB 2ND FLOOR"
-                    className="w-full bg-white border border-[#111111]/25 pl-9 pr-3.5 py-2.5 text-sm text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs"
+                    className="w-full bg-white border border-[#111111]/25 pl-9 pr-3.5 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs"
                     required
                   />
                 </div>
@@ -276,7 +276,7 @@ export const EditorialIssues: React.FC = () => {
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                   placeholder="PROVIDE HELPFUL DETAILS REGARDING THE ISSUE..."
-                  className="w-full bg-white border border-[#111111]/25 px-3.5 py-2.5 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs leading-relaxed"
+                  className="w-full bg-white border border-[#111111]/25 px-3.5 py-2.5 text-base sm:text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs leading-relaxed"
                   required
                 />
               </div>
@@ -330,7 +330,7 @@ export const EditorialIssues: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xs"
+                className="w-full py-3.5 sm:py-4 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer"
               >
                 <Send className="w-4 h-4 text-red-300" />
                 <span>SUBMIT ISSUE REPORT NOW →</span>

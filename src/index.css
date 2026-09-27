@@ -58,21 +58,33 @@
   }
 }
 
-/* Editorial Typography Helpers */
+/* Editorial Typography Helpers with Fluid Mobile-First Scaling */
 .text-giant {
-  font-size: clamp(3.8rem, 13vw, 14rem);
-  line-height: 0.86;
+  font-size: clamp(2.6rem, 11.5vw, 14rem);
+  line-height: 0.90;
   letter-spacing: -0.05em;
   font-weight: 800;
   text-transform: uppercase;
+  word-break: break-word;
 }
 
 .text-subgiant {
-  font-size: clamp(2.5rem, 8vw, 8rem);
-  line-height: 0.88;
+  font-size: clamp(1.85rem, 6.8vw, 8rem);
+  line-height: 0.92;
   letter-spacing: -0.04em;
   font-weight: 800;
   text-transform: uppercase;
+  word-break: break-word;
+}
+
+/* Mobile-Friendly Kinetic Touch Scrolling */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 .border-editorial {

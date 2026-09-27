@@ -126,7 +126,7 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
   const allLibrariesOpen = isLibraryOpen(simulatedTime);
 
   return (
-    <section id="sec-find" className="py-24 sm:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
+    <section id="sec-find" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-12">
         
         {/* Section Header */}
@@ -171,7 +171,7 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="SEARCH BY LIBRARY NAME, BUILDING, FLOOR, DISCIPLINE, OR CAPACITY..."
-                className="w-full pl-10 pr-9 py-2.5 bg-white border border-[#111111]/20 text-[#111111] text-xs font-mono placeholder:text-[#888880] focus:outline-none focus:border-[#DC2626] shadow-2xs font-bold"
+                className="w-full pl-10 pr-9 py-2.5 bg-white border border-[#111111]/20 text-[#111111] text-base sm:text-xs font-mono placeholder:text-[#888880] focus:outline-none focus:border-[#DC2626] shadow-2xs font-bold"
               />
               {searchQuery && (
                 <button
@@ -185,7 +185,7 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
             </div>
 
             {/* Quick Filter Pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none font-mono text-[11px]">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 no-scrollbar font-mono text-[11px]">
               <button
                 onClick={() => setActiveFilter('ALL')}
                 className={`px-3.5 py-2 uppercase font-bold tracking-wider transition-all whitespace-nowrap border shadow-2xs ${

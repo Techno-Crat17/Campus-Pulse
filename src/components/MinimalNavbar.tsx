@@ -113,20 +113,20 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         </div>
       )}
 
-      <div className="max-w-[1700px] mx-auto px-6 sm:px-12 flex items-center justify-between font-mono text-xs text-[#111111] dark:text-[#F3F3EE]">
+      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between font-mono text-xs text-[#111111] dark:text-[#F3F3EE]">
         
         {/* Campus Pulse Brand Logo */}
         <button 
           onClick={() => handleNavClick('sec-hero')}
           aria-label="Campus Pulse Home"
           title="Campus Pulse • UVERMA"
-          className="cursor-pointer font-bold text-sm uppercase flex items-center gap-3 group focus:outline-none transition-transform hover:opacity-95"
+          className="cursor-pointer font-bold text-sm uppercase flex items-center gap-2.5 sm:gap-3 group focus:outline-none transition-transform hover:opacity-95"
         >
           <img 
             src={`${import.meta.env.BASE_URL}assets/campus-pulse-logo.png`} 
             alt="Campus Pulse" 
             title="Campus Pulse • UVERMA"
-            className="h-9 sm:h-10 md:h-11 w-auto max-w-none object-contain drop-shadow-[0_2px_10px_rgba(220,38,38,0.25)] transition-transform duration-300 group-hover:scale-105" 
+            className="h-8 sm:h-10 md:h-11 w-auto max-w-none object-contain drop-shadow-[0_2px_10px_rgba(220,38,38,0.25)] transition-transform duration-300 group-hover:scale-105" 
           />
           <span className="hidden min-[380px]:inline-block font-syne font-extrabold tracking-tight text-sm sm:text-base text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors">
             CAMPUS PULSE
@@ -164,14 +164,14 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         </nav>
 
         {/* Action / Theme Toggle & Menu Trigger */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Light / Dark Mode Toggle */}
           <ThemeToggle variant="compact" />
 
           {/* Menu Drawer Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[11px] tracking-widest uppercase transition-all flex items-center gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
+            className="px-3 sm:px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[10px] sm:text-[11px] tracking-widest uppercase transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
           >
             {menuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
             <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
@@ -181,7 +181,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
 
       {/* Editorial Menu Drawer */}
       {menuOpen && (
-        <div className="fixed inset-0 top-16 bg-[#F5F4EF] dark:bg-[#0E0F12] z-40 px-6 sm:px-12 py-8 flex flex-col justify-between border-t border-[#111111]/10 dark:border-white/10 overflow-y-auto">
+        <div className="fixed inset-0 top-[54px] sm:top-16 bg-[#F5F4EF] dark:bg-[#0E0F12] z-40 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col justify-between border-t border-[#111111]/10 dark:border-white/10 overflow-y-auto">
           <div className="max-w-4xl space-y-6 my-auto w-full mx-auto">
             {/* Theme Toggle Drawer Row */}
             <ThemeToggle variant="drawer" />
@@ -189,7 +189,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
             <div className="font-mono text-xs text-[#DC2626] tracking-widest uppercase font-bold pt-2">
               NAVIGATION // SYSTEM INDEX
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {navItems.map((item) => {
                 const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
                 const isActive = activeSection === item.id;
@@ -198,7 +198,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                   <div
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-4 text-3xl sm:text-6xl font-syne font-black transition-colors uppercase ${
+                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 sm:pb-4 text-2xl sm:text-4xl md:text-6xl font-syne font-black transition-colors uppercase ${
                       isActive ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] dark:text-[#F3F3EE] hover:text-[#DC2626]'
                     }`}
                   >

@@ -8,8 +8,8 @@ interface EditorialFooterProps {
 
 export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, onExploreClick }) => {
   return (
-    <footer className="py-32 px-6 sm:px-12 bg-[#F5F4EF] text-[#111111] relative overflow-hidden border-t border-[#111111]/10">
-      <div className="max-w-[1700px] mx-auto space-y-24">
+    <footer className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 bg-[#F5F4EF] text-[#111111] relative overflow-hidden border-t border-[#111111]/10">
+      <div className="max-w-[1700px] mx-auto space-y-16 sm:space-y-24">
         
         {/* Massive Closing Typography */}
         <div className="space-y-4">
@@ -36,7 +36,7 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
           <div className="space-y-1">
             <div 
               onClick={onExploreClick}
-              className="font-syne text-3xl font-bold uppercase text-[#111111] cursor-pointer hover:text-[#DC2626] transition-colors"
+              className="font-syne text-2xl sm:text-3xl font-bold uppercase text-[#111111] cursor-pointer hover:text-[#DC2626] transition-colors"
             >
               CAMPUS PULSE <span className="text-[#DC2626]">→</span>
             </div>
@@ -47,7 +47,7 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
 
           <button
             onClick={onAskClick}
-            className="px-8 py-4 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center gap-2 transition-all"
+            className="w-full sm:w-auto px-8 py-4 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
           >
             <span>LAUNCH ASSISTANT</span>
             <ArrowUpRight className="w-4 h-4" />
@@ -55,8 +55,8 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
         </div>
 
         {/* Minimal Footer Line */}
-        <div className="pt-12 border-t border-[#111111]/10 flex flex-col sm:flex-row items-center justify-between font-mono text-xs text-[#666660] gap-4">
-          <div className="flex items-center gap-2">
+        <div className="pt-8 sm:pt-12 border-t border-[#111111]/10 flex flex-col sm:flex-row items-start sm:items-center justify-between font-mono text-xs text-[#666660] gap-4">
+          <div className="flex flex-wrap items-center gap-2">
             <span>CAMPUS PULSE © 2026. REAL-TIME CAMPUS OPERATING LAYER.</span>
             <span className="text-[#111111]/20">•</span>
             <span className="text-[10px] text-[#888880] tracking-widest uppercase hover:text-[#DC2626] transition-colors cursor-default" title="Creator: UVERMA">

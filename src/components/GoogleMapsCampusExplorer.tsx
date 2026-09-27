@@ -104,13 +104,14 @@ function computeCollisionFreeLabels(
   if (containerWidth <= 0 || containerHeight <= 0 || items.length === 0) return [];
 
   const isMobile = containerWidth < 640;
-  const cardWidth = isMobile ? 134 : 162;
-  const cardHeight = isMobile ? 40 : 44;
+  const isNarrowMobile = containerWidth < 420;
+  const cardWidth = isNarrowMobile ? 116 : isMobile ? 134 : 162;
+  const cardHeight = isNarrowMobile ? 36 : isMobile ? 40 : 44;
   const halfW = cardWidth / 2;
   const halfH = cardHeight / 2;
-  const minGapX = isMobile ? 10 : 14;
-  const minGapY = isMobile ? 10 : 14;
-  const padding = 16;
+  const minGapX = isNarrowMobile ? 8 : isMobile ? 10 : 14;
+  const minGapY = isNarrowMobile ? 8 : isMobile ? 10 : 14;
+  const padding = isNarrowMobile ? 10 : 16;
 
   // Initial cards at their polygon center anchors
   const cards = items.map((item) => ({
@@ -463,6 +464,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
             mapTypeControl: false,
             streetViewControl: false,
             zoomControl: true,
+            gestureHandling: 'cooperative',
             styles: isDark ? DARK_MAP_STYLES : LIGHT_MAP_STYLES
           });
 
@@ -470,7 +472,8 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           infoWindowRef.current = new google.maps.InfoWindow();
 
           // C. Fit Bounds to encompass full campus boundary
-          map.fitBounds(campusBounds, { top: 30, right: 30, bottom: 30, left: 30 });
+          const isMobileViewport = window.innerWidth < 640;
+          map.fitBounds(campusBounds, isMobileViewport ? { top: 15, right: 15, bottom: 15, left: 15 } : { top: 30, right: 30, bottom: 30, left: 30 });
 
           // Clamping center listener to strictly prevent panning beyond survey perimeter
           map.addListener('center_changed', () => {
@@ -835,7 +838,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     : [];
 
   return (
-    <section id="sec-map" className="py-24 sm:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
+    <section id="sec-map" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       <div id="sec-map-explore" className="max-w-[1700px] mx-auto space-y-10">
         
         {/* Section Header Breadcrumb */}
@@ -1148,7 +1151,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           
           {/* Left 7 Cols: Google Maps Satellite Container with Collision-Free Overlays */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="relative min-h-[620px] bg-[#EAE8E1] border-2 border-[#111111]/20 overflow-hidden shadow-md">
+            <div className="relative h-[380px] sm:h-[480px] lg:h-[620px] bg-[#EAE8E1] dark:bg-[#121318] border-2 border-[#111111]/20 dark:border-white/20 overflow-hidden shadow-md">
               
               {/* Google Maps Base View */}
               <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-10" />
@@ -1364,15 +1367,15 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                       >
                         <div className="flex items-center gap-1.5 overflow-hidden">
                           <span
-                            className="w-2.5 h-2.5 rounded-full shrink-0 border border-black/30"
+                            className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full shrink-0 border border-black/30"
                             style={{ backgroundColor: card.block.fillColor }}
                           />
-                          <span className="font-syne font-black text-[10px] uppercase tracking-tight truncate">
+                          <span className="font-syne font-black text-[9px] sm:text-[10px] uppercase tracking-tight truncate">
                             {card.block.name}
                           </span>
                         </div>
                         <div
-                          className={`font-mono text-[10px] font-extrabold shrink-0 ${
+                          className={`font-mono text-[9px] sm:text-[10px] font-extrabold shrink-0 ${
                             isSelected ? 'text-[#FCA5A5]' : 'text-[#DC2626]'
                           }`}
                         >

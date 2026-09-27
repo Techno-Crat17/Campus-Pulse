@@ -35,13 +35,13 @@ export const EditorialLostFound: React.FC = () => {
   });
 
   return (
-    <section id="sec-lostfound" className="py-32 px-6 sm:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
+    <section id="sec-lostfound" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       {/* Toast Notification */}
       {toastNotice && (
         <div 
           role="alert"
           aria-live="assertive"
-          className="fixed bottom-12 right-6 sm:right-12 z-[9999] max-w-sm bg-[#111111] text-[#F5F4EF] border border-[#DC2626] p-4 shadow-2xl flex items-center gap-3 font-mono"
+          className="fixed bottom-6 left-4 right-4 sm:left-auto sm:right-12 z-[9999] max-w-sm bg-[#111111] text-[#F5F4EF] border border-[#DC2626] p-4 shadow-2xl flex items-center gap-3 font-mono"
         >
           <div className="p-1.5 bg-[#DC2626]/20 border border-[#DC2626]/40 text-[#DC2626] shrink-0">
             <Bell className="w-4 h-4 text-[#DC2626]" />
@@ -64,7 +64,7 @@ export const EditorialLostFound: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-[1700px] mx-auto space-y-16">
+      <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#111111]/10 pb-8 gap-6">
@@ -116,7 +116,7 @@ export const EditorialLostFound: React.FC = () => {
           /* Coming Soon Display Card */
           <div 
             onClick={() => handleDisabledInteraction()}
-            className="border-2 border-dashed border-[#111111]/20 bg-white/50 hover:bg-white/80 transition-all p-8 sm:p-14 relative cursor-pointer group shadow-xs hover:border-[#DC2626]/60"
+            className="border-2 border-dashed border-[#111111]/20 bg-white/50 hover:bg-white/80 transition-all p-5 sm:p-10 lg:p-14 relative cursor-pointer group shadow-xs hover:border-[#DC2626]/60"
           >
             <div className="max-w-3xl space-y-6">
               <div className="flex items-center gap-3">

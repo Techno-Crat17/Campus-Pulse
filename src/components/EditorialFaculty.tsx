@@ -107,18 +107,18 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
         }`}
       >
         {/* Compact Default Row: Basic Information + Action Controls */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           
           {/* Index Number & Avatar & Profile Info */}
           <div
             onClick={() => toggleFacultyExpanded(fac.id)}
-            className="flex items-center gap-4 sm:gap-6 cursor-pointer flex-1 min-w-0"
+            className="flex items-center gap-3 sm:gap-6 cursor-pointer flex-1 min-w-0"
           >
-            <div className="font-mono text-lg sm:text-xl text-[#DC2626] font-bold shrink-0 w-8">
+            <div className="font-mono text-base sm:text-xl text-[#DC2626] font-bold shrink-0 w-6 sm:w-8">
               {String(idx + 1).padStart(2, '0')}
             </div>
 
-            <div className="w-14 h-14 sm:w-16 sm:h-16 border-2 border-[#111111]/20 shrink-0 overflow-hidden bg-white shadow-xs">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-[#111111]/20 shrink-0 overflow-hidden bg-white shadow-xs">
               {fac.avatarUrl ? (
                 <img
                   src={fac.avatarUrl}
@@ -129,7 +129,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   }}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center font-mono text-base font-bold bg-[#111111]/5 text-[#111111]">
+                <div className="w-full h-full flex items-center justify-center font-mono text-sm sm:text-base font-bold bg-[#111111]/5 text-[#111111]">
                   {fac.name.split(' ').map(n => n[0]).join('')}
                 </div>
               )}
@@ -137,7 +137,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
 
             <div className="space-y-0.5 min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-xl sm:text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight hover:text-[#DC2626] transition-colors truncate">
+                <h3 className="text-lg sm:text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight hover:text-[#DC2626] transition-colors truncate">
                   {fac.name}
                 </h3>
                 <span className={`inline-block px-2 py-0.5 border text-[10px] font-mono uppercase ${getStatusBadgeStyle(dynamicState.liveStatus)}`}>
@@ -155,7 +155,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
           </div>
 
           {/* Right Side Actions: SHOW ON MAP + Down-Arrow Chevron */}
-          <div className="flex items-center gap-2.5 sm:gap-3 self-end lg:self-center shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-center shrink-0">
             <button
               type="button"
               onClick={(e) => {
@@ -167,7 +167,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   if (mapEl) mapEl.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="px-3.5 py-2 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs font-bold uppercase inline-flex items-center gap-1.5 transition-all shadow-xs"
+              className="px-3 py-1.5 sm:px-3.5 sm:py-2 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-[11px] sm:text-xs font-bold uppercase inline-flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
             >
               <Map className="w-3.5 h-3.5 text-red-300" />
               <span>SHOW ON MAP</span>
@@ -179,10 +179,10 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
               onClick={(e) => toggleFacultyExpanded(fac.id, e)}
               aria-expanded={isExpanded}
               aria-label={isExpanded ? `Collapse details for ${fac.name}` : `Expand details for ${fac.name}`}
-              className="w-9 h-9 border border-[#111111]/30 bg-white hover:bg-[#111111] hover:text-white text-[#111111] flex items-center justify-center transition-all shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DC2626]"
+              className="w-8 h-8 sm:w-9 sm:h-9 border border-[#111111]/30 bg-white hover:bg-[#111111] hover:text-white text-[#111111] flex items-center justify-center transition-all shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#DC2626]"
             >
               <ChevronDown
-                className={`w-5 h-5 transition-transform duration-300 ease-in-out ${
+                className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ease-in-out ${
                   isExpanded ? 'rotate-180 text-[#DC2626] hover:text-white' : 'rotate-0'
                 }`}
               />
@@ -240,13 +240,13 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
 
                 {/* Today's Schedule Breakdown */}
                 {fac.todaySchedule && fac.todaySchedule.length > 0 && (
-                  <div className="space-y-2.5 font-mono text-xs">
+                  <div className="space-y-2 font-mono text-xs">
                     <div className="text-[#DC2626] uppercase font-bold tracking-wider text-[11px] flex items-center gap-2">
                       <Calendar className="w-3.5 h-3.5" />
-                      <span>TODAY'S SCHEDULE ({fac.todaySchedule.length} SESSIONS):</span>
+                      <span>TODAY&apos;S SCHEDULE ({fac.todaySchedule.length} SESSIONS):</span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                       {fac.todaySchedule.map((sch, sIdx) => (
                         <div key={sIdx} className="p-3 bg-white border border-[#111111]/15 space-y-1 shadow-xs">
                           <div className="text-[#DC2626] font-bold text-[11px] flex items-center gap-1">
@@ -276,19 +276,19 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
   };
 
   return (
-    <section id="sec-faculty" className="py-32 px-6 sm:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
-      <div className="max-w-[1700px] mx-auto space-y-16">
+    <section id="sec-faculty" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
+      <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
         {/* Section Label */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center justify-between">
+        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>SECTION 05 // DYNAMIC FACULTY TELEMETRY</span>
-          <span className="text-[#111111] bg-[#111111]/5 px-3 py-1 border border-[#111111]/15">
+          <span className="text-[#111111] bg-[#111111]/5 px-3 py-1 border border-[#111111]/15 self-start sm:self-auto text-[11px]">
             DATASET: FACULTY_MSRIT_DYNAMIC.JSON ({facultyData.length} RECORDS)
           </span>
         </div>
 
         {/* Section Heading & Search / Department Filters */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
           <div className="lg:col-span-6">
             <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
               WHO
@@ -313,7 +313,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search Dr. Yogish, Dr. Sumana, Room-102, ISE..."
-                  className="w-full bg-white border border-[#111111]/30 pl-9 pr-4 py-2.5 text-xs font-mono text-[#111111] placeholder-[#666660] focus:outline-none focus:border-[#DC2626] uppercase shadow-sm"
+                  className="w-full bg-white border border-[#111111]/30 pl-9 pr-4 py-2.5 text-base sm:text-xs font-mono text-[#111111] placeholder-[#666660] focus:outline-none focus:border-[#DC2626] uppercase shadow-sm"
                 />
               </div>
             </div>
