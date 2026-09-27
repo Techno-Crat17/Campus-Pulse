@@ -19,6 +19,13 @@ export async function checkBackendHealth(): Promise<boolean> {
     return isBackendAvailable;
   }
 
+  // When deployed on HTTPS (e.g., GitHub Pages) without an explicit API URL, avoid blocked mixed-content requests to localhost
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:' && (!import.meta.env.VITE_API_URL || import.meta.env.VITE_API_URL.startsWith('http://localhost'))) {
+    isBackendAvailable = false;
+    lastAvailabilityCheck = Date.now();
+    return false;
+  }
+
   try {
     const res = await fetch(`${API_BASE_URL}/health`, {
       method: 'GET',

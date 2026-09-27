@@ -90,7 +90,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
           className="cursor-pointer font-bold text-sm uppercase flex items-center gap-3 group focus:outline-none transition-transform hover:opacity-95"
         >
           <img 
-            src="/assets/campus-pulse-logo.png" 
+            src={`${import.meta.env.BASE_URL}assets/campus-pulse-logo.png`} 
             alt="Campus Pulse" 
             title="Campus Pulse • UVERMA"
             className="h-9 sm:h-10 md:h-11 w-auto max-w-none object-contain drop-shadow-[0_2px_10px_rgba(220,38,38,0.25)] transition-transform duration-300 group-hover:scale-105" 

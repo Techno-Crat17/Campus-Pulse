@@ -15,6 +15,7 @@ import { EditorialFooter } from './components/EditorialFooter';
 import { TimeProvider } from './context/TimeContext';
 import { TimeSimulationBar } from './components/TimeSimulationBar';
 import { FloatingScrollArrow } from './components/FloatingScrollArrow';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export function App() {
   const [selectedBuildingId, setSelectedBuildingId] = useState<string>('ise-lab-2');
@@ -68,9 +69,14 @@ export function App() {
         <EditorialOccupancy />
 
         {/* Section 04 — REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER */}
-        <GoogleMapsCampusExplorer
-          initialNodeId={selectedBuildingId}
-        />
+        <ErrorBoundary
+          fallbackTitle="Google Maps Explorer Unavailable"
+          fallbackMessage="The interactive Google Maps explorer could not be initialized. All other campus telemetry features and building schedules remain active."
+        >
+          <GoogleMapsCampusExplorer
+            initialNodeId={selectedBuildingId}
+          />
+        </ErrorBoundary>
 
         {/* Section 05 — FIND YOUR SPACE (Recommendations) */}
         <EditorialRecommender

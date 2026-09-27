@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
             className="cursor-pointer group flex items-center gap-3 text-left focus:outline-none"
           >
             <img 
-              src="/assets/campus-pulse-logo.png" 
+              src={`${import.meta.env.BASE_URL}assets/campus-pulse-logo.png`} 
               alt="Campus Pulse" 
               className="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105" 
             />

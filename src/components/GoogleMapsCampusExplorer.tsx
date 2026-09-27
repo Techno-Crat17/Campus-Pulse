@@ -259,7 +259,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
   // Recalculate projected pixel positions from Google Maps projection
   const updateProjectedLabels = useCallback(() => {
-    if (!overlayViewRef.current || !mapContainerRef.current) return;
+    if (!overlayViewRef.current || !mapContainerRef.current || !window.google?.maps?.LatLng) return;
     const projection = overlayViewRef.current.getProjection();
     if (!projection) return;
 
@@ -973,8 +973,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   </div>
                   <div className="text-xs sm:text-sm text-[#666660] max-w-md space-y-2">
                     <p>
-                      Add <code className="bg-[#111111]/10 px-2 py-1 text-[#DC2626] font-bold">VITE_GOOGLE_MAPS_API_KEY</code> to your <code className="bg-[#111111]/10 px-2 py-1 text-[#111111] font-bold">.env</code> file
-                      and restart the Vite development server.
+                      Add <code className="bg-[#111111]/10 px-2 py-1 text-[#DC2626] font-bold">VITE_GOOGLE_MAPS_API_KEY</code> to your environment variables or <code className="bg-[#111111]/10 px-2 py-1 text-[#111111] font-bold">.env</code> file.
+                    </p>
+                    <p className="text-[11px] text-[#888880]">
+                      Campus block selection, building telemetry, faculty directory, and room details remain fully functional below.
                     </p>
                   </div>
                 </div>
@@ -992,13 +994,54 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     RefererNotAllowedMapError • HTTP Referrer Restriction
                   </div>
                   <div className="text-xs text-[#111111] max-w-lg text-left space-y-2 bg-white p-5 border border-[#111111]/15 shadow-xs">
-                    <p>Add <code>http://localhost:5173/*</code> to Google Cloud Console Website Restrictions.</p>
+                    <p>Add <code>https://techno-crat17.github.io/*</code> and <code>http://localhost:5173/*</code> to Google Cloud Console Website Restrictions.</p>
                   </div>
                   <button
                     onClick={() => window.location.reload()}
                     className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
                   >
                     RELOAD PAGE & RECHECK MAP
+                  </button>
+                </div>
+              )}
+
+              {mapError === 'API_NOT_ENABLED' && (
+                <div className="absolute inset-0 z-40 bg-[#F5F4EF]/98 p-6 sm:p-8 flex flex-col justify-center items-center text-center space-y-4 font-mono overflow-y-auto">
+                  <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 mb-1">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <div className="text-xl sm:text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight">
+                    Maps API Not Enabled
+                  </div>
+                  <div className="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-3 py-1 border border-rose-200 uppercase">
+                    ApiNotActivatedMapError
+                  </div>
+                  <div className="text-xs text-[#666660] max-w-md space-y-2">
+                    <p>
+                      Enable the Maps JavaScript API in your Google Cloud Console project. Interactive campus block telemetry remains fully active.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {mapError === 'LOAD_FAILED' && (
+                <div className="absolute inset-0 z-40 bg-[#F5F4EF]/98 p-6 sm:p-8 flex flex-col justify-center items-center text-center space-y-4 font-mono overflow-y-auto">
+                  <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 mb-1">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <div className="text-xl sm:text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight">
+                    Map Layer Temporarily Unavailable
+                  </div>
+                  <div className="text-xs text-[#666660] max-w-md space-y-2">
+                    <p>
+                      The satellite map layer could not be connected. All campus telemetry, occupancy analytics, and faculty directories remain fully active.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
+                  >
+                    RETRY LOADING MAP
                   </button>
                 </div>
               )}
