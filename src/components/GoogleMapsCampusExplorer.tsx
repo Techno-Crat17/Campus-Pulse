@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   BookOpen,
   Users,
-  ShieldCheck,
   Building2,
   Info
 } from 'lucide-react';
@@ -17,7 +16,6 @@ import {
   VERIFIED_CAMPUS_BLOCKS,
   NON_GEOGRAPHIC_CRD_BLOCK,
   getVerifiedBlockByNameOrId,
-  CAMPUS_SURVEY_BOUNDARY,
   CAMPUS_PERIMETER_POLYGON,
   CAMPUS_RESTRICTION_BOUNDS
 } from '../data/verifiedCampusBlocks';
@@ -1417,38 +1415,6 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     </div>
                   </div>
 
-                  {/* Exact Corner Coordinates Telemetry */}
-                  <div className="p-3.5 bg-gray-50 border border-[#111111]/15 space-y-2 text-[11px]">
-                    <div className="font-bold text-[#111111] text-[10px] uppercase flex items-center justify-between">
-                      <span className="flex items-center gap-1 text-emerald-700">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                        EXACT VERIFIED CORNERS (TL → TR → BR → BL)
-                      </span>
-                      <span className="text-[#888]">4 POINTS</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-[10px] pt-1">
-                      <div className="p-1.5 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold">TL: </span>
-                        <span>{activeBlock.corners.TL.lat.toFixed(6)}, {activeBlock.corners.TL.lng.toFixed(6)}</span>
-                      </div>
-                      <div className="p-1.5 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold">TR: </span>
-                        <span>{activeBlock.corners.TR.lat.toFixed(6)}, {activeBlock.corners.TR.lng.toFixed(6)}</span>
-                      </div>
-                      <div className="p-1.5 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold">BR: </span>
-                        <span>{activeBlock.corners.BR.lat.toFixed(6)}, {activeBlock.corners.BR.lng.toFixed(6)}</span>
-                      </div>
-                      <div className="p-1.5 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold">BL: </span>
-                        <span>{activeBlock.corners.BL.lat.toFixed(6)}, {activeBlock.corners.BL.lng.toFixed(6)}</span>
-                      </div>
-                    </div>
-                    <div className="text-[10px] text-[#666] pt-1 border-t border-[#111111]/10">
-                      CENTER ANCHOR: <strong>{activeBlock.center.lat.toFixed(6)}° N, {activeBlock.center.lng.toFixed(6)}° E</strong>
-                    </div>
-                  </div>
-
                   {/* Associated Library Box if present */}
                   {activeBlockLibrary && activeLibDetails && (
                     <div className="p-4 border-2 border-[#DC2626] bg-[#DC2626]/5 space-y-3 font-mono text-xs">
@@ -1537,44 +1503,6 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     </div>
                   </div>
 
-                  {/* Official Survey Perimeter Boundary Box */}
-                  <div className="p-3.5 bg-gray-50 border-2 border-[#111111]/15 space-y-2 text-[11px]">
-                    <div className="font-bold text-[#111111] text-[10px] uppercase flex items-center justify-between">
-                      <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                        OFFICIAL CAMPUS PERIMETER BORDERS (SURVEY ENFORCED)
-                      </span>
-                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-bold">
-                        MAP LOCKED
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] pt-1">
-                      <div className="p-2 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold block">TL (TOP LEFT):</span>
-                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.TL.raw}</span>
-                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.TL.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.TL.lng.toFixed(6)}</div>
-                      </div>
-                      <div className="p-2 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold block">TR (TOP RIGHT):</span>
-                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.TR.raw}</span>
-                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.TR.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.TR.lng.toFixed(6)}</div>
-                      </div>
-                      <div className="p-2 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold block">BL (BOTTOM LEFT):</span>
-                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.BL.raw}</span>
-                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.BL.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.BL.lng.toFixed(6)}</div>
-                      </div>
-                      <div className="p-2 bg-white border border-[#111111]/10">
-                        <span className="text-[#DC2626] font-bold block">BR (BOTTOM RIGHT):</span>
-                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.BR.raw}</span>
-                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.BR.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.BR.lng.toFixed(6)}</div>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-[#666660] pt-1 border-t border-[#111111]/10">
-                      Map box is strictly bounded within these survey coordinates. Navigation and zoom cannot expand beyond this perimeter.
-                    </p>
-                  </div>
-
                   {/* 8 Campus Blocks Status Quick Selector */}
                   <div className="space-y-2">
                     <div className="font-bold text-[#111111] text-[11px] uppercase flex items-center justify-between">
@@ -1631,7 +1559,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   </div>
 
                   <p className="text-xs text-[#666660] font-light">
-                    Click any building polygon or label card on the map to inspect its floor plans, verified coordinates, departments, and active faculty roster. Click the selected building again to return to this overall view.
+                    Click any building polygon or label card on the map to inspect its floor plans, departments, and active faculty roster. Click the selected building again to return to this overall view.
                   </p>
                 </div>
               )}

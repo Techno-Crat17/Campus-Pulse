@@ -62,16 +62,10 @@ export const ISSUE_STATUSES: IssueStatus[] = [
   'Resolved'
 ];
 
-export const STUDENT_CONTRIBUTORS: string[] = [
-  'Udbhav Verma',
-  'Ravnish Sekhar',
-  'Shivam Kr Chaudhary',
-  'Varad Adavakar',
-  'Sagnik'
-];
+export const STUDENT_CONTRIBUTORS: string[] = [];
 
 /**
- * Initial sample issues — clearly marked as DEMO/SAMPLE data.
+ * Initial sample issues — completely anonymous campus telemetry.
  */
 export const INITIAL_ISSUE_REPORTS: IssueReport[] = [
   {
@@ -82,7 +76,7 @@ export const INITIAL_ISSUE_REPORTS: IssueReport[] = [
     location: 'LHC Block, Room 204',
     priority: 'Low',
     status: 'Under Review',
-    reportedBy: 'Udbhav Verma',
+    reportedBy: 'Anonymous',
     dateTime: '2026-09-26 14:30',
     isDemo: true
   },
@@ -94,7 +88,7 @@ export const INITIAL_ISSUE_REPORTS: IssueReport[] = [
     location: 'ESB Block, 2nd Floor Corridor',
     priority: 'Medium',
     status: 'In Progress',
-    reportedBy: 'Ravnish Sekhar',
+    reportedBy: 'Anonymous',
     dateTime: '2026-09-26 11:15',
     isDemo: true
   },
@@ -106,7 +100,7 @@ export const INITIAL_ISSUE_REPORTS: IssueReport[] = [
     location: 'Apex Block, Library Reading Hall',
     priority: 'High',
     status: 'Reported',
-    reportedBy: 'Shivam Kr Chaudhary',
+    reportedBy: 'Anonymous',
     dateTime: '2026-09-26 16:45',
     isDemo: true
   },
@@ -118,7 +112,7 @@ export const INITIAL_ISSUE_REPORTS: IssueReport[] = [
     location: 'Campus Quadrangle Plaza',
     priority: 'Low',
     status: 'Resolved',
-    reportedBy: 'Varad Adavakar',
+    reportedBy: 'Anonymous',
     dateTime: '2026-09-25 10:00',
     isDemo: true
   },
@@ -130,7 +124,7 @@ export const INITIAL_ISSUE_REPORTS: IssueReport[] = [
     location: 'LHC Block, Seminar Hall 1',
     priority: 'High',
     status: 'Under Review',
-    reportedBy: 'Sagnik',
+    reportedBy: 'Anonymous',
     dateTime: '2026-09-26 15:20',
     isDemo: true
   }
@@ -140,6 +134,7 @@ const LOCAL_STORAGE_KEY = 'campus_pulse_issue_reports';
 
 /**
  * Get all current issue reports (from localStorage if available, fallback to initial demo dataset)
+ * All reports are strictly anonymous with no student identity details.
  */
 export function getStoredIssueReports(): IssueReport[] {
   if (typeof window === 'undefined') return INITIAL_ISSUE_REPORTS;
@@ -148,7 +143,10 @@ export function getStoredIssueReports(): IssueReport[] {
     if (!raw) return INITIAL_ISSUE_REPORTS;
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      return parsed;
+      return parsed.map((item: IssueReport) => ({
+        ...item,
+        reportedBy: 'Anonymous'
+      }));
     }
   } catch (err) {
     console.warn('Failed to parse stored issue reports:', err);

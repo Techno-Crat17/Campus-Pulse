@@ -10,12 +10,43 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState<string>('sec-hero');
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
+
+      // Scrollspy logic to glow the active section button
+      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
+      
+      const sections = [
+        { id: 'sec-lostfound', navId: 'sec-lostfound' },
+        { id: 'sec-report', navId: 'sec-report' },
+        { id: 'sec-faculty', navId: 'sec-faculty' },
+        { id: 'sec-find', navId: 'sec-find' },
+        { id: 'sec-map', navId: 'sec-map' },
+        { id: 'sec-see', navId: 'sec-map' },
+        { id: 'sec-ask', navId: 'sec-ask' },
+        { id: 'sec-problem', navId: 'sec-hero' },
+        { id: 'sec-hero', navId: 'sec-hero' },
+      ];
+
+      for (const sec of sections) {
+        const el = document.getElementById(sec.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const top = rect.top + window.scrollY;
+          if (scrollPosition >= top) {
+            setActiveSection(sec.navId);
+            return;
+          }
+        }
+      }
+      setActiveSection('sec-hero');
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -30,7 +61,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
   const navItems = [
     { id: 'sec-hero', label: '01 / HOME' },
     { id: 'sec-ask', label: '02 / ASK' },
-    { id: 'sec-see', label: '03 / MAP' },
+    { id: 'sec-map', label: '03 / MAP' },
     { id: 'sec-find', label: '04 / SPACES' },
     { id: 'sec-faculty', label: '05 / FACULTY' },
     { id: 'sec-report', label: '06 / ISSUES' },
@@ -42,6 +73,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
       setToastMessage('Lost & Found is coming soon');
       return;
     }
+    setActiveSection(id);
     onNavigateSection(id);
     setMenuOpen(false);
   };
@@ -104,15 +136,18 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         <nav className="hidden lg:flex items-center space-x-7 text-[11px] tracking-wider text-[#666660]">
           {navItems.map((item) => {
             const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
+            const isActive = activeSection === item.id;
 
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`transition-colors uppercase font-mono flex items-center gap-1.5 ${
-                  isLfDisabled 
+                className={`transition-all duration-300 uppercase font-mono flex items-center gap-1.5 py-1 ${
+                  isActive
+                    ? 'text-[#DC2626] font-extrabold drop-shadow-[0_0_8px_rgba(220,38,38,0.55)] border-b-2 border-[#DC2626]'
+                    : isLfDisabled 
                     ? 'text-[#888880] hover:text-[#DC2626] cursor-pointer' 
-                    : 'hover:text-[#DC2626]'
+                    : 'text-[#666660] hover:text-[#DC2626]'
                 }`}
                 title={isLfDisabled ? 'Lost & Found is coming soon' : undefined}
               >
@@ -149,12 +184,15 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
             <div className="space-y-4">
               {navItems.map((item) => {
                 const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
+                const isActive = activeSection === item.id;
 
                 return (
                   <div
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className="group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 pb-4 text-3xl sm:text-6xl font-syne font-black text-[#111111] hover:text-[#DC2626] transition-colors uppercase"
+                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 pb-4 text-3xl sm:text-6xl font-syne font-black transition-colors uppercase ${
+                      isActive ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] hover:text-[#DC2626]'
+                    }`}
                   >
                     <div className="flex items-center gap-3 flex-wrap">
                       <span className={isLfDisabled ? 'opacity-70' : ''}>{item.label}</span>
@@ -169,7 +207,9 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                         [TEMPORARILY UNAVAILABLE]
                       </span>
                     ) : (
-                      <ArrowUpRight className="w-8 h-8 text-[#666660] group-hover:text-[#DC2626] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                      <ArrowUpRight className={`w-8 h-8 transition-all group-hover:translate-x-1 group-hover:-translate-y-1 ${
+                        isActive ? 'text-[#DC2626]' : 'text-[#666660] group-hover:text-[#DC2626]'
+                      }`} />
                     )}
                   </div>
                 );

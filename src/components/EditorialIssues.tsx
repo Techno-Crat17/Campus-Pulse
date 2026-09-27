@@ -5,36 +5,28 @@ import {
   Upload,
   Clock,
   MapPin,
-  ShieldAlert,
-  Users,
   X,
   Send
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
   ISSUE_CATEGORIES,
-  ISSUE_PRIORITIES,
-  STUDENT_CONTRIBUTORS,
   getStoredIssueReports,
   saveIssueReport
 } from '../data/issueReportsData';
 import type {
   IssueCategory,
-  IssuePriority,
   IssueReport
 } from '../data/issueReportsData';
 
 export const EditorialIssues: React.FC = () => {
   const [issues, setIssues] = useState<IssueReport[]>(() => getStoredIssueReports());
   
-  // Form fields
+  // Form fields: strictly Category, Title, Location, Description, Optional Photo
   const [category, setCategory] = useState<IssueCategory>('Infrastructure');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
-  const [priority, setPriority] = useState<IssuePriority>('Medium');
-  const [reportedBy, setReportedBy] = useState<string>(STUDENT_CONTRIBUTORS[0]);
-  const [customReporter, setCustomReporter] = useState<string>('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Status & Feedback
@@ -84,19 +76,15 @@ export const EditorialIssues: React.FC = () => {
       return;
     }
 
-    if (!description.trim()) {
-      setErrorMsg('Please describe the issue in detail.');
-      return;
-    }
-
     if (!location.trim()) {
       setErrorMsg('Please specify the campus location.');
       return;
     }
 
-    const effectiveReporter = reportedBy === 'Other' && customReporter.trim()
-      ? customReporter.trim()
-      : reportedBy;
+    if (!description.trim()) {
+      setErrorMsg('Please describe the issue in detail.');
+      return;
+    }
 
     const now = new Date();
     const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -107,9 +95,9 @@ export const EditorialIssues: React.FC = () => {
       category,
       description: description.trim(),
       location: location.trim(),
-      priority,
+      priority: 'Medium',
       status: 'Reported',
-      reportedBy: effectiveReporter,
+      reportedBy: 'Anonymous',
       dateTime: formattedDate,
       imageUrl: imagePreview || undefined,
       isDemo: false
@@ -137,19 +125,6 @@ export const EditorialIssues: React.FC = () => {
     }, 4500);
   };
 
-  const getPriorityBadgeClass = (p: IssuePriority) => {
-    switch (p) {
-      case 'High':
-        return 'bg-rose-100 text-rose-700 border-rose-300';
-      case 'Medium':
-        return 'bg-amber-100 text-amber-800 border-amber-300';
-      case 'Low':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-300';
-      default:
-        return 'bg-gray-100 text-gray-700 border-gray-300';
-    }
-  };
-
   const getStatusBadgeClass = (s: IssueReport['status']) => {
     switch (s) {
       case 'Reported':
@@ -173,8 +148,8 @@ export const EditorialIssues: React.FC = () => {
         <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <span>SECTION 08 // COMMUNITY ISSUE DISPATCH</span>
           <div className="flex items-center gap-2 text-[#111111] bg-white px-3 py-1 border border-[#111111]/15 text-[11px]">
-            <Users className="w-3.5 h-3.5 text-[#DC2626]" />
-            <span>REPORTED BY STUDENTS PROTOCOL</span>
+            <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626]" />
+            <span>ANONYMOUS DISPATCH PROTOCOL</span>
           </div>
         </div>
 
@@ -189,27 +164,8 @@ export const EditorialIssues: React.FC = () => {
             </h2>
           </div>
           <p className="font-mono text-xs sm:text-sm text-[#666660] max-w-2xl">
-            Help improve the campus by reporting issues that need attention.
+            Help improve the campus by anonymously reporting issues that need attention.
           </p>
-        </div>
-
-        {/* Student Contributors Row */}
-        <div className="p-4 bg-white border border-[#111111]/15 space-y-2">
-          <div className="font-mono text-xs text-[#111111] font-bold uppercase tracking-wider flex items-center gap-2">
-            <ShieldAlert className="w-3.5 h-3.5 text-[#DC2626]" />
-            <span>REPORTED BY STUDENTS:</span>
-          </div>
-          <div className="flex flex-wrap gap-2 pt-1 font-mono text-xs">
-            {STUDENT_CONTRIBUTORS.map((student, idx) => (
-              <span
-                key={student}
-                className="px-3 py-1 bg-[#F5F4EF] border border-[#111111]/20 text-[#111111] font-bold flex items-center gap-1.5 shadow-2xs"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
-                <span>{idx + 1}. {student}</span>
-              </span>
-            ))}
-          </div>
         </div>
 
         {/* Reporting Grid: Form (Left) & Issue Reports Stream (Right) */}
@@ -232,7 +188,7 @@ export const EditorialIssues: React.FC = () => {
                 <div>
                   <div className="font-bold text-emerald-800 text-sm">Issue reported successfully.</div>
                   <div className="text-[11px] text-emerald-700 mt-0.5">
-                    Your report has been logged and published to the dispatch queue below.
+                    Your report has been logged and published anonymously to the dispatch queue.
                   </div>
                 </div>
               </div>
@@ -325,68 +281,10 @@ export const EditorialIssues: React.FC = () => {
                 />
               </div>
 
-              {/* Priority & Reporter Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                {/* Priority */}
-                <div className="space-y-1.5">
-                  <label htmlFor="issue-priority-select" className="text-[#666660] uppercase tracking-widest font-bold block">
-                    5. PRIORITY LEVEL
-                  </label>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    {ISSUE_PRIORITIES.map((p) => (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => setPriority(p)}
-                        className={`py-2 px-1 text-center border font-bold transition-all ${
-                          priority === p
-                            ? 'bg-[#111111] text-white border-[#DC2626]'
-                            : 'bg-white border-[#111111]/15 text-[#666660] hover:border-[#111111]'
-                        }`}
-                      >
-                        {p.toUpperCase()}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Reported By Selector */}
-                <div className="space-y-1.5">
-                  <label htmlFor="issue-reporter-select" className="text-[#666660] uppercase tracking-widest font-bold block">
-                    6. REPORTED BY (STUDENT)
-                  </label>
-                  <select
-                    id="issue-reporter-select"
-                    value={reportedBy}
-                    onChange={(e) => setReportedBy(e.target.value)}
-                    className="w-full bg-white border border-[#111111]/25 px-3 py-2 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] font-bold"
-                  >
-                    {STUDENT_CONTRIBUTORS.map((name) => (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    ))}
-                    <option value="Other">Other Student (Write-in)</option>
-                  </select>
-
-                  {reportedBy === 'Other' && (
-                    <input
-                      type="text"
-                      value={customReporter}
-                      onChange={(e) => setCustomReporter(e.target.value)}
-                      placeholder="ENTER YOUR NAME"
-                      className="w-full bg-white border border-[#111111]/25 px-3 py-1.5 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] mt-1 uppercase"
-                    />
-                  )}
-                </div>
-
-              </div>
-
               {/* Optional Photo/Image Upload */}
               <div className="space-y-1.5">
                 <label className="text-[#666660] uppercase tracking-widest font-bold block">
-                  7. OPTIONAL PHOTO / ATTACHMENT
+                  5. OPTIONAL PHOTO / ATTACHMENT
                 </label>
                 
                 <input
@@ -460,17 +358,15 @@ export const EditorialIssues: React.FC = () => {
                     key={iss.id}
                     className="p-4 bg-white border border-[#111111]/15 space-y-3 font-mono text-xs shadow-2xs hover:border-[#111111] transition-all"
                   >
-                    {/* Header Row: Category, Demo Badge, Date */}
+                    {/* Header Row: Category, Anonymous Tag, Date */}
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#111111]/10 pb-2">
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-0.5 bg-[#111111] text-white font-bold text-[10px] uppercase">
                           {iss.category}
                         </span>
-                        {iss.isDemo && (
-                          <span className="px-1.5 py-0.5 border border-amber-300 bg-amber-50 text-amber-800 text-[9px] font-bold uppercase">
-                            DEMO / SAMPLE DATA
-                          </span>
-                        )}
+                        <span className="px-1.5 py-0.5 border border-[#111111]/15 bg-[#F5F4EF] text-[#666660] text-[9px] font-bold uppercase">
+                          ANONYMOUS
+                        </span>
                       </div>
                       <div className="text-[10px] text-[#666660] flex items-center gap-1">
                         <Clock className="w-3 h-3" />
@@ -499,29 +395,15 @@ export const EditorialIssues: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Location & Reported By */}
+                    {/* Location & Status Row */}
                     <div className="pt-2 border-t border-[#111111]/10 flex flex-wrap items-center justify-between gap-2 text-[11px]">
                       <div className="flex items-center gap-1.5 text-[#111111]">
                         <MapPin className="w-3.5 h-3.5 text-[#DC2626] shrink-0" />
                         <span>{iss.location}</span>
                       </div>
-                      <div className="text-[#666660]">
-                        Reported by: <strong className="text-[#111111]">{iss.reportedBy}</strong>
-                      </div>
-                    </div>
-
-                    {/* Priority & Status Row */}
-                    <div className="pt-1 flex flex-wrap items-center justify-between gap-2 text-[10px]">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[#888880] uppercase">PRIORITY:</span>
-                        <span className={`px-2 py-0.5 border font-bold uppercase ${getPriorityBadgeClass(iss.priority)}`}>
-                          {iss.priority}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[#888880] uppercase">STATUS:</span>
-                        <span className={`px-2 py-0.5 border font-bold uppercase ${getStatusBadgeClass(iss.status)}`}>
+                        <span className="text-[#888880] uppercase text-[10px]">STATUS:</span>
+                        <span className={`px-2 py-0.5 border font-bold uppercase text-[10px] ${getStatusBadgeClass(iss.status)}`}>
                           ● {iss.status}
                         </span>
                       </div>
