@@ -5,6 +5,7 @@ import App from './App.tsx'
 
 // Creator Easter Egg (discoverable in DevTools Console)
 if (typeof window !== 'undefined') {
+  (window as any).__CAMPUS_PULSE_MOUNTED__ = true;
   console.log(
     '%c CAMPUS PULSE %c • %c UVERMA %c',
     'background: #111111; color: #DC2626; font-weight: 700; padding: 2px 6px; font-family: monospace;',
