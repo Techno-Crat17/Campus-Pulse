@@ -36,9 +36,14 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
           <div className="space-y-1">
             <div 
               onClick={onExploreClick}
-              className="font-syne text-2xl sm:text-3xl font-bold uppercase text-[#111111] cursor-pointer hover:text-[#DC2626] transition-colors"
+              className="font-syne text-2xl sm:text-3xl font-bold uppercase text-[#111111] dark:text-[#F3F3EE] cursor-pointer hover:text-[#DC2626] transition-colors flex items-center gap-3"
             >
-              CAMPUS PULSE <span className="text-[#DC2626]">→</span>
+              <img 
+                src={`${import.meta.env.BASE_URL}assets/campus-pulse-icon.png`} 
+                alt="Campus Pulse Icon" 
+                className="w-8 h-8 rounded-lg bg-[#0A0A0A] object-contain shadow-xs border border-black/15 dark:border-white/15" 
+              />
+              <span>CAMPUS PULSE <span className="text-[#DC2626]">→</span></span>
             </div>
             <div className="font-mono text-xs text-[#666660] uppercase">
               ASK YOUR CAMPUS. SEE YOUR CAMPUS. NAVIGATE YOUR CAMPUS.
