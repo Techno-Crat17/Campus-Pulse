@@ -54,7 +54,7 @@ export const FloatingScrollArrow: React.FC<FloatingScrollArrowProps> = ({
       onClick={handleClick}
       aria-label={isNearTop ? 'Scroll down' : 'Scroll to top'}
       title={isNearTop ? 'Scroll down to content' : 'Scroll to top'}
-      className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111111] text-white border-2 border-[#DC2626] shadow-xl hover:bg-[#DC2626] hover:border-[#B91C1C] hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-108 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#DC2626] focus:ring-offset-2 focus:ring-offset-[#F5F4EF] group cursor-pointer"
+      className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#111111] dark:bg-[#1A1C24] text-white border-2 border-[#DC2626] shadow-xl hover:bg-[#DC2626] hover:border-[#B91C1C] hover:text-white flex items-center justify-center transition-all duration-300 hover:scale-108 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#DC2626] focus:ring-offset-2 focus:ring-offset-[#F5F4EF] dark:focus:ring-offset-[#0E0F12] group cursor-pointer"
     >
       {isNearTop ? (
         <ChevronDown className="w-5 h-5 text-white transition-transform duration-300 group-hover:translate-y-0.5" />

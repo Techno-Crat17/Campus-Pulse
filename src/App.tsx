@@ -12,6 +12,7 @@ import { EditorialLostFound } from './components/EditorialLostFound';
 import { EditorialPredict } from './components/EditorialPredict';
 import { EditorialFooter } from './components/EditorialFooter';
 
+import { ThemeProvider } from './context/ThemeContext';
 import { TimeProvider } from './context/TimeContext';
 import { TimeSimulationBar } from './components/TimeSimulationBar';
 import { FloatingScrollArrow } from './components/FloatingScrollArrow';
@@ -33,8 +34,9 @@ export function App() {
   };
 
   return (
-    <TimeProvider>
-      <div className="min-h-screen bg-[#F5F4EF] text-[#111111] font-sans selection-red relative">
+    <ThemeProvider>
+      <TimeProvider>
+        <div className="min-h-screen bg-[#F5F4EF] dark:bg-[#0E0F12] text-[#111111] dark:text-[#F3F3EE] font-sans selection-red relative transition-colors duration-200">
         
         {/* Floating Time Simulation Widget */}
         <TimeSimulationBar />
@@ -107,7 +109,8 @@ export function App() {
       </main>
 
     </div>
-    </TimeProvider>
+      </TimeProvider>
+    </ThemeProvider>
   );
 }
 

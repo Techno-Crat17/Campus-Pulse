@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowUpRight, Bell } from 'lucide-react';
 import { LOST_AND_FOUND_ENABLED } from '../config/features';
+import { ThemeToggle } from './ThemeToggle';
 
 interface MinimalNavbarProps {
   onNavigateSection: (sectionId: string) => void;
@@ -81,7 +82,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? 'bg-[#F5F4EF]/90 backdrop-blur-md py-3 border-b border-[#111111]/10' 
+        ? 'bg-[#F5F4EF]/90 dark:bg-[#0E0F12]/90 backdrop-blur-md py-3 border-b border-[#111111]/10 dark:border-white/10' 
         : 'bg-transparent py-6'
     }`}>
       {/* Toast Notification for Feature Status */}
@@ -89,7 +90,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         <div 
           role="alert"
           aria-live="assertive"
-          className="fixed top-24 right-4 sm:right-8 z-[9999] max-w-sm bg-[#111111] text-[#F5F4EF] border border-[#DC2626] shadow-2xl p-4 flex items-center gap-3"
+          className="fixed top-24 right-4 sm:right-8 z-[9999] max-w-sm bg-[#111111] dark:bg-[#1A1C24] text-[#F5F4EF] border border-[#DC2626] shadow-2xl p-4 flex items-center gap-3"
         >
           <div className="p-1.5 bg-[#DC2626]/20 border border-[#DC2626]/40 text-[#DC2626]">
             <Bell className="w-4 h-4 text-[#DC2626]" />
@@ -112,7 +113,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         </div>
       )}
 
-      <div className="max-w-[1700px] mx-auto px-6 sm:px-12 flex items-center justify-between font-mono text-xs text-[#111111]">
+      <div className="max-w-[1700px] mx-auto px-6 sm:px-12 flex items-center justify-between font-mono text-xs text-[#111111] dark:text-[#F3F3EE]">
         
         {/* Campus Pulse Brand Logo */}
         <button 
@@ -127,13 +128,13 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
             title="Campus Pulse • UVERMA"
             className="h-9 sm:h-10 md:h-11 w-auto max-w-none object-contain drop-shadow-[0_2px_10px_rgba(220,38,38,0.25)] transition-transform duration-300 group-hover:scale-105" 
           />
-          <span className="hidden min-[380px]:inline-block font-syne font-extrabold tracking-tight text-sm sm:text-base text-[#111111] group-hover:text-[#DC2626] transition-colors">
+          <span className="hidden min-[380px]:inline-block font-syne font-extrabold tracking-tight text-sm sm:text-base text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors">
             CAMPUS PULSE
           </span>
         </button>
 
         {/* Minimal Desktop Navigation */}
-        <nav className="hidden lg:flex items-center space-x-7 text-[11px] tracking-wider text-[#666660]">
+        <nav className="hidden lg:flex items-center space-x-7 text-[11px] tracking-wider text-[#666660] dark:text-[#9CA3AF]">
           {navItems.map((item) => {
             const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
             const isActive = activeSection === item.id;
@@ -147,7 +148,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                     ? 'text-[#DC2626] font-extrabold drop-shadow-[0_0_8px_rgba(220,38,38,0.55)] border-b-2 border-[#DC2626]'
                     : isLfDisabled 
                     ? 'text-[#888880] hover:text-[#DC2626] cursor-pointer' 
-                    : 'text-[#666660] hover:text-[#DC2626]'
+                    : 'text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626]'
                 }`}
                 title={isLfDisabled ? 'Lost & Found is coming soon' : undefined}
               >
@@ -162,11 +163,15 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
           })}
         </nav>
 
-        {/* Action / Menu Trigger */}
-        <div className="flex items-center gap-4">
+        {/* Action / Theme Toggle & Menu Trigger */}
+        <div className="flex items-center gap-3">
+          {/* Light / Dark Mode Toggle */}
+          <ThemeToggle variant="compact" />
+
+          {/* Menu Drawer Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="px-3.5 py-1.5 border border-[#111111]/20 hover:border-[#DC2626] hover:text-[#DC2626] text-[11px] tracking-widest uppercase transition-all flex items-center gap-2"
+            className="px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[11px] tracking-widest uppercase transition-all flex items-center gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
           >
             {menuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
             <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
@@ -176,12 +181,15 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
 
       {/* Editorial Menu Drawer */}
       {menuOpen && (
-        <div className="fixed inset-0 top-16 bg-[#F5F4EF] z-40 px-6 sm:px-12 py-12 flex flex-col justify-between border-t border-[#111111]/10">
-          <div className="max-w-4xl space-y-6 my-auto">
-            <div className="font-mono text-xs text-[#DC2626] tracking-widest uppercase">
+        <div className="fixed inset-0 top-16 bg-[#F5F4EF] dark:bg-[#0E0F12] z-40 px-6 sm:px-12 py-8 flex flex-col justify-between border-t border-[#111111]/10 dark:border-white/10 overflow-y-auto">
+          <div className="max-w-4xl space-y-6 my-auto w-full mx-auto">
+            {/* Theme Toggle Drawer Row */}
+            <ThemeToggle variant="drawer" />
+
+            <div className="font-mono text-xs text-[#DC2626] tracking-widest uppercase font-bold pt-2">
               NAVIGATION // SYSTEM INDEX
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {navItems.map((item) => {
                 const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
                 const isActive = activeSection === item.id;
@@ -190,8 +198,8 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                   <div
                     key={item.id}
                     onClick={() => handleNavClick(item.id)}
-                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 pb-4 text-3xl sm:text-6xl font-syne font-black transition-colors uppercase ${
-                      isActive ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] hover:text-[#DC2626]'
+                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-4 text-3xl sm:text-6xl font-syne font-black transition-colors uppercase ${
+                      isActive ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] dark:text-[#F3F3EE] hover:text-[#DC2626]'
                     }`}
                   >
                     <div className="flex items-center gap-3 flex-wrap">
@@ -208,7 +216,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                       </span>
                     ) : (
                       <ArrowUpRight className={`w-8 h-8 transition-all group-hover:translate-x-1 group-hover:-translate-y-1 ${
-                        isActive ? 'text-[#DC2626]' : 'text-[#666660] group-hover:text-[#DC2626]'
+                        isActive ? 'text-[#DC2626]' : 'text-[#666660] dark:text-[#9CA3AF] group-hover:text-[#DC2626]'
                       }`} />
                     )}
                   </div>
@@ -217,7 +225,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
             </div>
           </div>
 
-          <div className="font-mono text-xs text-[#666660] flex justify-between border-t border-[#111111]/10 pt-6">
+          <div className="font-mono text-xs text-[#666660] dark:text-[#9CA3AF] flex justify-between border-t border-[#111111]/10 dark:border-white/10 pt-6">
             <span>REAL-TIME OPERATING LAYER</span>
             <span className="text-[#888880]">BUILD 2026.09 • UVERMA</span>
           </div>

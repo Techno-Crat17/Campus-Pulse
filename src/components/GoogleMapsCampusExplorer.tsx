@@ -27,6 +27,7 @@ import {
 import type { MSRITFacultyRecord } from '../data/facultyData';
 import { getFacultyLiveStatus } from '../data/statusEngine';
 import { useTimeContext } from '../context/TimeContext';
+import { useTheme } from '../context/ThemeContext';
 import { LIBRARIES, searchLibraries, getLibraryOccupancyDetails } from '../data/libraryData';
 
 declare global {
@@ -198,9 +199,74 @@ function computeCollisionFreeLabels(
   });
 }
 
+const LIGHT_MAP_STYLES = [
+  {
+    featureType: 'poi.school',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#DC2626' }]
+  }
+];
+
+const DARK_MAP_STYLES = [
+  { elementType: 'geometry', stylers: [{ color: '#181A20' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#181A20' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#A0A4B0' }] },
+  {
+    featureType: 'administrative.locality',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#D0D4DF' }]
+  },
+  {
+    featureType: 'poi',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#9094A0' }]
+  },
+  {
+    featureType: 'poi.school',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#EF4444' }]
+  },
+  {
+    featureType: 'poi.park',
+    elementType: 'geometry',
+    stylers: [{ color: '#131A18' }]
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [{ color: '#272A35' }]
+  },
+  {
+    featureType: 'road',
+    elementType: 'geometry.stroke',
+    stylers: [{ color: '#1F222C' }]
+  },
+  {
+    featureType: 'road',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#8E93A2' }]
+  },
+  {
+    featureType: 'road.highway',
+    elementType: 'geometry',
+    stylers: [{ color: '#383C4C' }]
+  },
+  {
+    featureType: 'transit',
+    elementType: 'geometry',
+    stylers: [{ color: '#242834' }]
+  },
+  {
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [{ color: '#0F131A' }]
+  }
+];
+
 export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> = ({
   initialNodeId
 }) => {
+  const { isDark } = useTheme();
   const [customApiKey] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('campus_pulse_gmaps_key') || '';
@@ -397,13 +463,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
             mapTypeControl: false,
             streetViewControl: false,
             zoomControl: true,
-            styles: [
-              {
-                featureType: 'poi.school',
-                elementType: 'labels.text.fill',
-                stylers: [{ color: '#DC2626' }]
-              }
-            ]
+            styles: isDark ? DARK_MAP_STYLES : LIGHT_MAP_STYLES
           });
 
           googleMapInstanceRef.current = map;
@@ -576,6 +636,15 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
       }
     }
   }, [mapType]);
+
+  // Dynamic Map Theme synchronization (Light/Dark mode)
+  useEffect(() => {
+    if (googleMapInstanceRef.current) {
+      googleMapInstanceRef.current.setOptions({
+        styles: isDark ? DARK_MAP_STYLES : LIGHT_MAP_STYLES
+      });
+    }
+  }, [isDark]);
 
   // Deselect all blocks and return to overall campus view
   const handleDeselectAll = useCallback(() => {
@@ -1289,8 +1358,8 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                       <div
                         className={`px-2.5 py-1.5 border-2 shadow-md flex items-center justify-between gap-1.5 transition-all ${
                           isSelected
-                            ? 'bg-[#111111] text-white border-[#DC2626] ring-2 ring-[#DC2626]/30'
-                            : 'bg-white/95 text-[#111111] border-[#111111]/80 hover:border-[#111111]'
+                            ? 'bg-[#111111] dark:bg-[#0E0F12] text-white border-[#DC2626] ring-2 ring-[#DC2626]/30'
+                            : 'bg-white/95 dark:bg-[#1A1C24]/95 text-[#111111] dark:text-[#F3F3EE] border-[#111111]/80 dark:border-white/40 hover:border-[#111111] dark:hover:border-white'
                         }`}
                       >
                         <div className="flex items-center gap-1.5 overflow-hidden">

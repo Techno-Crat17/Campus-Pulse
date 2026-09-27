@@ -1,19 +1,34 @@
 <!doctype html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/assets/campus-pulse-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F5F4EF" />
     <title>Campus Pulse | Intelligent Real-Time Operating Layer for Campus Life</title>
     <meta name="author" content="UVERMA" />
     <meta name="creator" content="UVERMA" />
     <meta name="description" content="Ask your campus. See your campus. Navigate your campus. Improve your campus. Campus Pulse provides real-time occupancy tracking, AI space recommendation, wayfinding, faculty availability, and instant issue reporting." />
+    <script>
+      (function() {
+        try {
+          var stored = localStorage.getItem('campuspulse_theme');
+          if (stored === 'dark' || (!stored && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch (e) {}
+      })();
+    </script>
     <!-- Google Fonts: Syne (Display) & Space Grotesk / Plus Jakarta Sans (Body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-[#F5F4EF] text-[#111111] antialiased selection:bg-[#0066FF] selection:text-white overflow-x-hidden font-sans">
+  <body class="bg-[#F5F4EF] dark:bg-[#0E0F12] text-[#111111] dark:text-[#F3F3EE] antialiased selection:bg-[#DC2626] selection:text-white overflow-x-hidden font-sans">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>

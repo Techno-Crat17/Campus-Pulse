@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --font-display: 'Syne', sans-serif;
@@ -22,6 +24,21 @@
     /* Token aliases */
     --accent-red: var(--primary-accent);
     --accent-blue: var(--primary-accent);
+  }
+
+  .dark {
+    --bg-warm: #0E0F12;
+    --text-primary: #F3F3EE;
+    --text-secondary: #9CA3AF;
+
+    --primary-accent: #EF4444;
+    --primary-accent-dark: #DC2626;
+    --primary-accent-light: #F87171;
+    --primary-accent-soft: rgba(239, 68, 68, 0.15);
+    --primary-accent-subtle: rgba(239, 68, 68, 0.08);
+    --primary-accent-deep: #B91C1C;
+    --primary-accent-border: rgba(239, 68, 68, 0.35);
+    --primary-accent-ring: rgba(239, 68, 68, 0.45);
   }
 
   body {
@@ -85,3 +102,188 @@
   background: var(--primary-accent);
   color: #FFFFFF;
 }
+
+/* ==========================================================================
+   Eye-Soothing Dark Mode Architectural Theme System
+   ========================================================================== */
+
+.dark {
+  color-scheme: dark;
+  background-color: #0E0F12;
+  color: #F3F3EE;
+}
+
+.dark body {
+  background-color: #0E0F12;
+  color: #F3F3EE;
+}
+
+/* Base Canvases & Section Backgrounds */
+.dark .bg-\[\#F5F4EF\] {
+  background-color: #0E0F12 !important;
+}
+
+.dark .bg-\[\#F5F4EF\]\/90 {
+  background-color: rgba(14, 15, 18, 0.92) !important;
+}
+
+.dark .bg-\[\#F5F4EF\]\/95 {
+  background-color: rgba(14, 15, 18, 0.95) !important;
+}
+
+.dark .bg-\[\#F5F4EF\]\/98 {
+  background-color: rgba(14, 15, 18, 0.98) !important;
+}
+
+.dark .bg-\[\#EAE8E1\] {
+  background-color: #121318 !important;
+}
+
+/* Elevated Cards & Surface Containers */
+.dark .bg-white {
+  background-color: #17181D !important;
+}
+
+.dark .bg-white\/40,
+.dark .bg-white\/50,
+.dark .bg-white\/60,
+.dark .bg-white\/70,
+.dark .bg-white\/80,
+.dark .bg-white\/90,
+.dark .bg-white\/95 {
+  background-color: rgba(23, 24, 29, 0.88) !important;
+}
+
+/* Text Hierarchy */
+.dark .text-\[\#111111\] {
+  color: #F3F3EE !important;
+}
+
+.dark .text-\[\#666660\] {
+  color: #9CA3AF !important;
+}
+
+.dark .text-\[\#888880\] {
+  color: #6B7280 !important;
+}
+
+/* Architectural Border Grid */
+.dark .border-\[\#111111\]\/5 {
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .border-\[\#111111\]\/10 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .border-\[\#111111\]\/15 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .border-\[\#111111\]\/20 {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.dark .border-\[\#111111\]\/25 {
+  border-color: rgba(255, 255, 255, 0.20) !important;
+}
+
+.dark .border-\[\#111111\]\/30 {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.dark .border-\[\#111111\]\/40 {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.dark .border-\[\#111111\]\/80 {
+  border-color: rgba(255, 255, 255, 0.50) !important;
+}
+
+.dark .border-\[\#111111\] {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.dark .border-editorial {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .border-editorial-thin {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Subtle Wells & Tints */
+.dark .bg-\[\#111111\]\/5 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark .bg-\[\#111111\]\/10 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark .bg-\[\#111111\]\/15 {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.dark .bg-\[\#111111\]\/20 {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Interactive Solid Elements & Buttons in Dark Mode */
+.dark .bg-\[\#111111\] {
+  background-color: #22242D !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.dark button.hover\:bg-\[\#111111\]:hover,
+.dark div.hover\:bg-\[\#111111\]:hover,
+.dark a.hover\:bg-\[\#111111\]:hover {
+  background-color: #2D303B !important;
+  color: #F3F3EE !important;
+}
+
+.dark .bg-\[\#111111\].hover\:bg-\[\#DC2626\]:hover,
+.dark button.hover\:bg-\[\#DC2626\]:hover {
+  background-color: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+
+/* Form Inputs, Dropdowns & Textareas */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="search"],
+.dark textarea {
+  background-color: #17181D !important;
+  color: #F3F3EE !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6B7280 !important;
+}
+
+.dark select {
+  background-color: #17181D !important;
+  color: #F3F3EE !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.dark select option {
+  background-color: #17181D !important;
+  color: #F3F3EE !important;
+}
+
+/* Dark Mode Scrollbars */
+.dark ::-webkit-scrollbar-track {
+  background: #0E0F12 !important;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #272832 !important;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-accent) !important;
+}
+
