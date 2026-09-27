@@ -3,7 +3,6 @@ import {
   Search,
   Navigation,
   Layers,
-  MapPin,
   AlertCircle,
   Compass,
   CheckCircle2,
@@ -1319,45 +1318,6 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     </div>
                   );
                 })}
-              </div>
-
-              {/* Map Footer Info Overlay */}
-              <div className="absolute bottom-3 left-4 right-4 p-3 bg-white/95 border border-[#111111]/15 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#666660] z-30 shadow-xs">
-                <div className="flex items-center gap-3">
-                  <MapPin className="w-4 h-4 text-[#DC2626]" />
-                  <span className="font-bold text-[#111111]">ACTIVE VIEW:</span>
-                  <span className="text-[#DC2626] font-bold">
-                    {isCrdSelected
-                      ? 'CRD (NON-GEOGRAPHIC)'
-                      : activeBlock
-                      ? activeBlock.name
-                      : 'OVERALL CAMPUS (ALL 8 BLOCKS)'}
-                  </span>
-                  {activeBlock ? (
-                    <span
-                      className="px-2 py-0.5 text-[9px] font-bold uppercase border border-black/30"
-                      style={{
-                        backgroundColor: activeBlock.fillColor,
-                        color: activeBlock.fillColor === '#FFFFFF' ? '#111' : '#fff'
-                      }}
-                    >
-                      {activeBlock.colorName.toUpperCase()}
-                    </span>
-                  ) : !isCrdSelected && (
-                    <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
-                      CAMPUS WIDE
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[#111111] font-bold">
-                    {activeBlock ? `${associatedFaculty.length} FACULTY MAPPED` : `${FACULTY_MSRIT_DATA.length} TOTAL FACULTY`}
-                  </span>
-                  <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 inline" />
-                    SURVEY BOUNDS LOCKED
-                  </span>
-                </div>
               </div>
 
             </div>
