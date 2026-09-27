@@ -1,0 +1,87 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Syne', sans-serif;
+    --font-heading: 'Space Grotesk', sans-serif;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+    --bg-warm: #F5F4EF;
+    --text-primary: #111111;
+    --text-secondary: #666660;
+
+    /* Centralized Red/Crimson Accent Palette */
+    --primary-accent: #DC2626;
+    --primary-accent-dark: #B91C1C;
+    --primary-accent-light: #EF4444;
+    --primary-accent-soft: #FEE2E2;
+    --primary-accent-subtle: #FEF2F2;
+    --primary-accent-deep: #991B1B;
+    --primary-accent-border: #FCA5A5;
+    --primary-accent-ring: rgba(220, 38, 38, 0.35);
+
+    /* Token aliases */
+    --accent-red: var(--primary-accent);
+    --accent-blue: var(--primary-accent);
+  }
+
+  body {
+    background-color: var(--bg-warm);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, .font-syne {
+    font-family: var(--font-display);
+  }
+
+  .font-mono {
+    font-family: monospace, ui-monospace, SFMono-Regular;
+  }
+}
+
+/* Editorial Typography Helpers */
+.text-giant {
+  font-size: clamp(3.8rem, 13vw, 14rem);
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.text-subgiant {
+  font-size: clamp(2.5rem, 8vw, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.border-editorial {
+  border-color: rgba(17, 17, 17, 0.12);
+}
+
+.border-editorial-thin {
+  border-color: rgba(17, 17, 17, 0.08);
+}
+
+/* Custom Scrollbar for Light Theme */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #F5F4EF;
+}
+::-webkit-scrollbar-thumb {
+  background: #D5D4CD;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-accent);
+}
+
+.selection-red::selection,
+.selection-blue::selection {
+  background: var(--primary-accent);
+  color: #FFFFFF;
+}

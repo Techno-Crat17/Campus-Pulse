@@ -1,0 +1,178 @@
+[
+  {
+    "id": "dept-cse",
+    "code": "CSE",
+    "name": "Computer Science & Engineering",
+    "hod": "Dr. Anita Kanavalli",
+    "building": "LHC Block",
+    "sourceUrl": "https://www.msrit.edu/department/cse.html"
+  },
+  {
+    "id": "dept-ise",
+    "code": "ISE",
+    "name": "Information Science & Engineering",
+    "hod": "Dr. Sumana Maradithaya",
+    "building": "LHC Block",
+    "sourceUrl": "https://www.msrit.edu/department/ise.html"
+  },
+  {
+    "id": "dept-ai-ml",
+    "code": "AI-ML",
+    "name": "Artificial Intelligence & Machine Learning",
+    "hod": "HOD, Artificial Intelligence & Machine Learning",
+    "building": "CRD Block",
+    "sourceUrl": "https://www.msrit.edu/department/ai-ml.html"
+  },
+  {
+    "id": "dept-ds",
+    "code": "AI-DS",
+    "name": "Artificial Intelligence & Data Science",
+    "hod": "HOD, Artificial Intelligence & Data Science",
+    "building": "CRD Block",
+    "sourceUrl": "https://www.msrit.edu/department/ds.html"
+  },
+  {
+    "id": "dept-cy",
+    "code": "CY",
+    "name": "Cyber Security",
+    "hod": "HOD, Cyber Security",
+    "building": "CRD Block",
+    "sourceUrl": "https://www.msrit.edu/department/cy.html"
+  },
+  {
+    "id": "dept-ece",
+    "code": "ECE",
+    "name": "Electronics & Communication Engineering",
+    "hod": "HOD, Electronics & Communication Engineering",
+    "building": "LHC Block",
+    "sourceUrl": "https://www.msrit.edu/department/ece.html"
+  },
+  {
+    "id": "dept-eee",
+    "code": "EEE",
+    "name": "Electrical & Electronics Engineering",
+    "hod": "HOD, Electrical & Electronics Engineering",
+    "building": "Electrical Block",
+    "sourceUrl": "https://www.msrit.edu/department/eee.html"
+  },
+  {
+    "id": "dept-eie",
+    "code": "EIE",
+    "name": "Electronics & Instrumentation Engineering",
+    "hod": "HOD, Electronics & Instrumentation Engineering",
+    "building": "LHC Block",
+    "sourceUrl": "https://www.msrit.edu/department/eie.html"
+  },
+  {
+    "id": "dept-ete",
+    "code": "ETE",
+    "name": "Electronics & Telecommunication Engineering",
+    "hod": "HOD, Electronics & Telecommunication Engineering",
+    "building": "LHC Block",
+    "sourceUrl": "https://www.msrit.edu/department/ete.html"
+  },
+  {
+    "id": "dept-me",
+    "code": "ME",
+    "name": "Medical Electronics",
+    "hod": "Dr. Prabha Ravi",
+    "building": "LHC Block",
+    "sourceUrl": "https://www.msrit.edu/department/me.html"
+  },
+  {
+    "id": "dept-mech",
+    "code": "MECH",
+    "name": "Mechanical Engineering",
+    "hod": "Dr. Sunith Babu",
+    "building": "Mechanical Block",
+    "sourceUrl": "https://www.msrit.edu/department/mech.html"
+  },
+  {
+    "id": "dept-cv",
+    "code": "CV",
+    "name": "Civil Engineering",
+    "hod": "HOD, Civil Engineering",
+    "building": "ESB Block",
+    "sourceUrl": "https://www.msrit.edu/department/cv.html"
+  },
+  {
+    "id": "dept-che",
+    "code": "CHE",
+    "name": "Chemical Engineering",
+    "hod": "HOD, Chemical Engineering",
+    "building": "Chemical Block",
+    "sourceUrl": "https://www.msrit.edu/department/che.html"
+  },
+  {
+    "id": "dept-bt",
+    "code": "BT",
+    "name": "Biotechnology",
+    "hod": "HOD, Biotechnology",
+    "building": "ESB Block",
+    "sourceUrl": "https://www.msrit.edu/department/bt.html"
+  },
+  {
+    "id": "dept-iem",
+    "code": "IEM",
+    "name": "Industrial Engineering & Management",
+    "hod": "HOD, Industrial Engineering & Management",
+    "building": "ESB Block",
+    "sourceUrl": "https://www.msrit.edu/department/iem.html"
+  },
+  {
+    "id": "dept-mca",
+    "code": "MCA",
+    "name": "Master of Computer Applications",
+    "hod": "HOD, Master of Computer Applications",
+    "building": "Apex Block 4th Floor",
+    "sourceUrl": "https://www.msrit.edu/department/mca.html"
+  },
+  {
+    "id": "dept-mba",
+    "code": "MBA",
+    "name": "Management Studies (MBA)",
+    "hod": "HOD, Management Studies (MBA)",
+    "building": "MBA Block",
+    "sourceUrl": "https://www.msrit.edu/department/mba.html"
+  },
+  {
+    "id": "dept-arch",
+    "code": "ARCH",
+    "name": "Architecture",
+    "hod": "HOD, Architecture",
+    "building": "Architecture Building",
+    "sourceUrl": "https://www.msrit.edu/department/arch.html"
+  },
+  {
+    "id": "dept-maths",
+    "code": "MATH",
+    "name": "Mathematics",
+    "hod": "HOD, Mathematics",
+    "building": "Basic Sciences Block",
+    "sourceUrl": "https://www.msrit.edu/department/maths.html"
+  },
+  {
+    "id": "dept-physics",
+    "code": "PHY",
+    "name": "Physics",
+    "hod": "HOD, Physics",
+    "building": "Basic Sciences Block",
+    "sourceUrl": "https://www.msrit.edu/department/physics.html"
+  },
+  {
+    "id": "dept-chemistry",
+    "code": "CHEM",
+    "name": "Chemistry",
+    "hod": "Dr. Nagaraju Kottam",
+    "building": "Basic Sciences Block",
+    "sourceUrl": "https://www.msrit.edu/department/chemistry.html"
+  },
+  {
+    "id": "dept-humanities",
+    "code": "HUM",
+    "name": "Humanities",
+    "hod": "HOD, Humanities",
+    "building": "Basic Sciences Block",
+    "sourceUrl": "https://www.msrit.edu/department/humanities.html"
+  }
+]

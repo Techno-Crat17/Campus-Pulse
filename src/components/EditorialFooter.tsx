@@ -1,0 +1,74 @@
+import React from 'react';
+import { ArrowUpRight } from 'lucide-react';
+
+interface EditorialFooterProps {
+  onAskClick: () => void;
+  onExploreClick?: () => void;
+}
+
+export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, onExploreClick }) => {
+  return (
+    <footer className="py-32 px-6 sm:px-12 bg-[#F5F4EF] text-[#111111] relative overflow-hidden border-t border-[#111111]/10">
+      <div className="max-w-[1700px] mx-auto space-y-24">
+        
+        {/* Massive Closing Typography */}
+        <div className="space-y-4">
+          <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold">
+            CONCLUSION // THE OPERATING VISION
+          </div>
+
+          <h2 className="text-subgiant font-syne text-[#666660] uppercase tracking-tighter leading-none">
+            MAKE THE CAMPUS
+          </h2>
+          <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
+            SEARCHABLE.
+          </h2>
+          <h2 className="text-subgiant font-syne text-[#DC2626] uppercase tracking-tighter leading-none">
+            UNDERSTANDABLE.
+          </h2>
+          <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
+            ACTIONABLE.
+          </h2>
+        </div>
+
+        {/* Final CTA Line */}
+        <div className="pt-8 border-t border-[#111111]/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <div 
+              onClick={onExploreClick}
+              className="font-syne text-3xl font-bold uppercase text-[#111111] cursor-pointer hover:text-[#DC2626] transition-colors"
+            >
+              CAMPUS PULSE <span className="text-[#DC2626]">→</span>
+            </div>
+            <div className="font-mono text-xs text-[#666660] uppercase">
+              ASK YOUR CAMPUS. SEE YOUR CAMPUS. NAVIGATE YOUR CAMPUS.
+            </div>
+          </div>
+
+          <button
+            onClick={onAskClick}
+            className="px-8 py-4 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center gap-2 transition-all"
+          >
+            <span>LAUNCH ASSISTANT</span>
+            <ArrowUpRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Minimal Footer Line */}
+        <div className="pt-12 border-t border-[#111111]/10 flex flex-col sm:flex-row items-center justify-between font-mono text-xs text-[#666660] gap-4">
+          <div className="flex items-center gap-2">
+            <span>CAMPUS PULSE © 2026. REAL-TIME CAMPUS OPERATING LAYER.</span>
+            <span className="text-[#111111]/20">•</span>
+            <span className="text-[10px] text-[#888880] tracking-widest uppercase hover:text-[#DC2626] transition-colors cursor-default" title="Creator: UVERMA">
+              UVERMA
+            </span>
+          </div>
+          <div className="text-[11px] text-[#888880]">
+            CAMPUS PULSE • UVERMA
+          </div>
+        </div>
+
+      </div>
+    </footer>
+  );
+};
