@@ -202,7 +202,15 @@ function computeCollisionFreeLabels(
 export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> = ({
   initialNodeId
 }) => {
-  const rawApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const [customApiKey] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('campus_pulse_gmaps_key') || '';
+    }
+    return '';
+  });
+  const [keyInput, setKeyInput] = useState<string>('');
+
+  const rawApiKey = customApiKey || import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   const apiKey = typeof rawApiKey === 'string' ? rawApiKey.trim() : '';
 
   const isApiKeyConfigured = Boolean(
@@ -217,6 +225,18 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   const [mapError, setMapError] = useState<MapErrorState>(
     isApiKeyConfigured ? 'NONE' : 'MISSING_KEY'
   );
+
+  const handleApplyKey = (newKey: string) => {
+    const trimmed = newKey.trim();
+    if (typeof window !== 'undefined') {
+      if (trimmed) {
+        localStorage.setItem('campus_pulse_gmaps_key', trimmed);
+      } else {
+        localStorage.removeItem('campus_pulse_gmaps_key');
+      }
+      window.location.reload();
+    }
+  };
 
   // Map settings
   const [mapType, setMapType] = useState<MapTypeOption>('satellite');
@@ -966,19 +986,45 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
               {/* Error Overlays */}
               {mapError === 'MISSING_KEY' && (
-                <div className="absolute inset-0 z-40 bg-[#F5F4EF]/95 p-8 flex flex-col justify-center items-center text-center space-y-4 font-mono">
-                  <AlertCircle className="w-12 h-12 text-[#DC2626] mb-2" />
-                  <div className="text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight">
-                    GOOGLE MAPS API KEY NOT CONFIGURED
+                <div className="absolute inset-0 z-40 bg-[#F5F4EF]/95 p-6 sm:p-8 flex flex-col justify-center items-center text-center space-y-4 font-mono overflow-y-auto">
+                  <AlertCircle className="w-12 h-12 text-[#DC2626] mb-1" />
+                  <div className="text-xl sm:text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight">
+                    GOOGLE MAPS API KEY REQUIRED
                   </div>
-                  <div className="text-xs sm:text-sm text-[#666660] max-w-md space-y-2">
+                  <div className="text-xs text-[#666660] max-w-md space-y-2">
                     <p>
-                      Add <code className="bg-[#111111]/10 px-2 py-1 text-[#DC2626] font-bold">VITE_GOOGLE_MAPS_API_KEY</code> to your environment variables or <code className="bg-[#111111]/10 px-2 py-1 text-[#111111] font-bold">.env</code> file.
+                      If you just added <code className="bg-[#111111]/10 px-1.5 py-0.5 text-[#DC2626] font-bold">VITE_GOOGLE_MAPS_API_KEY</code> to GitHub Secrets, a GitHub Actions rebuild has been triggered to update the deployment.
                     </p>
-                    <p className="text-[11px] text-[#888880]">
-                      Campus block selection, building telemetry, faculty directory, and room details remain fully functional below.
+                    <p>
+                      You can also activate Google Maps immediately in your browser by pasting your API key below:
                     </p>
                   </div>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleApplyKey(keyInput);
+                    }}
+                    className="w-full max-w-sm flex gap-2 pt-1"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Paste AIzaSy... API key"
+                      value={keyInput}
+                      onChange={(e) => setKeyInput(e.target.value)}
+                      className="flex-1 px-3 py-2 text-xs font-mono bg-white border-2 border-[#111111]/30 focus:border-[#DC2626] outline-none text-[#111111]"
+                    />
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-bold uppercase transition-colors shrink-0"
+                    >
+                      ACTIVATE
+                    </button>
+                  </form>
+
+                  <p className="text-[10px] text-[#888880]">
+                    Campus block selection, building telemetry, faculty directory, and room details remain fully functional below.
+                  </p>
                 </div>
               )}
 
@@ -994,14 +1040,26 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     RefererNotAllowedMapError • HTTP Referrer Restriction
                   </div>
                   <div className="text-xs text-[#111111] max-w-lg text-left space-y-2 bg-white p-5 border border-[#111111]/15 shadow-xs">
-                    <p>Add <code>https://techno-crat17.github.io/*</code> and <code>http://localhost:5173/*</code> to Google Cloud Console Website Restrictions.</p>
+                    <p>Your API key restricts allowed websites. Add the following to Google Cloud Console Website Restrictions:</p>
+                    <code className="block bg-[#111111]/5 p-2 font-mono text-[11px] text-[#DC2626] font-bold">
+                      https://techno-crat17.github.io/*<br />
+                      http://localhost:5173/*
+                    </code>
                   </div>
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
-                  >
-                    RELOAD PAGE & RECHECK MAP
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleApplyKey('')}
+                      className="px-4 py-2 border border-[#111111]/30 hover:border-[#DC2626] text-[11px] font-mono font-bold uppercase transition-all bg-white"
+                    >
+                      CHANGE / CLEAR KEY
+                    </button>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
+                    >
+                      RELOAD PAGE & RECHECK MAP
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -1018,8 +1076,22 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   </div>
                   <div className="text-xs text-[#666660] max-w-md space-y-2">
                     <p>
-                      Enable the Maps JavaScript API in your Google Cloud Console project. Interactive campus block telemetry remains fully active.
+                      Enable the <strong>Maps JavaScript API</strong> in your Google Cloud Console project for this API key.
                     </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleApplyKey('')}
+                      className="px-4 py-2 border border-[#111111]/30 hover:border-[#DC2626] text-[11px] font-mono font-bold uppercase transition-all bg-white"
+                    >
+                      CHANGE / CLEAR KEY
+                    </button>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
+                    >
+                      RELOAD PAGE
+                    </button>
                   </div>
                 </div>
               )}
@@ -1037,12 +1109,20 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                       The satellite map layer could not be connected. All campus telemetry, occupancy analytics, and faculty directories remain fully active.
                     </p>
                   </div>
-                  <button
-                    onClick={() => window.location.reload()}
-                    className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
-                  >
-                    RETRY LOADING MAP
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => handleApplyKey('')}
+                      className="px-4 py-2 border border-[#111111]/30 hover:border-[#DC2626] text-[11px] font-mono font-bold uppercase transition-all bg-white"
+                    >
+                      CHANGE / CLEAR KEY
+                    </button>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="px-5 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white text-xs font-mono font-bold uppercase transition-all shadow-xs"
+                    >
+                      RETRY LOADING MAP
+                    </button>
+                  </div>
                 </div>
               )}
 
