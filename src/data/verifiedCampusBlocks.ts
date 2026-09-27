@@ -328,6 +328,35 @@ export const ALL_VERIFIED_CORNER_COORDINATES: LatLngPoint[] = VERIFIED_CAMPUS_BL
 ]);
 
 /**
+ * Official Campus Perimeter Survey Boundary Coordinates:
+ * BL - 13°01'45.9"N 77°33'48.8"E (lat: 13.0294167, lng: 77.5635556)
+ * TL - 13°01'57.8"N 77°33'50.8"E (lat: 13.0327222, lng: 77.5641111)
+ * TR - 13°01'57.0"N 77°34'00.6"E (lat: 13.0325000, lng: 77.5668333)
+ * BR - 13°01'45.5"N 77°34'00.5"E (lat: 13.0293056, lng: 77.5668056)
+ */
+export const CAMPUS_SURVEY_BOUNDARY = {
+  BL: { lat: 13.0294167, lng: 77.5635556, raw: `13°01'45.9"N 77°33'48.8"E` },
+  TL: { lat: 13.0327222, lng: 77.5641111, raw: `13°01'57.8"N 77°33'50.8"E` },
+  TR: { lat: 13.0325000, lng: 77.5668333, raw: `13°01'57.0"N 77°34'00.6"E` },
+  BR: { lat: 13.0293056, lng: 77.5668056, raw: `13°01'45.5"N 77°34'00.5"E` }
+};
+
+export const CAMPUS_PERIMETER_POLYGON: LatLngPoint[] = [
+  { lat: 13.0327222, lng: 77.5641111 }, // TL
+  { lat: 13.0325000, lng: 77.5668333 }, // TR
+  { lat: 13.0293056, lng: 77.5668056 }, // BR
+  { lat: 13.0294167, lng: 77.5635556 }, // BL
+  { lat: 13.0327222, lng: 77.5641111 }  // TL (close loop)
+];
+
+export const CAMPUS_RESTRICTION_BOUNDS = {
+  north: 13.0327222,
+  south: 13.0293056,
+  west: 77.5635556,
+  east: 77.5668333
+};
+
+/**
  * Find verified block by building name or ID
  */
 export function getVerifiedBlockByNameOrId(query: string): VerifiedCampusBlock | undefined {
@@ -343,3 +372,4 @@ export function getVerifiedBlockByNameOrId(query: string): VerifiedCampusBlock |
     (b.id === 'apex' && q.includes('APEX'))
   );
 }
+

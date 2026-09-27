@@ -17,8 +17,10 @@ import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import {
   VERIFIED_CAMPUS_BLOCKS,
   NON_GEOGRAPHIC_CRD_BLOCK,
-  ALL_VERIFIED_CORNER_COORDINATES,
-  getVerifiedBlockByNameOrId
+  getVerifiedBlockByNameOrId,
+  CAMPUS_SURVEY_BOUNDARY,
+  CAMPUS_PERIMETER_POLYGON,
+  CAMPUS_RESTRICTION_BOUNDS
 } from '../data/verifiedCampusBlocks';
 import type { VerifiedCampusBlock } from '../data/verifiedCampusBlocks';
 import {
@@ -241,7 +243,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   // Map settings
   const [mapType, setMapType] = useState<MapTypeOption>('satellite');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeBlock, setActiveBlock] = useState<VerifiedCampusBlock>(VERIFIED_CAMPUS_BLOCKS[0]);
+  const [activeBlock, setActiveBlock] = useState<VerifiedCampusBlock | null>(null);
   const [isCrdSelected, setIsCrdSelected] = useState<boolean>(false);
   const [selectedFacultyMember, setSelectedFacultyMember] = useState<MSRITFacultyRecord | null>(null);
   const [placesSearchResults, setPlacesSearchResults] = useState<any[]>([]);
@@ -258,6 +260,14 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   const polygonsRef = useRef<{ [key: string]: any }>({});
   const placesServiceRef = useRef<any>(null);
   const infoWindowRef = useRef<any>(null);
+  const activeBlockRef = useRef<VerifiedCampusBlock | null>(activeBlock);
+  const isCrdSelectedRef = useRef<boolean>(isCrdSelected);
+  const handleSelectBlockRef = useRef<(block: VerifiedCampusBlock) => void>(() => {});
+
+  useEffect(() => {
+    activeBlockRef.current = activeBlock;
+    isCrdSelectedRef.current = isCrdSelected;
+  }, [activeBlock, isCrdSelected]);
 
   // Dynamic Occupancy Calculator for verified blocks
   const getBlockOccupancy = useCallback((block: VerifiedCampusBlock): number => {
@@ -369,20 +379,26 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           if (!mapContainerRef.current) return;
           const google = window.google;
 
-          // A. Calculate Bounds from ALL 32 verified corner coordinates
-          const bounds = new google.maps.LatLngBounds();
-          ALL_VERIFIED_CORNER_COORDINATES.forEach((c) => {
-            bounds.extend(new google.maps.LatLng(c.lat, c.lng));
-          });
+          // A. Calculate Bounds from Official Campus Survey Restriction Coordinates
+          const campusBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(CAMPUS_RESTRICTION_BOUNDS.south, CAMPUS_RESTRICTION_BOUNDS.west),
+            new google.maps.LatLng(CAMPUS_RESTRICTION_BOUNDS.north, CAMPUS_RESTRICTION_BOUNDS.east)
+          );
 
-          // B. Instantiate Google Map
+          // B. Instantiate Google Map with Strict Boundary Restriction
           const map = new maps.Map(mapContainerRef.current, {
-            center: bounds.getCenter(),
+            center: campusBounds.getCenter(),
             zoom: 18,
+            minZoom: 17,
+            maxZoom: 21,
+            restriction: {
+              latLngBounds: CAMPUS_RESTRICTION_BOUNDS,
+              strictBounds: true,
+            },
             mapTypeId: 'satellite',
             fullscreenControl: true,
             mapTypeControl: false,
-            streetViewControl: true,
+            streetViewControl: false,
             zoomControl: true,
             styles: [
               {
@@ -396,15 +412,38 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           googleMapInstanceRef.current = map;
           infoWindowRef.current = new google.maps.InfoWindow();
 
-          // C. Fit Bounds to encompass all 8 verified campus blocks with padding
-          map.fitBounds(bounds, { top: 45, right: 45, bottom: 45, left: 45 });
+          // C. Fit Bounds to encompass full campus boundary
+          map.fitBounds(campusBounds, { top: 30, right: 30, bottom: 30, left: 30 });
 
-          // Apply reasonable maximum zoom so it does not zoom excessively close
-          google.maps.event.addListenerOnce(map, 'idle', () => {
-            if (map.getZoom() > 19) {
-              map.setZoom(19);
+          // Clamping center listener to strictly prevent panning beyond survey perimeter
+          map.addListener('center_changed', () => {
+            const center = map.getCenter();
+            if (!center) return;
+            const lat = center.lat();
+            const lng = center.lng();
+            let clampedLat = lat;
+            let clampedLng = lng;
+            if (lat > CAMPUS_RESTRICTION_BOUNDS.north) clampedLat = CAMPUS_RESTRICTION_BOUNDS.north;
+            if (lat < CAMPUS_RESTRICTION_BOUNDS.south) clampedLat = CAMPUS_RESTRICTION_BOUNDS.south;
+            if (lng > CAMPUS_RESTRICTION_BOUNDS.east) clampedLng = CAMPUS_RESTRICTION_BOUNDS.east;
+            if (lng < CAMPUS_RESTRICTION_BOUNDS.west) clampedLng = CAMPUS_RESTRICTION_BOUNDS.west;
+            if (clampedLat !== lat || clampedLng !== lng) {
+              map.setCenter({ lat: clampedLat, lng: clampedLng });
             }
           });
+
+          // Draw Official Survey Perimeter Polygon (TL -> TR -> BR -> BL -> TL)
+          const campusPerimeter = new google.maps.Polygon({
+            paths: CAMPUS_PERIMETER_POLYGON,
+            strokeColor: '#DC2626',
+            strokeOpacity: 0.95,
+            strokeWeight: 2,
+            fillColor: '#DC2626',
+            fillOpacity: 0.03,
+            clickable: false,
+            zIndex: 5
+          });
+          campusPerimeter.setMap(map);
 
           // D. Create EXACT Building Polygons (TL -> TR -> BR -> BL -> TL)
           VERIFIED_CAMPUS_BLOCKS.forEach((block) => {
@@ -423,20 +462,22 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
             // Hover interactions
             polygon.addListener('mouseover', () => {
-              if (block.id !== activeBlock.id) {
+              if (block.id !== activeBlockRef.current?.id) {
                 polygon.setOptions({ fillOpacity: 0.55, strokeWeight: 3 });
               }
             });
 
             polygon.addListener('mouseout', () => {
-              if (block.id !== activeBlock.id) {
+              if (block.id !== activeBlockRef.current?.id) {
                 polygon.setOptions({ fillOpacity: 0.35, strokeWeight: 2.5 });
               }
             });
 
-            // Click interaction
+            // Click interaction (toggle select / deselect)
             polygon.addListener('click', () => {
-              handleSelectBlock(block);
+              if (handleSelectBlockRef.current) {
+                handleSelectBlockRef.current(block);
+              }
             });
 
             polygonsRef.current[block.id] = polygon;
@@ -503,11 +544,11 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
       const block = VERIFIED_CAMPUS_BLOCKS.find((b) => b.id === blockId);
       if (!block) return;
 
-      if (!isCrdSelected && block.id === activeBlock.id) {
+      if (!isCrdSelected && activeBlock && block.id === activeBlock.id) {
         poly.setOptions({
           strokeColor: '#111111',
           strokeWeight: 4,
-          fillOpacity: 0.6,
+          fillOpacity: 0.65,
           zIndex: 25
         });
       } else {
@@ -539,8 +580,33 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     }
   }, [mapType]);
 
-  // Handle Selection of a Verified Campus Block
-  const handleSelectBlock = (block: VerifiedCampusBlock) => {
+  // Deselect all blocks and return to overall campus view
+  const handleDeselectAll = useCallback(() => {
+    setActiveBlock(null);
+    setIsCrdSelected(false);
+    setSelectedFacultyMember(null);
+
+    if (infoWindowRef.current) {
+      infoWindowRef.current.close();
+    }
+
+    if (googleMapInstanceRef.current && window.google?.maps) {
+      const campusBounds = new window.google.maps.LatLngBounds(
+        new window.google.maps.LatLng(CAMPUS_RESTRICTION_BOUNDS.south, CAMPUS_RESTRICTION_BOUNDS.west),
+        new window.google.maps.LatLng(CAMPUS_RESTRICTION_BOUNDS.north, CAMPUS_RESTRICTION_BOUNDS.east)
+      );
+      googleMapInstanceRef.current.fitBounds(campusBounds, { top: 30, right: 30, bottom: 30, left: 30 });
+    }
+  }, []);
+
+  // Handle Selection of a Verified Campus Block with Toggle Deselect
+  const handleSelectBlock = useCallback((block: VerifiedCampusBlock) => {
+    if (activeBlockRef.current?.id === block.id && !isCrdSelectedRef.current) {
+      // Already selected: Deselect and return to overall campus view
+      handleDeselectAll();
+      return;
+    }
+
     setActiveBlock(block);
     setIsCrdSelected(false);
     setSelectedFacultyMember(null);
@@ -562,6 +628,9 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           <div style="font-weight: 800; font-size: 15px; text-transform: uppercase;">
             ${block.displayName}
           </div>
+          <div style="font-size: 9px; color: #666; margin-top: 3px;">
+            (Click block again to deselect & view overall campus)
+          </div>
           ${block.libraries.length > 0 ? `
             <div style="margin-top: 6px; font-size: 10px; padding: 4px 6px; background: #FEF2F2; border-left: 3px solid #DC2626;">
               <strong>LIBRARY:</strong> ${block.libraries.join(', ')}
@@ -581,7 +650,11 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
         infoWindowRef.current.open(googleMapInstanceRef.current);
       }
     }
-  };
+  }, [getBlockOccupancy, handleDeselectAll]);
+
+  useEffect(() => {
+    handleSelectBlockRef.current = handleSelectBlock;
+  }, [handleSelectBlock]);
 
   // Handle external selection
   useEffect(() => {
@@ -591,23 +664,32 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
         handleSelectBlock(block);
       }
     }
-  }, [initialNodeId]);
+  }, [initialNodeId, handleSelectBlock]);
 
   // Handle Selection of Non-Geographic CRD Block
   const handleSelectCrd = () => {
+    if (isCrdSelected) {
+      handleDeselectAll();
+      return;
+    }
     setIsCrdSelected(true);
+    setActiveBlock(null);
     setSelectedFacultyMember(null);
     if (infoWindowRef.current) {
       infoWindowRef.current.close();
     }
   };
 
-  // Get Faculty associated with active block
+  // Get Faculty associated with active block or entire campus
   const getAssociatedFaculty = (): MSRITFacultyRecord[] => {
     if (isCrdSelected) {
       return FACULTY_MSRIT_DATA.filter(
         (f: MSRITFacultyRecord) => f.department === 'CSE AIML' || f.department === 'CSE CY'
       );
+    }
+
+    if (!activeBlock) {
+      return FACULTY_MSRIT_DATA;
     }
 
     if (activeBlock.id === 'lhc') {
@@ -674,11 +756,15 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
       )
     : [];
 
+  const overallCampusOccupancy = Math.round(
+    VERIFIED_CAMPUS_BLOCKS.reduce((sum, b) => sum + getBlockOccupancy(b), 0) / VERIFIED_CAMPUS_BLOCKS.length
+  );
+
   const associatedFaculty = getAssociatedFaculty();
-  const currentBlockOccupancy = getBlockOccupancy(activeBlock);
+  const currentBlockOccupancy = activeBlock ? getBlockOccupancy(activeBlock) : overallCampusOccupancy;
 
   // Associated library for active block
-  const activeBlockLibrary = activeBlock.libraries.length > 0
+  const activeBlockLibrary = (activeBlock && activeBlock.libraries.length > 0)
     ? LIBRARIES.find((l) => l.name.toLowerCase().includes(activeBlock.libraries[0].toLowerCase()))
     : null;
   const activeLibDetails = activeBlockLibrary
@@ -745,20 +831,39 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           </div>
         </div>
 
-        {/* Quick Selection Bar for 8 Blocks + CRD Reference */}
+        {/* Quick Selection Bar for Overall Campus + 8 Blocks + CRD Reference */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 font-mono text-xs border-b border-[#111111]/10 no-scrollbar">
-            <span className="text-[#666660] font-bold uppercase shrink-0 pr-2">CAMPUS BLOCKS:</span>
+            <span className="text-[#666660] font-bold uppercase shrink-0 pr-2">CAMPUS VIEW:</span>
+
+            {/* Overall Campus View Button */}
+            <button
+              onClick={handleDeselectAll}
+              title={!activeBlock && !isCrdSelected ? 'Overall campus view is active' : 'Click to deselect block and view overall campus'}
+              className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${
+                !activeBlock && !isCrdSelected
+                  ? 'bg-[#111111] text-white border-[#111111] shadow-xs'
+                  : 'bg-white text-[#111111] border-[#111111]/20 hover:border-[#DC2626]'
+              }`}
+            >
+              <Compass className={`w-3.5 h-3.5 ${!activeBlock && !isCrdSelected ? 'text-red-400' : 'text-[#DC2626]'}`} />
+              <span>OVERALL CAMPUS</span>
+              <span className={`text-[10px] ${!activeBlock && !isCrdSelected ? 'text-[#FCA5A5]' : 'text-[#DC2626]'}`}>
+                {overallCampusOccupancy}%
+              </span>
+            </button>
+
             {VERIFIED_CAMPUS_BLOCKS.map((block) => {
-              const isSelected = !isCrdSelected && activeBlock.id === block.id;
+              const isSelected = !isCrdSelected && activeBlock?.id === block.id;
               const occ = getBlockOccupancy(block);
               return (
                 <button
                   key={block.id}
                   onClick={() => handleSelectBlock(block)}
+                  title={isSelected ? `Selected: ${block.displayName}. Click again to deselect.` : `Click to select ${block.displayName}`}
                   className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${
                     isSelected
-                      ? 'bg-[#111111] text-white border-[#111111] shadow-xs'
+                      ? 'bg-[#111111] text-white border-[#DC2626] shadow-xs ring-1 ring-[#DC2626]'
                       : 'bg-white text-[#111111] border-[#111111]/20 hover:border-[#DC2626]'
                   }`}
                 >
@@ -777,6 +882,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
             {/* Non-Geographic CRD Block Button */}
             <button
               onClick={handleSelectCrd}
+              title={isCrdSelected ? 'CRD selected. Click again to deselect.' : 'Click to select CRD'}
               className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${
                 isCrdSelected
                   ? 'bg-[#111111] text-white border-[#DC2626] shadow-xs'
@@ -1170,7 +1276,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
                 {/* Building Label Cards */}
                 {projectedLabels.map((card) => {
-                  const isSelected = !isCrdSelected && activeBlock.id === card.block.id;
+                  const isSelected = !isCrdSelected && activeBlock?.id === card.block.id;
                   return (
                     <div
                       key={`card-${card.block.id}`}
@@ -1184,7 +1290,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                         transform: 'translate(-50%, -50%)',
                         width: `${card.width}px`
                       }}
-                      title={`${card.block.displayName} (${card.occupancyPercent}% Occupancy)`}
+                      title={`${card.block.displayName} (${card.occupancyPercent}% Occupancy) - ${isSelected ? 'Click to deselect' : 'Click to select'}`}
                     >
                       <div
                         className={`px-2.5 py-1.5 border-2 shadow-md flex items-center justify-between gap-1.5 transition-all ${
@@ -1219,11 +1325,15 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
               <div className="absolute bottom-3 left-4 right-4 p-3 bg-white/95 border border-[#111111]/15 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#666660] z-30 shadow-xs">
                 <div className="flex items-center gap-3">
                   <MapPin className="w-4 h-4 text-[#DC2626]" />
-                  <span className="font-bold text-[#111111]">ACTIVE BLOCK:</span>
+                  <span className="font-bold text-[#111111]">ACTIVE VIEW:</span>
                   <span className="text-[#DC2626] font-bold">
-                    {isCrdSelected ? 'CRD (NON-GEOGRAPHIC)' : activeBlock.name}
+                    {isCrdSelected
+                      ? 'CRD (NON-GEOGRAPHIC)'
+                      : activeBlock
+                      ? activeBlock.name
+                      : 'OVERALL CAMPUS (ALL 8 BLOCKS)'}
                   </span>
-                  {!isCrdSelected && (
+                  {activeBlock ? (
                     <span
                       className="px-2 py-0.5 text-[9px] font-bold uppercase border border-black/30"
                       style={{
@@ -1233,14 +1343,19 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     >
                       {activeBlock.colorName.toUpperCase()}
                     </span>
+                  ) : !isCrdSelected && (
+                    <span className="px-2 py-0.5 text-[9px] font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      CAMPUS WIDE
+                    </span>
                   )}
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-[#111111] font-bold">
-                    {associatedFaculty.length} FACULTY MAPPED
+                    {activeBlock ? `${associatedFaculty.length} FACULTY MAPPED` : `${FACULTY_MSRIT_DATA.length} TOTAL FACULTY`}
                   </span>
-                  <span className="text-[10px] text-emerald-700 font-bold">
-                    EXACT 4-CORNER GEOMETRY ACTIVE
+                  <span className="text-[10px] text-emerald-700 font-bold flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 inline" />
+                    SURVEY BOUNDS LOCKED
                   </span>
                 </div>
               </div>
@@ -1255,10 +1370,18 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
               {/* Header Badge */}
               <div className="text-xs border-b border-[#111111]/10 pb-3 flex items-center justify-between">
                 <span className="text-[#666660] uppercase tracking-widest">
-                  {isCrdSelected ? 'NON-GEOGRAPHIC CAMPUS BLOCK' : 'VERIFIED CAMPUS BLOCK'}
+                  {isCrdSelected
+                    ? 'NON-GEOGRAPHIC CAMPUS BLOCK'
+                    : activeBlock
+                    ? 'VERIFIED CAMPUS BLOCK'
+                    : 'OVERALL CAMPUS TELEMETRY'}
                 </span>
                 <span className="text-[#DC2626] font-bold uppercase">
-                  {isCrdSelected ? 'CRD' : activeBlock.id}
+                  {isCrdSelected
+                    ? 'CRD'
+                    : activeBlock
+                    ? activeBlock.id
+                    : '8 MONITORED BLOCKS'}
                 </span>
               </div>
 
@@ -1287,10 +1410,22 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     <div>STATUS: <strong>NON-GEOGRAPHIC ACTIVE REFERENCE</strong></div>
                   </div>
                 </div>
-              ) : (
+              ) : activeBlock ? (
                 /* Verified Geographic Block Presentation */
                 <div className="space-y-4">
                   
+                  {/* Deselect shortcut */}
+                  <div className="flex items-center justify-between border-b border-[#111111]/10 pb-2">
+                    <div className="text-[10px] text-[#666660] uppercase font-bold">SINGLE BLOCK INSPECTION</div>
+                    <button
+                      onClick={handleDeselectAll}
+                      className="text-[10px] font-bold text-[#DC2626] hover:underline flex items-center gap-1 uppercase"
+                      title="Deselect block and return to overall campus view"
+                    >
+                      <span>DESELECT BLOCK</span> ✕
+                    </button>
+                  </div>
+
                   {/* Block Title & Color Spec */}
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -1404,6 +1539,141 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   </p>
 
                 </div>
+              ) : (
+                /* Overall Campus Presentation (Deselected State) */
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 rounded-full border border-black/40 bg-[#DC2626]" />
+                      <h3 className="font-syne text-2xl sm:text-3xl font-extrabold text-[#111111] uppercase tracking-tight">
+                        RAMAIAH INSTITUTE OF TECHNOLOGY
+                      </h3>
+                    </div>
+                    <div className="text-xs sm:text-sm text-[#111111] font-bold">
+                      MAIN CAMPUS • OVERALL TELEMETRY & BOUNDARY
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase bg-[#111111] text-white">
+                        8 GEOGRAPHIC BLOCKS MONITORED
+                      </span>
+                      <span className="text-xs text-[#DC2626] font-bold">
+                        CAMPUS-WIDE AVG OCCUPANCY: {overallCampusOccupancy}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Campus-wide occupancy bar */}
+                  <div className="space-y-1">
+                    <div className="w-full h-2.5 bg-[#111111]/10 overflow-hidden border border-[#111111]/15">
+                      <div
+                        className="h-full bg-[#DC2626] transition-all duration-700"
+                        style={{ width: `${overallCampusOccupancy}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-[10px] text-[#666660]">
+                      <span>0% IDLE</span>
+                      <span>ACTIVE LOAD: {overallCampusOccupancy}%</span>
+                      <span>100% CAPACITY</span>
+                    </div>
+                  </div>
+
+                  {/* Official Survey Perimeter Boundary Box */}
+                  <div className="p-3.5 bg-gray-50 border-2 border-[#111111]/15 space-y-2 text-[11px]">
+                    <div className="font-bold text-[#111111] text-[10px] uppercase flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        OFFICIAL CAMPUS PERIMETER BORDERS (SURVEY ENFORCED)
+                      </span>
+                      <span className="text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-bold">
+                        MAP LOCKED
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] pt-1">
+                      <div className="p-2 bg-white border border-[#111111]/10">
+                        <span className="text-[#DC2626] font-bold block">TL (TOP LEFT):</span>
+                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.TL.raw}</span>
+                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.TL.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.TL.lng.toFixed(6)}</div>
+                      </div>
+                      <div className="p-2 bg-white border border-[#111111]/10">
+                        <span className="text-[#DC2626] font-bold block">TR (TOP RIGHT):</span>
+                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.TR.raw}</span>
+                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.TR.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.TR.lng.toFixed(6)}</div>
+                      </div>
+                      <div className="p-2 bg-white border border-[#111111]/10">
+                        <span className="text-[#DC2626] font-bold block">BL (BOTTOM LEFT):</span>
+                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.BL.raw}</span>
+                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.BL.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.BL.lng.toFixed(6)}</div>
+                      </div>
+                      <div className="p-2 bg-white border border-[#111111]/10">
+                        <span className="text-[#DC2626] font-bold block">BR (BOTTOM RIGHT):</span>
+                        <span className="font-bold text-[#111111]">{CAMPUS_SURVEY_BOUNDARY.BR.raw}</span>
+                        <div className="text-[9px] text-[#888]">{CAMPUS_SURVEY_BOUNDARY.BR.lat.toFixed(6)}, {CAMPUS_SURVEY_BOUNDARY.BR.lng.toFixed(6)}</div>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-[#666660] pt-1 border-t border-[#111111]/10">
+                      Map box is strictly bounded within these survey coordinates. Navigation and zoom cannot expand beyond this perimeter.
+                    </p>
+                  </div>
+
+                  {/* 8 Campus Blocks Status Quick Selector */}
+                  <div className="space-y-2">
+                    <div className="font-bold text-[#111111] text-[11px] uppercase flex items-center justify-between">
+                      <span className="flex items-center gap-1.5">
+                        <Building2 className="w-3.5 h-3.5 text-[#DC2626]" />
+                        <span>SELECT A BLOCK TO INSPECT:</span>
+                      </span>
+                      <span className="text-[10px] text-[#888]">CLICK TO FOCUS</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      {VERIFIED_CAMPUS_BLOCKS.map((b) => {
+                        const occ = getBlockOccupancy(b);
+                        return (
+                          <div
+                            key={b.id}
+                            onClick={() => handleSelectBlock(b)}
+                            className="p-2 bg-white hover:bg-[#111111] hover:text-white cursor-pointer border border-[#111111]/15 transition-all group flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-1.5 overflow-hidden">
+                              <span
+                                className="w-2.5 h-2.5 rounded-full shrink-0 border border-black/30"
+                                style={{ backgroundColor: b.fillColor }}
+                              />
+                              <span className="font-bold text-[11px] truncate uppercase">{b.name}</span>
+                            </div>
+                            <span className="text-[10px] text-[#DC2626] group-hover:text-[#FCA5A5] font-bold shrink-0">
+                              {occ}%
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Major Campus Facilities Summary */}
+                  <div className="p-3 bg-white border border-[#111111]/15 space-y-2 text-xs">
+                    <div className="font-bold text-[#111111] text-[11px] uppercase flex items-center gap-1.5">
+                      <BookOpen className="w-3.5 h-3.5 text-[#DC2626]" />
+                      <span>CAMPUS LIBRARIES ({LIBRARIES.length}):</span>
+                    </div>
+                    <div className="space-y-1 text-[11px]">
+                      {LIBRARIES.map((lib) => {
+                        const details = getLibraryOccupancyDetails(lib, simulatedTime);
+                        return (
+                          <div key={lib.id} className="flex items-center justify-between py-0.5 border-b border-[#111111]/5 last:border-none">
+                            <span className="text-[#111111] font-bold">{lib.name} ({lib.building})</span>
+                            <span className="text-[#DC2626] font-bold">
+                              {details.isOpen ? details.displayOccupancy : 'CLOSED'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[#666660] font-light">
+                    Click any building polygon or label card on the map to inspect its floor plans, verified coordinates, departments, and active faculty roster. Click the selected building again to return to this overall view.
+                  </p>
+                </div>
               )}
 
               {/* Selected Faculty Member Card if active */}
@@ -1455,7 +1725,13 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                 <div className="font-mono text-xs text-[#111111] uppercase font-bold border-b border-[#111111]/10 pb-2 flex justify-between">
                   <span className="flex items-center gap-1.5">
                     <Users className="w-3.5 h-3.5 text-[#DC2626]" />
-                    <span>FACULTY AT THIS BLOCK ({associatedFaculty.length}):</span>
+                    <span>
+                      {isCrdSelected
+                        ? `FACULTY AT CRD (${associatedFaculty.length}):`
+                        : activeBlock
+                        ? `FACULTY AT ${activeBlock.name} (${associatedFaculty.length}):`
+                        : `ALL CAMPUS FACULTY (${associatedFaculty.length}):`}
+                    </span>
                   </span>
                   <span className="text-[#DC2626] text-[10px]">DYNAMIC ROSTER</span>
                 </div>
@@ -1472,7 +1748,13 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                       return (
                         <div
                           key={fac.id}
-                          onClick={() => setSelectedFacultyMember(fac)}
+                          onClick={() => {
+                            const targetBlock = VERIFIED_CAMPUS_BLOCKS.find((b) =>
+                              b.departments.some((d) => d.toUpperCase() === fac.department.toUpperCase())
+                            ) || VERIFIED_CAMPUS_BLOCKS[0];
+                            handleSelectBlock(targetBlock);
+                            setSelectedFacultyMember(fac);
+                          }}
                           className={`p-2.5 border font-mono text-xs cursor-pointer transition-all ${
                             isSelected
                               ? 'border-[#DC2626] bg-[#DC2626]/10 text-[#111111] font-bold'
@@ -1500,7 +1782,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
               {/* Action Buttons */}
               <div className="pt-2 flex flex-col sm:flex-row gap-2">
-                {!isCrdSelected && (
+                {activeBlock ? (
                   <button
                     onClick={() => {
                       const url = `https://www.google.com/maps/dir/?api=1&destination=${activeBlock.center.lat},${activeBlock.center.lng}`;
@@ -1509,9 +1791,20 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     className="flex-1 py-3 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xs"
                   >
                     <Navigation className="w-4 h-4 text-red-300" />
-                    <span>GOOGLE MAPS DIRECTIONS →</span>
+                    <span>GOOGLE MAPS DIRECTIONS TO {activeBlock.name} →</span>
                   </button>
-                )}
+                ) : !isCrdSelected ? (
+                  <button
+                    onClick={() => {
+                      const url = `https://www.google.com/maps/dir/?api=1&destination=13.031014,77.565194`;
+                      window.open(url, '_blank');
+                    }}
+                    className="flex-1 py-3 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-xs"
+                  >
+                    <Navigation className="w-4 h-4 text-red-300" />
+                    <span>GOOGLE MAPS DIRECTIONS TO MAIN GATE →</span>
+                  </button>
+                ) : null}
               </div>
 
             </div>
