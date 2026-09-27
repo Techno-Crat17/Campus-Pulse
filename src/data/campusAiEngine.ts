@@ -998,8 +998,8 @@ export function getLibraryAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['LIBRARY_SEARCH'],
-      responseText: "Yes. Campus Pulse features three official campus libraries:\n\n1. ESB Library (ESB Block - 4th Level)\n   • Primary Users: 1st Year, Above 1st Year, Mainly Non-CSE\n\n2. LHC Library (LHC Block - 1st Floor, Room LHC-306)\n   • Primary Users: CSE, Electronics\n\n3. Apex Library (Apex Block - 5th Level)\n   • Primary Users: 1st Year (Exclusive for 1st Year UG courses)",
-      subText: "All three libraries are open 09:00–21:00 every day (Monday through Sunday)."
+      responseText: "Yes. Campus Pulse features six official campus libraries:\n\n1. MSRIT Main Library (ESB Block - 4th Level)\n   • Primary: Civil, Mechanical, Chemical, Industrial & Biotechnology\n\n2. Unit II - Library (LHC Block - 2nd Level)\n   • Primary: CSE, ISE, ECE, EEE, AI & ML, Cybersecurity\n\n3. Unit III - Library (Apex Block - 5th Level)\n   • Exclusive for 1st Year UG courses\n\n4. MCA Library (Apex Block - 2nd Level)\n   • Master of Computer Applications & Software Systems\n\n5. Architecture Library (ADS Block - 3rd Level)\n   • Architecture, Urban Design & Spatial Folios\n\n6. MBA Library (ESB Block - 5th Level)\n   • Master of Business Administration & Management Studies",
+      subText: "All six libraries are open 09:00–21:00 every day (Monday through Sunday)."
     };
   }
 
@@ -1018,7 +1018,7 @@ export function getLibraryAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['LIBRARY_SEARCH', 'LIBRARY_USERS'],
-        responseText: `Campus Pulse provides three dedicated libraries based on your branch and year:\n\n• 💻 CSE & Electronics Students → LHC Library (Room LHC-306, 1st Floor)\n• 📐 1st Year Students → Apex Library (Apex 5th Level - Exclusive for 1st Year) or ESB Library\n• 🏗️ Non-CSE & Core Branches (1st Year & Above) → ESB Library (ESB 4th Level)\n\nLeast Crowded Right Now: ${lowest.name} is currently at ${lowestDet.displayOccupancy} occupancy.`,
+        responseText: `Campus Pulse provides six dedicated libraries based on your branch and program:\n\n• 💻 CSE, ISE & Electronics → Unit II - Library (LHC-II 2nd Level)\n• 📐 1st Year Students → Unit III - Library (Apex 5th Level - Exclusive for 1st Year) or Main Library\n• 🏗️ Core Engineering (Civil/Mech/Chem/Biotech) → MSRIT Main Library (ESB-II 4th Level)\n• 📊 Management Students → MBA Library (ESB-II 5th Level)\n• 🖥️ MCA Students → MCA Library (Apex 2nd Level)\n• 🏛️ Architecture Students → Architecture Library (ADS 3rd Level)\n\nLeast Crowded Right Now: ${lowest.name} is currently at ${lowestDet.displayOccupancy} occupancy.`,
         subText: "All libraries open 09:00–21:00 every day (Monday through Sunday)."
       };
     }
@@ -1026,7 +1026,7 @@ export function getLibraryAnswer(
 
   // 3. Student Group Specific:
   // "which library is least crowded for CSE students?", "best library for CSE", "which library for first year?"
-  if (studentGroup || normQ.includes('for cse') || normQ.includes('for electronics') || normQ.includes('first year') || normQ.includes('1st year')) {
+  if (studentGroup || normQ.includes('for cse') || normQ.includes('for electronics') || normQ.includes('first year') || normQ.includes('1st year') || normQ.includes('mca') || normQ.includes('mba') || normQ.includes('arch')) {
     // 3A. CSE / Electronics Query
     if (studentGroup === 'CSE' || studentGroup === 'Electronics' || normQ.includes('cse') || normQ.includes('electronics')) {
       const lhc = LIBRARIES.find((l) => l.id.includes('lhc')) || LIBRARIES[1];
@@ -1035,16 +1035,16 @@ export function getLibraryAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['LIBRARY_USERS', 'LIBRARY_OCCUPANCY'],
-        responseText: `LHC Library is currently at ${lhcDet.displayOccupancy} occupancy and is the primary library for CSE and Electronics students.`,
-        subText: `Location: Room LHC-306, 1st Floor LHC Block • Open 09:00–21:00 Daily.`,
+        responseText: `Unit II - Library (LHC-II 2nd Level) is currently at ${lhcDet.displayOccupancy} occupancy and is the primary library for CSE, ISE, and Electronics students.`,
+        subText: `Location: LHC-II 2nd Level, LHC Block • Open 09:00–21:00 Daily.`,
         matchedLibrary: lhc
       };
     }
 
     // 3B. 1st Year Query ("which library is for first year?")
     if (studentGroup === '1st Year' || normQ.includes('first year') || normQ.includes('1st year')) {
-      const apex = LIBRARIES.find((l) => l.id.includes('apex')) || LIBRARIES[2];
-      const esb = LIBRARIES.find((l) => l.id.includes('esb')) || LIBRARIES[0];
+      const apex = LIBRARIES.find((l) => l.id.includes('apex_unit')) || LIBRARIES[2];
+      const esb = LIBRARIES.find((l) => l.id === 'esb_main_library') || LIBRARIES[0];
       const apexDet = getLibraryOccupancyDetails(apex, simulatedTime);
       const esbDet = getLibraryOccupancyDetails(esb, simulatedTime);
 
@@ -1052,23 +1052,65 @@ export function getLibraryAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['LIBRARY_USERS', 'LIBRARY_OCCUPANCY'],
-        responseText: `Apex Library (Apex Block 5th Level) is exclusive for 1st Year UG courses, currently at ${apexDet.displayOccupancy} occupancy.\n\nIn addition, ESB Library (ESB Block 4th Level, currently at ${esbDet.displayOccupancy}) also primarily serves 1st Year and upper-year students across core non-CSE disciplines.`,
-        subText: "Apex Library: Exclusive for 1st Year • ESB Library: 1st Year, Above 1st Year, Non-CSE.",
+        responseText: `Unit III - Library (Apex Block 5th Level) is exclusive for 1st Year UG courses, currently at ${apexDet.displayOccupancy} occupancy.\n\nIn addition, MSRIT Main Library (ESB Block 4th Level, currently at ${esbDet.displayOccupancy}) also primarily serves 1st Year and upper-year students across core engineering disciplines.`,
+        subText: "Unit III - Library: Exclusive for 1st Year • MSRIT Main Library: Core Engineering & 1st Year.",
         matchedLibrary: apex
       };
     }
 
     // 3C. Non-CSE / Core disciplines
-    if (studentGroup === 'Civil/Mechanical/Chemical/Biotech' || normQ.includes('non-cse')) {
-      const esb = LIBRARIES.find((l) => l.id.includes('esb')) || LIBRARIES[0];
+    if (studentGroup === 'Civil/Mechanical/Chemical/Biotech' || normQ.includes('non-cse') || normQ.includes('civil') || normQ.includes('mechanical')) {
+      const esb = LIBRARIES.find((l) => l.id === 'esb_main_library') || LIBRARIES[0];
       const esbDet = getLibraryOccupancyDetails(esb, simulatedTime);
       return {
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['LIBRARY_USERS', 'LIBRARY_OCCUPANCY'],
-        responseText: `ESB Library (ESB Block 4th Level) is currently at ${esbDet.displayOccupancy} occupancy and is the primary library for 1st Year, Above 1st Year, and Mainly Non-CSE students.`,
-        subText: "ESB Block 4th Level • Open 09:00–21:00 Daily.",
+        responseText: `MSRIT Main Library (ESB Block 4th Level) is currently at ${esbDet.displayOccupancy} occupancy and is the primary library for Civil, Mechanical, Chemical, Industrial, and Biotechnology engineering students.`,
+        subText: "ESB-II 4th Level • Open 09:00–21:00 Daily.",
         matchedLibrary: esb
+      };
+    }
+
+    // 3D. MCA Query
+    if (studentGroup === 'MCA' || normQ.includes('mca')) {
+      const mca = LIBRARIES.find((l) => l.id === 'apex_mca_library') || LIBRARIES[3];
+      const mcaDet = getLibraryOccupancyDetails(mca, simulatedTime);
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['LIBRARY_USERS', 'LIBRARY_OCCUPANCY'],
+        responseText: `MCA Library (Apex Block 2nd Level) is currently at ${mcaDet.displayOccupancy} occupancy and is the dedicated library for Master of Computer Applications students.`,
+        subText: "Apex Block 2nd Level • Open 09:00–21:00 Daily.",
+        matchedLibrary: mca
+      };
+    }
+
+    // 3E. MBA Query
+    if (studentGroup === 'MBA' || normQ.includes('mba')) {
+      const mba = LIBRARIES.find((l) => l.id === 'esb_mba_library') || LIBRARIES[5];
+      const mbaDet = getLibraryOccupancyDetails(mba, simulatedTime);
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['LIBRARY_USERS', 'LIBRARY_OCCUPANCY'],
+        responseText: `MBA Library (ESB-II 5th Level) is currently at ${mbaDet.displayOccupancy} occupancy and is the dedicated management library for MBA students and researchers.`,
+        subText: "ESB-II 5th Level • Open 09:00–21:00 Daily.",
+        matchedLibrary: mba
+      };
+    }
+
+    // 3F. Architecture Query
+    if (studentGroup === 'Architecture' || normQ.includes('arch')) {
+      const arch = LIBRARIES.find((l) => l.id === 'arch_library') || LIBRARIES[4];
+      const archDet = getLibraryOccupancyDetails(arch, simulatedTime);
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['LIBRARY_USERS', 'LIBRARY_OCCUPANCY'],
+        responseText: `Architecture Library (ADS Block 3rd Level) is currently at ${archDet.displayOccupancy} occupancy and is dedicated to architecture, urban planning, and design studio students.`,
+        subText: "ADS Block 3rd Level • Open 09:00–21:00 Daily.",
+        matchedLibrary: arch
       };
     }
   }
@@ -1090,13 +1132,13 @@ export function getLibraryAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['LIBRARY_OCCUPANCY'],
-        responseText: `All campus libraries are currently CLOSED (Operating hours: 09:00–21:00 every day).\n\n• ESB Library: 0% (Closed)\n• LHC Library: 0% (Closed)\n• Apex Library: 0% (Closed)`,
+        responseText: `All six campus libraries are currently CLOSED (Operating hours: 09:00–21:00 every day).\n\n• MSRIT Main Library: 0% (Closed)\n• Unit II - Library: 0% (Closed)\n• Unit III - Library: 0% (Closed)\n• MCA Library: 0% (Closed)\n• Architecture Library: 0% (Closed)\n• MBA Library: 0% (Closed)`,
         subText: "Libraries reopen at 09:00 AM.",
         matchedLibrary: lowest
       };
     }
 
-    // Check for ties among the three libraries
+    // Check for ties among the libraries
     const ties = sorted.filter((lib) => {
       const det = getLibraryOccupancyDetails(lib, simulatedTime);
       return det.percentageEquivalent === lowestDet.percentageEquivalent;
@@ -1119,7 +1161,7 @@ export function getLibraryAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['LIBRARY_OCCUPANCY'],
-      responseText: `${responseHeading}\n\nCurrent Library Occupancy:\n${lines}`,
+      responseText: `${responseHeading}\n\nCurrent Library Occupancy across all 6 units:\n${lines}`,
       subText: "Estimated Live Occupancy (Dynamic campus telemetry).",
       matchedLibrary: lowest
     };
@@ -1136,7 +1178,7 @@ export function getLibraryAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['LIBRARY_OCCUPANCY'],
-      responseText: `Current Campus Library Occupancy:\n\n${lines}`,
+      responseText: `Current Campus Library Occupancy (6 Units):\n\n${lines}`,
       subText: "All occupancy values formatted as percentages via formatOccupancy()."
     };
   }
@@ -1144,7 +1186,7 @@ export function getLibraryAnswer(
   // 6. Library Operating Hours: "is LHC library open?", "is Apex library open?", "when does library open?"
   if (intents.includes('LIBRARY_HOURS') || (normQ.includes('library') && (normQ.includes('open') || normQ.includes('close') || normQ.includes('hours') || normQ.includes('timing')))) {
     const openNow = isLibraryOpen(simulatedTime);
-    const target = matchedLibrary ? matchedLibrary.name : "All three campus libraries (ESB Library, LHC Library, Apex Library)";
+    const target = matchedLibrary ? matchedLibrary.name : "All six campus libraries";
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,

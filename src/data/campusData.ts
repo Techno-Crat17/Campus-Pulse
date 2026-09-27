@@ -190,6 +190,75 @@ export const BUILDINGS_DATA: Building[] = [
       { name: '1st Year Foundation Reading Hall', occupancy: 22, capacity: 64, status: 'AVAILABLE' }
     ]
   },
+  {
+    id: 'apex_mca_library',
+    name: 'MCA Library',
+    code: 'MCA-LIB',
+    category: 'study',
+    occupancy: calculateLibraryOccupancy(LIBRARIES[3]),
+    status: 'AVAILABLE',
+    noiseLevel: 'Quiet',
+    walkTimeMinutes: 4,
+    distanceMeters: 280,
+    floor: 'APEX Block 2nd Level',
+    capacity: 35,
+    carpetArea: '84.82 Sq.m',
+    digitalSystems: '03 Systems',
+    facilities: 'MCA Books & Technical Journals & Computing Magazines, Digital System Terminals',
+    disciplines: 'Master of Computer Applications (MCA), Software Development, Cloud Computing, Algorithm Design',
+    coordinates: { x: 62, y: 27 },
+    amenities: ['MCA Books & Journals', '03 Digital Workstations', 'Silent Study Pods', 'Power Outlets'],
+    description: 'Postgraduate computing library located on Apex Block 2nd Level, featuring specialized software development volumes, computer application journals, and digital research bays.',
+    rooms: [
+      { name: 'MCA Reference Reading Bay', occupancy: 12, capacity: 35, status: 'AVAILABLE' }
+    ]
+  },
+  {
+    id: 'arch_library',
+    name: 'Architecture Library',
+    code: 'ARCH-LIB',
+    category: 'study',
+    occupancy: calculateLibraryOccupancy(LIBRARIES[4]),
+    status: 'AVAILABLE',
+    noiseLevel: 'Quiet',
+    walkTimeMinutes: 3,
+    distanceMeters: 220,
+    floor: 'ADS Block 3rd Level',
+    capacity: 45,
+    carpetArea: '88.42 Sq.m',
+    digitalSystems: '03 Systems',
+    facilities: 'Architecture Books & Journals & Design Magazines, Digital Research Workstations, Portfolio Review Tables',
+    disciplines: 'Architecture, Urban Design, Landscape Architecture, Environmental Design, Spatial Computing',
+    coordinates: { x: 38, y: 65 },
+    amenities: ['Design Magazines & Folios', '03 Digital Workstations', 'Portfolio Review Tables', 'Power Outlets'],
+    description: 'Specialized architectural library situated on ADS Block 3rd Level, stocked with international design monographs, urban planning catalogues, spatial folios, and architectural journals.',
+    rooms: [
+      { name: 'Architecture Design Studio Library', occupancy: 16, capacity: 45, status: 'AVAILABLE' }
+    ]
+  },
+  {
+    id: 'esb_mba_library',
+    name: 'MBA Library',
+    code: 'MBA-LIB',
+    category: 'study',
+    occupancy: calculateLibraryOccupancy(LIBRARIES[5]),
+    status: 'AVAILABLE',
+    noiseLevel: 'Quiet',
+    walkTimeMinutes: 2,
+    distanceMeters: 140,
+    floor: 'ESB-II 5th Level',
+    capacity: 45,
+    carpetArea: '100.01 Sq.m',
+    digitalSystems: '03 Systems',
+    facilities: 'MBA Books & Management Journals & Business Magazines, Digital Research Terminals',
+    disciplines: 'Master of Business Administration (MBA), Finance, Marketing, Human Resources, Business Analytics',
+    coordinates: { x: 25, y: 60 },
+    amenities: ['Business Magazines & Case Studies', '03 Digital Workstations', 'Management Reading Room', 'Power Outlets'],
+    description: 'Management studies library located on ESB-II 5th Level, dedicated to business research, case study archives, Harvard Business Review folios, and corporate periodicals.',
+    rooms: [
+      { name: 'MBA Management Reading Room', occupancy: 15, capacity: 45, status: 'AVAILABLE' }
+    ]
+  },
   // Backward compatibility alias entries so legacy references in any component continue to resolve:
   {
     id: 'ise-lab-2',

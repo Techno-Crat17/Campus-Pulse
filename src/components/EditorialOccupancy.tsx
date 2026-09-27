@@ -91,8 +91,8 @@ export const EditorialOccupancy: React.FC = () => {
           </div>
         </div>
 
-        {/* Asymmetric Giant Numbers Flow for the Three Official Libraries */}
-        <div className="space-y-36">
+        {/* Asymmetric Giant Numbers Flow for the Six Official Campus Libraries */}
+        <div className="space-y-24 sm:space-y-28">
           {libraryOccupancies.map((lib, idx) => {
             const isRight = idx % 2 === 1;
 

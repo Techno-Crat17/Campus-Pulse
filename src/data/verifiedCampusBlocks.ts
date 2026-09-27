@@ -73,10 +73,10 @@ export const VERIFIED_CAMPUS_BLOCKS: VerifiedCampusBlock[] = [
       lng: (77.5646349 + 77.5651761 + 77.5651057 + 77.5645847) / 4
     },
     departments: ['CSE', 'ISE', 'ECE', 'ET', 'EI', 'ME (Medical Electronics)'],
-    libraries: ['LHC Library'],
+    libraries: ['Unit II - Library'],
     category: 'academic',
     baseOccupancy: 68,
-    description: 'Premier academic lecture hall facility hosting CSE, ISE, ECE, ET, EI, and Medical Electronics departments along with LHC Library.'
+    description: 'Premier academic lecture hall facility hosting CSE, ISE, ECE, ET, EI, and Medical Electronics departments along with Unit II - Library.'
   },
 
   // 2. DES
@@ -137,10 +137,10 @@ export const VERIFIED_CAMPUS_BLOCKS: VerifiedCampusBlock[] = [
       lng: (77.5646058 + 77.5650601 + 77.5650165 + 77.5645625) / 4
     },
     departments: [],
-    libraries: ['Apex Library'],
+    libraries: ['Unit III - Library (Apex Library)', 'MCA Library'],
     category: 'academic',
     baseOccupancy: 42,
-    description: 'Apex academic wing housing computing auditoriums, seminar halls, and Apex Library.'
+    description: 'Apex academic wing housing computing auditoriums, seminar halls, Unit III - Library (1st Year), and MCA Library.'
   },
 
   // 4. MULTIPURPOSE BLOCK
@@ -201,10 +201,10 @@ export const VERIFIED_CAMPUS_BLOCKS: VerifiedCampusBlock[] = [
       lng: (77.5651965 + 77.5658490 + 77.5657420 + 77.5650658) / 4
     },
     departments: ['CV', 'INDUSTRIAL', 'BIOTECH'],
-    libraries: ['ESB Library'],
+    libraries: ['MSRIT Main Library', 'MBA Library'],
     category: 'academic',
     baseOccupancy: 76,
-    description: 'Houses Civil Engineering (CV), Industrial Engineering, Biotechnology, and ESB Library.'
+    description: 'Houses Civil Engineering (CV), Industrial Engineering, Biotechnology, MSRIT Main Library (4th floor), and MBA Library (5th floor).'
   },
 
   // 6. QUADRANGLE
@@ -265,10 +265,10 @@ export const VERIFIED_CAMPUS_BLOCKS: VerifiedCampusBlock[] = [
       lng: (77.5659331 + 77.5661665 + 77.5660820 + 77.5658627) / 4
     },
     departments: [],
-    libraries: [],
+    libraries: ['Architecture Library'],
     category: 'academic',
     baseOccupancy: 58,
-    description: 'Department of Architecture studios, design exhibition spaces, and modeling labs.'
+    description: 'Department of Architecture studios, design exhibition spaces, modeling labs, and Architecture Library (3rd Level).'
   },
 
   // 8. WORKSHOP BLOCK

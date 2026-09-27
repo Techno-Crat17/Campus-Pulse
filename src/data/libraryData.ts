@@ -29,6 +29,7 @@ export interface CampusLibrary {
   facilities?: string;
   exclusiveFor?: string;
   disciplines?: string;
+  nonPrintMaterials?: string;
   primaryUsers?: string[];
   historicalTrend?: Array<{ hour: string; avgOccupancy: number }>;
   source: string;
@@ -82,47 +83,54 @@ export const DIGITAL_LIBRARY: DigitalLibraryInfo = {
 export const digitalLibrary = DIGITAL_LIBRARY;
 
 /**
- * Campus Pulse Libraries (3 Exactly: ESB Library, LHC Library, Apex Library)
- *
- * 1. ESB Library (Building: ESB)
- *    Primary Users: 1st Year, Above 1st Year, Mainly Non-CSE
- * 2. LHC Library (Building: LHC)
- *    Primary Users: CSE, Electronics
- * 3. Apex Library (Building: Apex)
- *    Primary Users: 1st Year
+ * Campus Pulse Libraries — 6 Official Libraries Across Campus:
+ * 1. MSRIT MAIN LIBRARY (ESB Block - 4th Level)
+ * 2. UNIT II - LIBRARY (LHC Block - 2nd Level)
+ * 3. UNIT III - LIBRARY (APEX LIBRARY) (Apex Block - 5th Level)
+ * 4. MCA LIBRARY (Apex Block - 2nd Level)
+ * 5. ARCHITECTURE LIBRARY (ADS Block - 3rd Level)
+ * 6. MBA LIBRARY (ESB Block - 5th Level)
  *
  * Operating Hours: 09:00–21:00 Every Day (Monday through Sunday).
  */
 export const LIBRARIES: CampusLibrary[] = [
+  // 1. MSRIT MAIN LIBRARY
   {
     id: "esb_main_library",
-    name: "ESB Library",
-    code: "ESB-LIB",
+    name: "MSRIT Main Library",
+    code: "MAIN-LIB",
     building: "ESB",
     type: "Physical Library",
     openingTime: "09:00",
     closingTime: "21:00",
     primaryGroups: [
-      "1st Year",
-      "Above 1st Year",
-      "Mainly Non-CSE"
+      "Civil",
+      "Mechanical",
+      "Chemical",
+      "Industrial Engg",
+      "Biotechnology",
+      "All Disciplines"
     ],
     primaryUsers: [
-      "1st Year",
-      "Above 1st Year",
-      "Mainly Non-CSE"
+      "Civil Engg",
+      "Mechanical Engg",
+      "Chemical Engg",
+      "Industrial Engg",
+      "Biotechnology"
     ],
     nodeId: "esb_main_library",
-    floor: "4th Level, ESB Block",
-    description: "Engineering Sciences Block library housing comprehensive reference collections, research journals, and reading carrels for 1st Year and upper-level students across non-CSE disciplines.",
+    floor: "ESB-II 4th Level",
+    description: "Central institute library housing comprehensive reference holdings, technical standards, periodical collections, and dedicated e-learning servers.",
     noiseLevel: "Silent",
     walkTimeMinutes: 2,
     capacity: 538,
     carpetArea: "791.84 Sq.m",
-    digitalSystems: "60 TFT Workstations",
+    digitalSystems: "60 TFT Monitor Systems",
     servers: "LMS, DSpace & E-Learning Servers",
-    disciplines: "1st Year, Above 1st Year, Mainly Non-CSE (Civil, Mechanical, Chemical, Biotechnology, Core Engineering)",
-    facilities: "Textbooks, reference volumes, research terminals, and reading carrels",
+    nonPrintMaterials: "CD's/DVD's & Subject Video Cassettes",
+    sections: "Acquisition Section, Technical Section, Periodical Section",
+    disciplines: "Departments of Civil Engg, Mechanical Engg, Chemical Engg, Industrial Engg. & Biotechnology",
+    facilities: "Reference & Text Books, IS Standards, Faculty publications, Data Books, Competitive Exam Books & GATE books, Bound Volumes of Journals & SC/ST Book Bank Reference, Journals, Magazines, Newspapers & Member Registration",
     historicalTrend: [
       { hour: '09:00', avgOccupancy: 25 },
       { hour: '11:00', avgOccupancy: 55 },
@@ -133,33 +141,46 @@ export const LIBRARIES: CampusLibrary[] = [
     ],
     source: "MSRIT ESB Block"
   },
+
+  // 2. UNIT II - LIBRARY
   {
     id: "lhc_unit_2_library",
-    name: "LHC Library",
-    code: "LHC-306",
-    roomNumber: "LHC-306",
+    name: "Unit II - Library",
+    code: "UNIT-II",
+    roomNumber: "LHC-II 2nd Level",
     building: "LHC",
     type: "Physical Library",
     openingTime: "09:00",
     closingTime: "21:00",
     primaryGroups: [
-      "CSE",
-      "Electronics"
+      "Computer Science",
+      "Information Science",
+      "Electronics & Comm",
+      "Electrical Engg",
+      "AI & ML",
+      "Cybersecurity",
+      "AI & DS"
     ],
     primaryUsers: [
       "CSE",
-      "Electronics"
+      "ISE",
+      "ECE",
+      "EEE",
+      "EIE",
+      "AI & ML",
+      "Cybersecurity"
     ],
     nodeId: "lhc_unit_2_library",
-    floor: "1st Floor (Room LHC-306), LHC Block",
-    description: "Lecture Hall Complex Central Library located on 1st Floor (Room LHC-306), specialized for Computer Science and Electronics engineering students.",
+    floor: "LHC-II 2nd Level",
+    description: "Advanced computing and electronics technical library on LHC-II 2nd Level with high-capacity digital workstation systems and language research labs.",
     noiseLevel: "Silent",
     walkTimeMinutes: 3,
     capacity: 538,
     carpetArea: "495.83 Sq.m",
-    digitalSystems: "61 Workstations",
-    disciplines: "CSE, Electronics, Information Science, AI & ML, Cybersecurity, ECE, EEE",
-    facilities: "CSE textbooks, IEEE research access, Subhashini Language Lab, technical journals",
+    digitalSystems: "61 Systems",
+    nonPrintMaterials: "CD's/DVD's",
+    disciplines: "Computer Sc., Information Sc., Instrumentation Tech, Medical Ele, Electronics & Communication, Electrical Engg, Elco & Tel Engg, CSE (AI& ML), CSE (Cybersecurity), AI & ML, AI & DS",
+    facilities: "Text & Reference Books, MSRIT Book Bank, Subhashini English Language Lab, Bound Volumes of Journals, Journals, etc.",
     historicalTrend: [
       { hour: '09:00', avgOccupancy: 20 },
       { hour: '11:00', avgOccupancy: 50 },
@@ -170,31 +191,33 @@ export const LIBRARIES: CampusLibrary[] = [
     ],
     source: "MSRIT LHC Block"
   },
+
+  // 3. UNIT III - LIBRARY (Apex Library)
   {
     id: "apex_unit_3_library",
-    name: "Apex Library",
-    code: "APEX-LIB",
+    name: "Unit III - Library (Apex Library)",
+    code: "UNIT-III",
     building: "Apex",
     type: "Physical Library",
     openingTime: "09:00",
     closingTime: "21:00",
     primaryGroups: [
-      "1st Year"
+      "1st Year UG Courses"
     ],
     primaryUsers: [
-      "1st Year"
+      "1st Year UG Students"
     ],
+    exclusiveFor: "Exclusive for 1st Year UG courses",
     nodeId: "apex_unit_3_library",
-    floor: "5th Level, Apex Block",
-    description: "Dedicated foundational academic library on Apex Block 5th Level, exclusively tailored for 1st Year undergraduate engineering students.",
+    floor: "Apex Block, 5th Level",
+    description: "Dedicated foundational academic library on Apex Block 5th Level, exclusively tailored for first-year undergraduate engineering and basic sciences students.",
     noiseLevel: "Silent",
     walkTimeMinutes: 4,
     capacity: 64,
-    exclusiveFor: "Exclusive for 1st Year UG courses",
     carpetArea: "200.94 Sq.m",
-    digitalSystems: "02 Workstations",
-    disciplines: "1st Year, Mathematics, Physics, Chemistry, Basic Engineering & Humanities",
-    facilities: "1st Year textbooks, foundational science reference holdings, quiet study cubicles",
+    digitalSystems: "02 Systems",
+    disciplines: "Mathematics, Chemistry, Physics, Other Basic Engg. & Humanities Books for First year",
+    facilities: "First Year Textbooks, Foundational Engineering Reference Volumes, Basic Sciences Course Books, Quiet Study Carrels",
     historicalTrend: [
       { hour: '09:00', avgOccupancy: 15 },
       { hour: '11:00', avgOccupancy: 45 },
@@ -204,6 +227,120 @@ export const LIBRARIES: CampusLibrary[] = [
       { hour: '19:00', avgOccupancy: 30 },
     ],
     source: "MSRIT Apex Block"
+  },
+
+  // 4. MCA LIBRARY
+  {
+    id: "apex_mca_library",
+    name: "MCA Library",
+    code: "MCA-LIB",
+    building: "Apex",
+    type: "Physical Library",
+    openingTime: "09:00",
+    closingTime: "21:00",
+    primaryGroups: [
+      "MCA",
+      "PG Computing"
+    ],
+    primaryUsers: [
+      "Master of Computer Applications"
+    ],
+    nodeId: "apex_mca_library",
+    floor: "APEX Block 2nd Level",
+    description: "Postgraduate computing library located on Apex Block 2nd Level, featuring specialized software development volumes, computer application journals, and digital research bays.",
+    noiseLevel: "Quiet",
+    walkTimeMinutes: 4,
+    capacity: 35,
+    carpetArea: "84.82 Sq.m",
+    digitalSystems: "03 Systems",
+    disciplines: "Master of Computer Applications (MCA), Software Development, Cloud Computing, Algorithm Design",
+    facilities: "MCA Books & Technical Journals & Computing Magazines, Digital System Terminals",
+    historicalTrend: [
+      { hour: '09:00', avgOccupancy: 18 },
+      { hour: '11:00', avgOccupancy: 42 },
+      { hour: '13:00', avgOccupancy: 30 },
+      { hour: '15:00', avgOccupancy: 60 },
+      { hour: '17:00', avgOccupancy: 25 },
+      { hour: '19:00', avgOccupancy: 35 },
+    ],
+    source: "MSRIT Apex Block"
+  },
+
+  // 5. ARCHITECTURE LIBRARY
+  {
+    id: "arch_library",
+    name: "Architecture Library",
+    code: "ARCH-LIB",
+    building: "Architecture",
+    type: "Physical Library",
+    openingTime: "09:00",
+    closingTime: "21:00",
+    primaryGroups: [
+      "Architecture",
+      "B.Arch",
+      "M.Arch",
+      "Design Studios"
+    ],
+    primaryUsers: [
+      "Architecture & Urban Design Students"
+    ],
+    nodeId: "arch_library",
+    floor: "ADS Block 3rd Level",
+    description: "Specialized architectural library situated on ADS Block 3rd Level, stocked with international design monographs, urban planning catalogues, spatial folios, and architectural journals.",
+    noiseLevel: "Quiet",
+    walkTimeMinutes: 3,
+    capacity: 45,
+    carpetArea: "88.42 Sq.m",
+    digitalSystems: "03 Systems",
+    disciplines: "Architecture, Urban Design, Landscape Architecture, Environmental Design, Spatial Computing",
+    facilities: "Architecture Books & Journals & Design Magazines, Digital Research Workstations, Portfolio Review Tables",
+    historicalTrend: [
+      { hour: '09:00', avgOccupancy: 15 },
+      { hour: '11:00', avgOccupancy: 48 },
+      { hour: '13:00', avgOccupancy: 35 },
+      { hour: '15:00', avgOccupancy: 65 },
+      { hour: '17:00', avgOccupancy: 38 },
+      { hour: '19:00', avgOccupancy: 42 },
+    ],
+    source: "MSRIT ADS Block"
+  },
+
+  // 6. MBA LIBRARY
+  {
+    id: "esb_mba_library",
+    name: "MBA Library",
+    code: "MBA-LIB",
+    building: "ESB",
+    type: "Physical Library",
+    openingTime: "09:00",
+    closingTime: "21:00",
+    primaryGroups: [
+      "MBA",
+      "Management Studies",
+      "Research Scholars"
+    ],
+    primaryUsers: [
+      "Master of Business Administration"
+    ],
+    nodeId: "esb_mba_library",
+    floor: "ESB-II 5th Level",
+    description: "Executive management library on ESB-II 5th Level catering to MBA graduates and business researchers with corporate case studies, economic databases, and global business periodicals.",
+    noiseLevel: "Quiet",
+    walkTimeMinutes: 2,
+    capacity: 45,
+    carpetArea: "100.01 Sq.m",
+    digitalSystems: "03 Systems",
+    disciplines: "Master of Business Administration (MBA), Finance, Marketing, Human Resources, Supply Chain & Operations",
+    facilities: "MBA Books & Journals & Business Magazines, Harvard Case Studies, Digital Research Terminals",
+    historicalTrend: [
+      { hour: '09:00', avgOccupancy: 22 },
+      { hour: '11:00', avgOccupancy: 52 },
+      { hour: '13:00', avgOccupancy: 36 },
+      { hour: '15:00', avgOccupancy: 70 },
+      { hour: '17:00', avgOccupancy: 32 },
+      { hour: '19:00', avgOccupancy: 45 },
+    ],
+    source: "MSRIT ESB Block"
   }
 ];
 
@@ -325,8 +462,14 @@ let cachedTimeSlot = '';
 let cachedEveningValues: Record<string, number> = {};
 
 /**
- * Returns dynamic, mutually unique evening occupancies as percentages (10%-100%) for all 3 libraries.
- * Generates distinct dynamic occupancy for each library (e.g. ESB -> 40%, LHC -> 70%, Apex -> 30%).
+ * Returns dynamic, mutually unique evening occupancies as percentages (10%-100%) for all 6 libraries.
+ * Generates distinct dynamic occupancy for each library:
+ * - MSRIT Main Library
+ * - Unit II - Library
+ * - Unit III - Library (Apex Library)
+ * - MCA Library
+ * - Architecture Library
+ * - MBA Library
  * Recalculates every ~35 seconds (within 30-60s requirement).
  */
 export function getEveningOccupancyMap(currentTime?: Date | SimulatedTimeState | null): Record<string, number> {
@@ -340,19 +483,25 @@ export function getEveningOccupancyMap(currentTime?: Date | SimulatedTimeState |
     cachedCycleBucket = cycleBucket;
     cachedTimeSlot = timeSlot;
 
-    // Generate 3 unique values for ESB, LHC, and Apex:
-    const uniqueValues = generateUniqueValues(3, 2, 8);
-    const esbVal = (uniqueValues[0] || 4) * 10;
+    // Generate 6 unique values for all 6 libraries:
+    const uniqueValues = generateUniqueValues(6, 2, 8);
+    const esbMainVal = (uniqueValues[0] || 4) * 10;
     const lhcVal = (uniqueValues[1] || 7) * 10;
     const apexVal = (uniqueValues[2] || 3) * 10;
+    const mcaVal = (uniqueValues[3] || 5) * 10;
+    const archVal = (uniqueValues[4] || 4) * 10;
+    const mbaVal = (uniqueValues[5] || 6) * 10;
 
     cachedEveningValues = {
-      'esb_main_library': esbVal,
-      'esb-library': esbVal,
+      'esb_main_library': esbMainVal,
+      'esb-library': esbMainVal,
       'lhc_unit_2_library': lhcVal,
       'lhc-library': lhcVal,
       'apex_unit_3_library': apexVal,
-      'apex-library': apexVal
+      'apex-library': apexVal,
+      'apex_mca_library': mcaVal,
+      'arch_library': archVal,
+      'esb_mba_library': mbaVal
     };
   }
 
@@ -363,18 +512,24 @@ export function getEveningOccupancyMap(currentTime?: Date | SimulatedTimeState |
  * Force regenerates a fresh set of mutually unique evening occupancies (percentage values).
  */
 export function forceRegenerateEveningOccupancies(): Record<string, number> {
-  const uniqueValues = generateUniqueValues(3, 2, 8);
-  const esbVal = (uniqueValues[0] || 4) * 10;
+  const uniqueValues = generateUniqueValues(6, 2, 8);
+  const esbMainVal = (uniqueValues[0] || 4) * 10;
   const lhcVal = (uniqueValues[1] || 7) * 10;
   const apexVal = (uniqueValues[2] || 3) * 10;
+  const mcaVal = (uniqueValues[3] || 5) * 10;
+  const archVal = (uniqueValues[4] || 4) * 10;
+  const mbaVal = (uniqueValues[5] || 6) * 10;
 
   cachedEveningValues = {
-    'esb_main_library': esbVal,
-    'esb-library': esbVal,
+    'esb_main_library': esbMainVal,
+    'esb-library': esbMainVal,
     'lhc_unit_2_library': lhcVal,
     'lhc-library': lhcVal,
     'apex_unit_3_library': apexVal,
-    'apex-library': apexVal
+    'apex-library': apexVal,
+    'apex_mca_library': mcaVal,
+    'arch_library': archVal,
+    'esb_mba_library': mbaVal
   };
   return cachedEveningValues;
 }
@@ -383,7 +538,7 @@ export function forceRegenerateEveningOccupancies(): Record<string, number> {
  * Calculates Estimated Live Occupancy dynamically (0–100%):
  * - Before 09:00: Strictly 0 (Libraries CLOSED) -> 0%
  * - 09:00 to 17:59 (Daytime): Dynamic calculation (0-100%) based on active schedules & student groups
- * - 18:00 to 20:59 (Evening): Unique separate values for ESB, LHC, Apex (e.g. 40%, 70%, 30%), updated every ~35s
+ * - 18:00 to 20:59 (Evening): Unique separate values for all 6 libraries (e.g. 40%, 70%, 30%, 50%, etc.), updated every ~35s
  * - 21:00 onwards (Night): Strictly 0 (Libraries CLOSED at 21:00) -> 0%
  */
 export function calculateLibraryOccupancy(
@@ -419,12 +574,18 @@ export function calculateLibraryOccupancy(
 
   // 4. DAYTIME LOGIC: 09:00 to 17:59 (540 min to 1079 min)
   let baseOccupancy = 40;
-  if (library.id.includes('esb')) {
+  if (library.id === 'esb_main_library') {
     baseOccupancy = 46;
-  } else if (library.id.includes('lhc')) {
-    baseOccupancy = 38;
-  } else if (library.id.includes('apex')) {
+  } else if (library.id === 'lhc_unit_2_library') {
+    baseOccupancy = 42;
+  } else if (library.id === 'apex_unit_3_library') {
     baseOccupancy = 32;
+  } else if (library.id === 'apex_mca_library') {
+    baseOccupancy = 38;
+  } else if (library.id === 'arch_library') {
+    baseOccupancy = 36;
+  } else if (library.id === 'esb_mba_library') {
+    baseOccupancy = 44;
   }
 
   let timeOfDayEffect = 0;
@@ -453,10 +614,10 @@ export function calculateLibraryOccupancy(
   }
 
   let studentGroupEffect = 0;
-  if (library.primaryGroups?.includes('1st Year') && currentMinutes >= 780 && currentMinutes <= 880) {
+  if (library.primaryGroups?.some((g) => g.toLowerCase().includes('1st year')) && currentMinutes >= 780 && currentMinutes <= 880) {
     studentGroupEffect += 6;
   }
-  if (library.primaryGroups?.includes('CSE') && currentMinutes >= 930 && currentMinutes <= 1020) {
+  if (library.primaryGroups?.some((g) => g.toLowerCase().includes('computer') || g.toLowerCase().includes('cse')) && currentMinutes >= 930 && currentMinutes <= 1020) {
     studentGroupEffect += 7;
   }
 
@@ -543,7 +704,7 @@ export function getLibraryOccupancyDetails(
 }
 
 /**
- * Search libraries by name, building, or primary student group
+ * Search libraries by name, building, disciplines, or primary student group
  */
 export function searchLibraries(query: string): CampusLibrary[] {
   const q = query.trim().toLowerCase();
@@ -553,8 +714,9 @@ export function searchLibraries(query: string): CampusLibrary[] {
     const nameMatch = lib.name.toLowerCase().includes(q);
     const buildingMatch = lib.building.toLowerCase().includes(q);
     const groupMatch = lib.primaryGroups.some((g) => g.toLowerCase().includes(q));
+    const disciplineMatch = lib.disciplines ? lib.disciplines.toLowerCase().includes(q) : false;
     const combinedMatch = `${lib.building} library`.toLowerCase().includes(q) ||
                           `${lib.name} ${lib.building}`.toLowerCase().includes(q);
-    return nameMatch || buildingMatch || groupMatch || combinedMatch;
+    return nameMatch || buildingMatch || groupMatch || disciplineMatch || combinedMatch;
   });
 }

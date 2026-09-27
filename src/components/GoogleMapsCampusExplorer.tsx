@@ -760,13 +760,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   const associatedFaculty = getAssociatedFaculty();
   const currentBlockOccupancy = activeBlock ? getBlockOccupancy(activeBlock) : overallCampusOccupancy;
 
-  // Associated library for active block
-  const activeBlockLibrary = (activeBlock && activeBlock.libraries.length > 0)
-    ? LIBRARIES.find((l) => l.name.toLowerCase().includes(activeBlock.libraries[0].toLowerCase()))
-    : null;
-  const activeLibDetails = activeBlockLibrary
-    ? getLibraryOccupancyDetails(activeBlockLibrary, simulatedTime)
-    : null;
+  // Associated libraries for active block
+  const activeBlockLibraries = (activeBlock && activeBlock.libraries.length > 0)
+    ? LIBRARIES.filter((l) => activeBlock.libraries.some((libName) => l.name.toLowerCase().includes(libName.toLowerCase()) || libName.toLowerCase().includes(l.name.toLowerCase())))
+    : [];
 
   return (
     <section id="sec-map" className="py-24 sm:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
@@ -1415,28 +1412,36 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     </div>
                   </div>
 
-                  {/* Associated Library Box if present */}
-                  {activeBlockLibrary && activeLibDetails && (
-                    <div className="p-4 border-2 border-[#DC2626] bg-[#DC2626]/5 space-y-3 font-mono text-xs">
-                      <div className="flex items-center justify-between border-b border-[#DC2626]/20 pb-2">
-                        <span className="text-[#DC2626] font-bold uppercase flex items-center gap-1.5">
-                          <BookOpen className="w-4 h-4 text-[#DC2626]" />
-                          <span>ASSOCIATED LIBRARY: {activeBlockLibrary.name}</span>
-                        </span>
-                        <span className="text-[#DC2626] font-bold text-sm">
-                          {activeLibDetails.displayOccupancy}
-                        </span>
-                      </div>
-                      <div className="w-full h-2 bg-[#111111]/10 overflow-hidden border border-[#111111]/15">
-                        <div
-                          className="h-full bg-[#DC2626] transition-all duration-700"
-                          style={{ width: `${activeLibDetails.percentageEquivalent}%` }}
-                        />
-                      </div>
-                      <div className="space-y-1 text-[11px] text-[#666660]">
-                        <div>PRIMARY USERS: <strong className="text-[#111111]">{activeBlockLibrary.primaryGroups.join(' • ')}</strong></div>
-                        <div>STATUS: <strong className="text-[#111111]">{activeLibDetails.isOpen ? 'OPEN' : 'CLOSED (OPENS 09:00)'}</strong></div>
-                      </div>
+                  {/* Associated Libraries if present */}
+                  {activeBlockLibraries.length > 0 && (
+                    <div className="space-y-3">
+                      {activeBlockLibraries.map((lib) => {
+                        const libDetails = getLibraryOccupancyDetails(lib, simulatedTime);
+                        return (
+                          <div key={lib.id} className="p-4 border-2 border-[#DC2626] bg-[#DC2626]/5 space-y-3 font-mono text-xs">
+                            <div className="flex items-center justify-between border-b border-[#DC2626]/20 pb-2">
+                              <span className="text-[#DC2626] font-bold uppercase flex items-center gap-1.5">
+                                <BookOpen className="w-4 h-4 text-[#DC2626]" />
+                                <span>ASSOCIATED LIBRARY: {lib.name}</span>
+                              </span>
+                              <span className="text-[#DC2626] font-bold text-sm">
+                                {libDetails.displayOccupancy}
+                              </span>
+                            </div>
+                            <div className="w-full h-2 bg-[#111111]/10 overflow-hidden border border-[#111111]/15">
+                              <div
+                                className="h-full bg-[#DC2626] transition-all duration-700"
+                                style={{ width: `${libDetails.percentageEquivalent}%` }}
+                              />
+                            </div>
+                            <div className="space-y-1 text-[11px] text-[#666660]">
+                              <div>LOCATION / FLOOR: <strong className="text-[#111111]">{lib.floor}</strong></div>
+                              <div>PRIMARY USERS: <strong className="text-[#111111]">{lib.primaryGroups.join(' • ')}</strong></div>
+                              <div>STATUS: <strong className="text-[#111111]">{libDetails.isOpen ? 'OPEN' : 'CLOSED (OPENS 09:00)'}</strong></div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
