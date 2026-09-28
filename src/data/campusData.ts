@@ -564,18 +564,6 @@ export const INITIAL_ISSUES: CampusIssue[] = [
     imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=600'
   },
   {
-    id: 'iss-102',
-    title: 'AC Unit Dripping Water',
-    type: 'AC',
-    buildingId: 'library',
-    locationDetails: 'Main Library - 2nd Floor Reading Zone B',
-    description: 'Air conditioning unit above Desk #14 is leaking water onto study tables.',
-    status: 'ACKNOWLEDGED',
-    reportedAt: '1 hour ago',
-    upvotes: 8,
-    imageUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=600'
-  },
-  {
     id: 'iss-103',
     title: 'Campus-Guest Wi-Fi Packet Loss',
     type: 'Wi-Fi',
