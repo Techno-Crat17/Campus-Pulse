@@ -1184,9 +1184,12 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   </div>
                   <div className="text-xs text-[#111111] max-w-lg text-left space-y-2 bg-white p-5 border border-[#111111]/15 shadow-xs">
                     <p>Your API key restricts allowed websites. Add the following to Google Cloud Console Website Restrictions:</p>
-                    <code className="block bg-[#111111]/5 p-2 font-mono text-[11px] text-[#DC2626] font-bold">
-                      https://techno-crat17.github.io/*<br />
-                      http://localhost:5173/*
+                    <code className="block bg-[#111111]/5 p-2 font-mono text-[11px] text-[#DC2626] font-bold leading-relaxed">
+                      https://campus-pulse-mu-bice.vercel.app/*<br />
+                      https://campus-pulse-git-main-udbhavv-s-projects.vercel.app/*<br />
+                      https://campus-pulse-e0ecutxm7-udbhavv-s-projects.vercel.app/*<br />
+                      http://localhost:5173/*<br />
+                      http://127.0.0.1:5173/*
                     </code>
                   </div>
                   <div className="flex items-center gap-3">
