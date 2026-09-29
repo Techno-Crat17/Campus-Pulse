@@ -4,7 +4,8 @@
  * Implements graceful fallback to static local data if backend is offline.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
 let isBackendAvailable: boolean | null = null;
 let lastAvailabilityCheck = 0;
@@ -30,7 +31,7 @@ export async function checkBackendHealth(): Promise<boolean> {
     const res = await fetch(`${API_BASE_URL}/health`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(3000)
+      signal: AbortSignal.timeout(5000)
     });
     if (res.ok) {
       const json = await res.json();
@@ -264,24 +265,27 @@ export async function fetchIssues(filters: Record<string, string> = {}): Promise
 }
 
 export async function createIssue(issueData: any): Promise<any> {
-  const isOnline = await checkBackendHealth();
-  if (!isOnline) {
-    throw new Error('Campus Pulse backend server is unreachable. Please ensure the backend is running on port 5000.');
+  const targetUrl = `${API_BASE_URL}/issues`;
+
+  try {
+    const res = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(issueData)
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok || json.success === false) {
+      throw new Error(json.message || `Failed to report issue to backend (HTTP ${res.status})`);
+    }
+
+    isBackendAvailable = true;
+    return json.issue || json.data || json;
+  } catch (err: any) {
+    console.error(`[API Client] POST ${targetUrl} failed:`, err);
+    throw err;
   }
-
-  const res = await fetch(`${API_BASE_URL}/issues`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(issueData)
-  });
-
-  const json = await res.json().catch(() => ({}));
-
-  if (!res.ok || !json.success) {
-    throw new Error(json.message || `Failed to report issue to backend (HTTP ${res.status})`);
-  }
-
-  return json.issue || json.data;
 }
 
 export async function updateIssueStatus(id: string, status: string): Promise<any> {

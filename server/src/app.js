@@ -31,15 +31,18 @@ app.use(helmet());
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
   'http://localhost:5173',
-  'http://127.0.0.1:5173'
+  'http://127.0.0.1:5173',
+  'https://campus-pulse-mu-bice.vercel.app',
+  'https://campus-pulse-git-main-udbhavv-s-projects.vercel.app',
+  'https://campus-pulse-e0ecutxm7-udbhavv-s-projects.vercel.app'
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {
-      callback(null, true); // Allow dev origins
+      callback(null, true);
     }
   },
   credentials: true
