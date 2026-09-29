@@ -4,8 +4,18 @@
  * Implements graceful fallback to static local data if backend is offline.
  */
 
-const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-export const API_BASE_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
+const getApiBaseUrl = (): string => {
+  let envUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').trim();
+  if (envUrl.endsWith('/')) {
+    envUrl = envUrl.slice(0, -1);
+  }
+  if (!envUrl.endsWith('/api')) {
+    envUrl = `${envUrl}/api`;
+  }
+  return envUrl;
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 let isBackendAvailable: boolean | null = null;
 let lastAvailabilityCheck = 0;
