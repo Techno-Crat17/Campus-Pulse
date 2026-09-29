@@ -529,7 +529,3 @@ function fallbackQueryCampusAi(query: string) {
     answer: textAnswer
   };
 }
-
-
-
-
