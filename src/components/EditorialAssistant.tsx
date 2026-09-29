@@ -14,7 +14,6 @@ import {
   BookOpen,
   PhoneCall,
   Award,
-  Trash2,
   Calendar,
   Newspaper,
   Loader2,
@@ -91,8 +90,6 @@ const SUGGESTION_CATEGORIES = [
   }
 ];
 
-const HISTORY_STORAGE_KEY = 'campus_pulse_query_history';
-
 export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   onSelectBuildingForMap
 }) => {
@@ -104,7 +101,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isListening, setIsListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
-  const [queryHistory, setQueryHistory] = useState<string[]>([]);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
@@ -119,18 +115,8 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     setTimeout(() => setCopiedEmail(null), 2000);
   };
 
-  // Load history & setup voice recognition
+  // Voice recognition setup
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) setQueryHistory(parsed.slice(0, 5));
-      }
-    } catch {
-      // Storage fallback
-    }
-
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       setVoiceSupported(true);
@@ -181,29 +167,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     loadInitial();
   }, []);
 
-  const saveToHistory = (q: string) => {
-    if (!q || q.length < 3) return;
-    setQueryHistory((prev) => {
-      const filtered = prev.filter((item) => item.toLowerCase() !== q.toLowerCase());
-      const updated = [q, ...filtered].slice(0, 5);
-      try {
-        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updated));
-      } catch {
-        // Fallback
-      }
-      return updated;
-    });
-  };
-
-  const clearHistory = () => {
-    setQueryHistory([]);
-    try {
-      localStorage.removeItem(HISTORY_STORAGE_KEY);
-    } catch {
-      // Fallback
-    }
-  };
-
   const toggleVoiceListen = () => {
     if (!recognitionRef.current) return;
     if (isListening) {
@@ -226,7 +189,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     setIsProcessing(true);
     setQuery(text);
     setErrorMessage(null);
-    saveToHistory(text);
 
     try {
       const res = await processCampusAiQuery(text, simulatedTime, aiContextRef.current);
@@ -365,33 +327,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                 </div>
               </form>
             </div>
-
-            {/* Recent Search History */}
-            {queryHistory.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-[#111111]/10 dark:border-white/10">
-                <div className="flex items-center justify-between font-mono text-[11px] text-[#666660] dark:text-gray-400">
-                  <span className="uppercase tracking-widest font-bold">RECENT QUERIES</span>
-                  <button
-                    onClick={clearHistory}
-                    className="hover:text-[#DC2626] flex items-center gap-1 transition-colors"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Clear History</span>
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {queryHistory.map((h, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleQuerySubmit(h)}
-                      className="px-2.5 py-1 bg-white/70 dark:bg-white/5 border border-[#111111]/15 dark:border-white/15 hover:border-[#DC2626] text-[#111111] dark:text-gray-300 font-mono text-xs transition-all cursor-pointer truncate max-w-xs"
-                    >
-                      🕒 "{h}"
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Quick Query Category Suggestions */}
             <div className="space-y-4 pt-4 border-t border-[#111111]/10 dark:border-white/10">
