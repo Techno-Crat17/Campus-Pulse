@@ -264,23 +264,24 @@ export async function fetchIssues(filters: Record<string, string> = {}): Promise
 }
 
 export async function createIssue(issueData: any): Promise<any> {
-  try {
-    const isOnline = await checkBackendHealth();
-    if (isOnline) {
-      const res = await fetch(`${API_BASE_URL}/issues`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(issueData)
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (json.success) return json.data;
-      }
-    }
-  } catch (err) {
-    console.warn('[API Client] createIssue failed. Falling back to local storage creation.', err);
+  const isOnline = await checkBackendHealth();
+  if (!isOnline) {
+    throw new Error('Campus Pulse backend server is unreachable. Please ensure the backend is running on port 5000.');
   }
-  return fallbackCreateIssue(issueData);
+
+  const res = await fetch(`${API_BASE_URL}/issues`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(issueData)
+  });
+
+  const json = await res.json().catch(() => ({}));
+
+  if (!res.ok || !json.success) {
+    throw new Error(json.message || `Failed to report issue to backend (HTTP ${res.status})`);
+  }
+
+  return json.issue || json.data;
 }
 
 export async function updateIssueStatus(id: string, status: string): Promise<any> {

@@ -14,10 +14,11 @@ export async function connectDB() {
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/campuspulse';
 
   try {
+    const safeHostDb = uri.replace(/^mongodb(\+srv)?:\/\//, '').split('?')[0];
     await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 5000
     });
-    console.log('[Database] Connected to MongoDB');
+    console.log(`[Database] Connected to MongoDB: ${safeHostDb}`);
     console.log(`[Database] Database: ${mongoose.connection.name || 'campuspulse'}`);
   } catch (err) {
     console.error(`[Database] Connection Error: Unable to connect to MongoDB at ${uri}`);

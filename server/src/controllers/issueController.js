@@ -1,33 +1,57 @@
+import mongoose from 'mongoose';
 import { Issue } from '../models/Issue.js';
 import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export async function createIssue(req, res, next) {
+  console.log('[Issues] POST /api/issues received');
+  console.log('[Issues] Request body:', JSON.stringify(req.body, null, 2));
+
   try {
+    if (mongoose.connection.readyState !== 1) {
+      console.error('[Issues] Connection Error: MongoDB is not connected (readyState !== 1).');
+      return errorResponse(res, 'Database connection is not active. Unable to save issue.', 'DATABASE_DISCONNECTED', 500);
+    }
+
     const { title, description, category, location, priority, reportedBy, imageUrl } = req.body;
 
     if (!title || !description || !category || !location) {
-      return errorResponse(res, 'Title, description, category, and location are required fields', 'VALIDATION_ERROR', 400);
+      console.warn('[Issues] Validation Error: Missing required fields.');
+      return errorResponse(
+        res,
+        'Title, description, category, and location are required fields.',
+        'VALIDATION_ERROR',
+        400
+      );
     }
+
+    console.log('[Issues] Saving issue...');
 
     const count = await Issue.countDocuments({});
     const issueId = `iss-${Date.now().toString().slice(-4)}-${count + 1}`;
 
-    const newIssue = await Issue.create({
+    const savedIssue = await Issue.create({
       id: issueId,
-      title,
-      description,
-      category,
-      location,
+      title: title.trim(),
+      description: description.trim(),
+      category: category.trim(),
+      location: location.trim(),
       priority: priority || 'Low',
       status: 'Reported',
-      reportedBy: reportedBy || 'Campus Student',
+      reportedBy: reportedBy || 'Anonymous',
       imageUrl: imageUrl || '',
       isDemo: false,
       upvotes: 0
     });
 
-    return successResponse(res, newIssue, 201);
+    console.log(`[Issues] Issue saved: ${savedIssue._id} (ID: ${savedIssue.id})`);
+
+    return res.status(201).json({
+      success: true,
+      issue: savedIssue,
+      data: savedIssue
+    });
   } catch (err) {
+    console.error('[Issues] Error creating issue:', err.message);
     next(err);
   }
 }

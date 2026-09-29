@@ -18,6 +18,7 @@ import type {
   IssueCategory,
   IssueReport
 } from '../data/issueReportsData';
+import { createIssue, fetchIssues } from '../services/api';
 
 export const EditorialIssues: React.FC = () => {
   const [issues, setIssues] = useState<IssueReport[]>(() => getStoredIssueReports());
@@ -34,10 +35,38 @@ export const EditorialIssues: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Synchronize issues from storage or updates
+  // Synchronize issues from backend or storage
   useEffect(() => {
-    const handleUpdate = () => {
+    async function loadIssues() {
+      try {
+        const remoteIssues = await fetchIssues();
+        if (Array.isArray(remoteIssues) && remoteIssues.length > 0) {
+          const mapped: IssueReport[] = remoteIssues.map((item: any) => ({
+            id: item.id || item._id,
+            title: item.title,
+            category: item.category,
+            description: item.description,
+            location: item.location,
+            priority: item.priority || 'Medium',
+            status: item.status || 'Reported',
+            reportedBy: item.reportedBy || 'Anonymous',
+            dateTime: item.createdAt ? new Date(item.createdAt).toISOString().replace('T', ' ').substring(0, 16) : '2026-09-29 12:00',
+            imageUrl: item.imageUrl || undefined,
+            isDemo: item.isDemo || false
+          }));
+          setIssues(mapped);
+          return;
+        }
+      } catch (err) {
+        console.warn('[EditorialIssues] Failed to fetch remote issues:', err);
+      }
       setIssues(getStoredIssueReports());
+    }
+
+    loadIssues();
+
+    const handleUpdate = () => {
+      loadIssues();
     };
     window.addEventListener('campus_pulse_issues_updated', handleUpdate);
     return () => window.removeEventListener('campus_pulse_issues_updated', handleUpdate);
@@ -67,7 +96,7 @@ export const EditorialIssues: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg('');
 
@@ -86,43 +115,60 @@ export const EditorialIssues: React.FC = () => {
       return;
     }
 
-    const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-    const newIssue: IssueReport = {
-      id: 'iss-' + Date.now(),
-      title: title.trim(),
+    const payload = {
       category,
+      title: title.trim(),
       description: description.trim(),
       location: location.trim(),
       priority: 'Medium',
-      status: 'Reported',
       reportedBy: 'Anonymous',
-      dateTime: formattedDate,
-      imageUrl: imagePreview || undefined,
-      isDemo: false
+      imageUrl: imagePreview || undefined
     };
 
-    const updated = saveIssueReport(newIssue);
-    setIssues(updated);
-    setSubmitted(true);
-
     try {
-      confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
-    } catch {
-      // Confetti fallback
+      const savedIssue = await createIssue(payload);
+
+      const now = new Date();
+      const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      const newIssue: IssueReport = {
+        id: savedIssue.id || savedIssue._id || ('iss-' + Date.now()),
+        title: savedIssue.title || title.trim(),
+        category: savedIssue.category || category,
+        description: savedIssue.description || description.trim(),
+        location: savedIssue.location || location.trim(),
+        priority: savedIssue.priority || 'Medium',
+        status: savedIssue.status || 'Reported',
+        reportedBy: savedIssue.reportedBy || 'Anonymous',
+        dateTime: formattedDate,
+        imageUrl: savedIssue.imageUrl || imagePreview || undefined,
+        isDemo: false
+      };
+
+      const updated = saveIssueReport(newIssue);
+      setIssues(updated);
+      setSubmitted(true);
+
+      try {
+        confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
+      } catch {
+        // Confetti fallback
+      }
+
+      // Reset form fields
+      setTitle('');
+      setDescription('');
+      setLocation('');
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 4500);
+    } catch (err: any) {
+      console.error('[EditorialIssues] Submit error:', err);
+      setErrorMsg(err.message || 'Failed to submit issue report. Please check server connection.');
     }
-
-    // Reset form fields
-    setTitle('');
-    setDescription('');
-    setLocation('');
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 4500);
   };
 
   const getStatusBadgeClass = (s: IssueReport['status']) => {

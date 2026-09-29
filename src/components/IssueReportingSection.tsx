@@ -4,6 +4,7 @@ import { AlertTriangle, ThumbsUp, CheckCircle2, MapPin, Camera } from 'lucide-re
 import confetti from 'canvas-confetti';
 import { INITIAL_ISSUES, BUILDINGS_DATA } from '../data/campusData';
 import type { CampusIssue } from '../data/campusData';
+import { createIssue, fetchIssues } from '../services/api';
 
 export const IssueReportingSection: React.FC = () => {
   const [issues, setIssues] = useState<CampusIssue[]>(INITIAL_ISSUES);
@@ -21,31 +22,50 @@ export const IssueReportingSection: React.FC = () => {
     { label: 'Equipment', url: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=600' }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     if (!description.trim()) return;
 
-    const newIssue: CampusIssue = {
-      id: 'iss-' + Date.now(),
+    const payload = {
+      category: issueType,
       title: `${issueType} Issue reported`,
-      type: issueType,
-      buildingId: buildingId,
-      locationDetails: locationDetails || 'Campus Building',
-      description: description,
-      status: 'REPORTED',
-      reportedAt: 'Just now',
-      upvotes: 1,
+      description: description.trim(),
+      location: locationDetails || 'Campus Building',
+      priority: 'Low',
+      reportedBy: 'Campus Student',
       imageUrl: selectedPhoto || SAMPLE_PHOTOS[0].url
     };
 
-    setIssues([newIssue, ...issues]);
-    setSubmittedStatus(true);
-    confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+    try {
+      const saved = await createIssue(payload);
+      const newIssue: CampusIssue = {
+        id: saved.id || saved._id || ('iss-' + Date.now()),
+        title: saved.title || `${issueType} Issue reported`,
+        type: issueType,
+        buildingId: buildingId,
+        locationDetails: saved.location || locationDetails || 'Campus Building',
+        description: saved.description || description,
+        status: (saved.status?.toUpperCase() as any) || 'REPORTED',
+        reportedAt: 'Just now',
+        upvotes: saved.upvotes || 1,
+        imageUrl: saved.imageUrl || selectedPhoto || SAMPLE_PHOTOS[0].url
+      };
 
-    setTimeout(() => {
-      setSubmittedStatus(false);
-      setDescription('');
-    }, 4000);
+      setIssues((prev) => [newIssue, ...prev]);
+      setSubmittedStatus(true);
+      confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+
+      setTimeout(() => {
+        setSubmittedStatus(false);
+        setDescription('');
+      }, 4000);
+    } catch (err: any) {
+      console.error('[IssueReportingSection] Submit error:', err);
+      setErrorMessage(err.message || 'Failed to report issue to backend server.');
+    }
   };
 
   const handleUpvote = (id: string) => {
@@ -107,6 +127,16 @@ export const IssueReportingSection: React.FC = () => {
                 <div className="text-[11px] text-emerald-200">
                   Status set to REPORTED. Facilities engineering has been notified.
                 </div>
+              </div>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="p-4 bg-rose-500/20 border border-rose-400 text-rose-300 font-mono text-xs flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+              <div>
+                <div className="font-bold">REPORT SUBMISSION FAILED</div>
+                <div className="text-[11px] text-rose-200">{errorMessage}</div>
               </div>
             </div>
           )}
