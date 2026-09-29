@@ -18,6 +18,8 @@ import searchRoutes from './routes/searchRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 
+import { connectDB } from './config/db.js';
+
 dotenv.config();
 
 const app = express();
@@ -49,6 +51,17 @@ app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // Rate Limiter
 app.use('/api/', apiLimiter);
+
+// Database Connection Middleware for API endpoints
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('[App] Database connection error:', err.message);
+    return errorResponse(res, 'Database connection unavailable.', 'DATABASE_ERROR', 500);
+  }
+});
 
 // API Routes Mounting
 app.use('/api/health', healthRoutes);
