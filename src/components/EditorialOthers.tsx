@@ -16,9 +16,10 @@ import {
   Users,
   Search,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Target
 } from 'lucide-react';
-import { fetchAnnouncements, fetchEvents } from '../services/api';
+import { fetchAnnouncements, fetchEvents, fetchClubs } from '../services/api';
 
 interface EditorialOthersProps {
   onNavigateSection: (sectionId: string) => void;
@@ -48,6 +49,19 @@ export interface EventItem {
   fetchedAt: string;
 }
 
+export interface ClubItem {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  department?: string | null;
+  officialUrl: string;
+  socialLinks?: string[];
+  source: string;
+  sourceUrl: string;
+  lastUpdated: string;
+}
+
 export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSection }) => {
   // Announcements State
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
@@ -61,16 +75,26 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
   const [eventsError, setEventsError] = useState<string | null>(null);
   const [eventsLastFetched, setEventsLastFetched] = useState<string | null>(null);
 
+  // Clubs State
+  const [clubs, setClubs] = useState<ClubItem[]>([]);
+  const [clubsLoading, setClubsLoading] = useState<boolean>(true);
+  const [clubsError, setClubsError] = useState<string | null>(null);
+  const [clubsLastFetched, setClubsLastFetched] = useState<string | null>(null);
+  const [clubSearch, setClubSearch] = useState<string>('');
+  const [clubCategoryFilter, setClubCategoryFilter] = useState<string>('All');
+
   // Modals
   const [showAllAnnouncementsModal, setShowAllAnnouncementsModal] = useState<boolean>(false);
   const [showAllEventsModal, setShowAllEventsModal] = useState<boolean>(false);
 
-  // Load News & Events from backend
+  // Load News, Events & Clubs from backend
   const loadData = async () => {
     setAnnouncementsLoading(true);
     setEventsLoading(true);
+    setClubsLoading(true);
     setAnnouncementsError(null);
     setEventsError(null);
+    setClubsError(null);
 
     try {
       const annRes = await fetchAnnouncements();
@@ -103,11 +127,43 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
     } finally {
       setEventsLoading(false);
     }
+
+    try {
+      const clubRes = await fetchClubs();
+      if (clubRes.success && Array.isArray(clubRes.data) && clubRes.data.length > 0) {
+        setClubs(clubRes.data);
+        if (clubRes.lastFetched) {
+          setClubsLastFetched(new Date(clubRes.lastFetched).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
+      } else {
+        setClubsError('No live club data available at this time.');
+      }
+    } catch {
+      setClubsError('Failed to load club data from backend.');
+    } finally {
+      setClubsLoading(false);
+    }
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Filtered Clubs
+  const filteredClubs = clubs.filter((c) => {
+    const matchesSearch =
+      !clubSearch.trim() ||
+      c.name.toLowerCase().includes(clubSearch.toLowerCase()) ||
+      c.category.toLowerCase().includes(clubSearch.toLowerCase()) ||
+      (c.department && c.department.toLowerCase().includes(clubSearch.toLowerCase())) ||
+      c.description.toLowerCase().includes(clubSearch.toLowerCase());
+
+    const matchesCategory =
+      clubCategoryFilter === 'All' ||
+      c.category.toLowerCase().includes(clubCategoryFilter.toLowerCase());
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <section id="sec-others" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
@@ -133,11 +189,11 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
             </h2>
           </div>
           <p className="font-mono text-xs sm:text-sm text-[#666660] dark:text-[#9CA3AF] max-w-2xl">
-            Real-time announcements and events fetched directly from the official MSRIT portal, paired with emergency contacts, quick links, and institutional references.
+            Real-time announcements, events, and student organizations fetched directly from official MSRIT portals, paired with emergency contacts, quick links, and institutional references.
           </p>
         </div>
 
-        {/* 7 Utility Cards Grid Layout */}
+        {/* 8 Utility Cards Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start pt-4 border-t border-[#111111]/10 dark:border-white/10">
           
           {/* Card 1: 📢 Latest MSRIT News / Announcements */}
@@ -398,10 +454,6 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                 </div>
               ))}
             </div>
-
-            <div className="p-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 text-[10px] text-amber-900 dark:text-amber-300">
-              ⚠️ In case of life-threatening emergencies, visit the nearest security control desk or department office immediately.
-            </div>
           </div>
 
           {/* Card 4: ⭐ Quick Access */}
@@ -551,7 +603,126 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
             </div>
           </div>
 
-          {/* Card 7: 📱 PWA & Web App Status */}
+          {/* Card 7: 🎯 Clubs & Student Activities (Full Row Card) */}
+          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-5 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all md:col-span-2 lg:col-span-3">
+            
+            {/* Card Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 gap-2">
+              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs sm:text-sm font-syne">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-[#DC2626]" />
+                <span>CLUBS & STUDENT ACTIVITIES</span>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 font-bold uppercase text-[10px]">
+                  Live from MSRIT Official Website
+                </span>
+                {clubsLastFetched && (
+                  <span className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
+                    Last updated: {clubsLastFetched}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Search & Filter Bar */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                {/* Search Bar */}
+                <div className="relative flex-1">
+                  <Search className="w-4 h-4 text-[#888] absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={clubSearch}
+                    onChange={(e) => setClubSearch(e.target.value)}
+                    placeholder="Search clubs, societies, cells, or activities..."
+                    className="w-full bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/20 dark:border-white/20 pl-9 pr-3.5 py-2 text-xs text-[#111111] dark:text-[#F3F3EE] focus:outline-none focus:border-[#DC2626]"
+                  />
+                  {clubSearch && (
+                    <button
+                      onClick={() => setClubSearch('')}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888] hover:text-[#DC2626]"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter Pills */}
+                <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                  {['All', 'Technical', 'Cultural', 'Sports', 'Social', 'Innovation'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setClubCategoryFilter(cat)}
+                      className={`px-3 py-1.5 border text-[10px] font-bold uppercase transition-all cursor-pointer ${
+                        clubCategoryFilter === cat
+                          ? 'bg-[#111111] dark:bg-white dark:text-[#111111] text-white border-[#DC2626]'
+                          : 'bg-white dark:bg-white/5 border-[#111111]/15 dark:border-white/15 text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Clubs Grid Sub-Component */}
+            {clubsLoading ? (
+              <div className="py-12 flex flex-col items-center justify-center space-y-2 text-[#666660] dark:text-[#9CA3AF]">
+                <Loader2 className="w-6 h-6 animate-spin text-[#DC2626]" />
+                <span className="text-[11px] uppercase tracking-wider">Fetching MSRIT student organizations...</span>
+              </div>
+            ) : clubsError && filteredClubs.length === 0 ? (
+              <div className="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-[11px]">
+                {clubsError}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                {filteredClubs.map((club) => (
+                  <div
+                    key={club.id}
+                    className="p-4 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-3 flex flex-col justify-between group"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold text-[9px] uppercase">
+                          {club.category}
+                        </span>
+                        {club.department && (
+                          <span className="text-[9px] text-[#666660] dark:text-[#9CA3AF] truncate max-w-[150px]">
+                            {club.department}
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
+                        {club.name}
+                      </h4>
+
+                      <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] leading-relaxed line-clamp-3">
+                        {club.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-[#111111]/5 dark:border-white/5 flex items-center justify-between">
+                      <span className="text-[9px] text-[#888880] uppercase">Source: {club.source}</span>
+                      <a
+                        href={club.officialUrl || club.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-1 bg-[#111111] dark:bg-[#DC2626] hover:bg-[#DC2626] text-white text-[10px] font-bold uppercase inline-flex items-center gap-1 transition-colors"
+                      >
+                        <span>VIEW DETAILS</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Card 8: 📱 PWA & Web App Status */}
           <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all md:col-span-2 lg:col-span-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 gap-2">
               <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">

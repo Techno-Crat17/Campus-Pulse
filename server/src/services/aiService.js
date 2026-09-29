@@ -7,6 +7,7 @@ import { calculateFacultyDynamicStatus } from './facultyStatusService.js';
 import { calculateEstimatedOccupancy, isLibraryOpen } from './occupancyService.js';
 import { normalizeRoomNumber } from '../utils/roomUtils.js';
 import { getLiveAnnouncements, getLiveEvents } from './msritService.js';
+import { getLiveClubs } from './clubService.js';
 
 // In-memory short-lived session context store
 const sessionContextStore = new Map();
@@ -79,6 +80,31 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
       return { intent: 'EVENT_QUERY', answer: ans, data: { events: list, source: result.source, lastFetched: result.lastFetched } };
     }
     return { intent: 'EVENT_QUERY', answer: 'No live MSRIT events are currently available from the official website.', data: null };
+  }
+
+  // 0.8. MSRIT CLUBS & STUDENT ACTIVITIES QUERY PATTERNS
+  const isClubQuery = lower.includes('club') || lower.includes('organization') || lower.includes('society') || lower.includes('extracurricular') || lower.includes('co-curricular') || lower.includes('ieee') || lower.includes('nss') || lower.includes('edc') || lower.includes('iic') || lower.includes('idea lab') || lower.includes('tedx') || lower.includes('sports activity');
+
+  if (isClubQuery) {
+    const result = await getLiveClubs();
+    let clubsList = result.data || [];
+
+    if (lower.includes('technical')) {
+      clubsList = clubsList.filter(c => c.category === 'Technical' || c.category === 'Professional Society' || c.name.toLowerCase().includes('ieee') || c.name.toLowerCase().includes('apple'));
+    } else if (lower.includes('innovation')) {
+      clubsList = clubsList.filter(c => c.category === 'Innovation' || c.name.toLowerCase().includes('idea') || c.name.toLowerCase().includes('iic'));
+    } else if (lower.includes('sports')) {
+      clubsList = clubsList.filter(c => c.category === 'Sports' || c.name.toLowerCase().includes('sports'));
+    } else if (lower.includes('ieee')) {
+      clubsList = clubsList.filter(c => c.name.toLowerCase().includes('ieee'));
+    }
+
+    if (clubsList.length > 0) {
+      const namesText = clubsList.map((c, i) => `${i + 1}. ${c.name} (${c.category})`).join('; ');
+      const ans = `Official MSRIT Organizations & Clubs (Source: ${result.source}): ${namesText}. Total ${result.data.length} verified campus organizations tracked.`;
+      return { intent: 'CLUB_QUERY', answer: ans, data: { clubs: clubsList, source: result.source } };
+    }
+    return { intent: 'CLUB_QUERY', answer: "I couldn't find that information in the official MSRIT data.", data: null };
   }
 
   // 1. FACULTY QUERY PATTERNS

@@ -19,6 +19,7 @@ import aiRoutes from './routes/aiRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import announcementRoutes from './routes/announcementRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
+import clubRoutes from './routes/clubRoutes.js';
 
 import { connectDB } from './config/db.js';
 
@@ -95,6 +96,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/clubs', clubRoutes);
 
 // 404 Route Handler
 app.use((req, res) => {

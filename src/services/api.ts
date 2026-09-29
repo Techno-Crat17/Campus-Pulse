@@ -374,6 +374,22 @@ export async function fetchEvents(): Promise<{ success: boolean; data: any[]; la
   return { success: false, data: [] };
 }
 
+export async function fetchClubs(): Promise<{ success: boolean; data: any[]; lastFetched?: string }> {
+  try {
+    const isOnline = await checkBackendHealth();
+    if (isOnline) {
+      const res = await fetch(`${API_BASE_URL}/clubs`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) return json;
+      }
+    }
+  } catch (err) {
+    console.warn('[API Client] fetchClubs failed:', err);
+  }
+  return { success: false, data: [] };
+}
+
 // ----------------------------------------------------
 // 7. ASK CAMPUS AI API
 // ----------------------------------------------------
