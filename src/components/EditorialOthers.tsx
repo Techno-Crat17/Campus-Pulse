@@ -361,16 +361,6 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                   phone: '108',
                   tel: 'tel:108',
                   isStandardEmergency: true
-                },
-                {
-                  name: 'Campus Security',
-                  detail: 'Main Gate Control Desk',
-                  phone: null
-                },
-                {
-                  name: 'Medical Centre',
-                  detail: 'Campus Infirmary',
-                  phone: null
                 }
               ].map((contact, idx) => (
                 <div
@@ -398,19 +388,13 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                     </div>
                   </div>
 
-                  {contact.phone ? (
-                    <a
-                      href={contact.tel}
-                      className="px-2.5 py-1 bg-[#111111] dark:bg-[#DC2626] hover:bg-[#DC2626] text-white font-mono font-bold text-[11px] tracking-wider transition-colors inline-flex items-center gap-1 shrink-0 self-start sm:self-auto"
-                      title={`Call ${contact.name}: ${contact.phone}`}
-                    >
-                      <span>📞 {contact.phone}</span>
-                    </a>
-                  ) : (
-                    <span className="text-[10px] text-[#888880] bg-white dark:bg-[#0E0F12] px-2 py-1 border border-[#111111]/10 dark:border-white/10 shrink-0 self-start sm:self-auto">
-                      Number unavailable
-                    </span>
-                  )}
+                  <a
+                    href={contact.tel}
+                    className="px-2.5 py-1 bg-[#111111] dark:bg-[#DC2626] hover:bg-[#DC2626] text-white font-mono font-bold text-[11px] tracking-wider transition-colors inline-flex items-center gap-1 shrink-0 self-start sm:self-auto"
+                    title={`Call ${contact.name}: ${contact.phone}`}
+                  >
+                    <span>📞 {contact.phone}</span>
+                  </a>
                 </div>
               ))}
             </div>
