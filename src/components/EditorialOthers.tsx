@@ -334,27 +334,83 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
 
             <div className="space-y-2.5">
               {[
-                { name: 'Campus Security', detail: 'Main Gate Desk' },
-                { name: 'Medical Centre', detail: 'Campus Infirmary' },
-                { name: 'Fire Emergency', detail: 'Control Desk' },
-                { name: 'Ambulance', detail: 'Campus Emergency Unit' },
-                { name: 'Administration', detail: 'Registrar Office' }
+                {
+                  name: 'MSRIT Administration / Admissions',
+                  detail: 'Main Campus Office',
+                  phone: '080-23607902',
+                  tel: 'tel:08023607902',
+                  isVerifiedMsrit: true
+                },
+                {
+                  name: 'Registrar Administration',
+                  detail: 'Anti-Ragging Cell & Student Services',
+                  phone: '080-23608445',
+                  tel: 'tel:08023608445',
+                  isVerifiedMsrit: true
+                },
+                {
+                  name: 'Fire Emergency',
+                  detail: 'Standard Emergency Service',
+                  phone: '101',
+                  tel: 'tel:101',
+                  isStandardEmergency: true
+                },
+                {
+                  name: 'Ambulance',
+                  detail: 'Standard Emergency Service',
+                  phone: '108',
+                  tel: 'tel:108',
+                  isStandardEmergency: true
+                },
+                {
+                  name: 'Campus Security',
+                  detail: 'Main Gate Control Desk',
+                  phone: null
+                },
+                {
+                  name: 'Medical Centre',
+                  detail: 'Campus Infirmary',
+                  phone: null
+                }
               ].map((contact, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 flex items-center justify-between"
+                  className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                 >
-                  <div>
-                    <div className="font-bold text-[#111111] dark:text-[#F3F3EE] text-[11px] uppercase">
-                      {contact.name}
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-[#111111] dark:text-[#F3F3EE] text-[11px] uppercase">
+                        {contact.name}
+                      </span>
+                      {contact.isVerifiedMsrit && (
+                        <span className="px-1.5 py-0.2 text-[9px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          ✓ Verified Source
+                        </span>
+                      )}
+                      {contact.isStandardEmergency && (
+                        <span className="px-1.5 py-0.2 text-[9px] font-bold uppercase bg-blue-50 text-blue-700 border border-blue-200">
+                          National Helpline
+                        </span>
+                      )}
                     </div>
                     <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
                       {contact.detail}
                     </div>
                   </div>
-                  <span className="text-[10px] text-[#888880] bg-white dark:bg-[#0E0F12] px-2 py-1 border border-[#111111]/10 dark:border-white/10">
-                    Contact number unavailable
-                  </span>
+
+                  {contact.phone ? (
+                    <a
+                      href={contact.tel}
+                      className="px-2.5 py-1 bg-[#111111] dark:bg-[#DC2626] hover:bg-[#DC2626] text-white font-mono font-bold text-[11px] tracking-wider transition-colors inline-flex items-center gap-1 shrink-0 self-start sm:self-auto"
+                      title={`Call ${contact.name}: ${contact.phone}`}
+                    >
+                      <span>📞 {contact.phone}</span>
+                    </a>
+                  ) : (
+                    <span className="text-[10px] text-[#888880] bg-white dark:bg-[#0E0F12] px-2 py-1 border border-[#111111]/10 dark:border-white/10 shrink-0 self-start sm:self-auto">
+                      Number unavailable
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
