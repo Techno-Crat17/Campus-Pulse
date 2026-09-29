@@ -35,4 +35,4 @@ const BuildingSchema = new mongoose.Schema({
 
 BuildingSchema.index({ name: 'text', displayName: 'text', shortName: 'text', description: 'text' });
 
-export const Building = mongoose.model('Building', BuildingSchema);
+export const Building = mongoose.model('Building', BuildingSchema, 'buildings');

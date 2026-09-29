@@ -39,4 +39,4 @@ const LibrarySchema = new mongoose.Schema({
 
 LibrarySchema.index({ name: 'text', building: 'text', disciplines: 'text' });
 
-export const Library = mongoose.model('Library', LibrarySchema);
+export const Library = mongoose.model('Library', LibrarySchema, 'libraries');

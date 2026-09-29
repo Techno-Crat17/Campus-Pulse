@@ -30,4 +30,4 @@ const FacultySchema = new mongoose.Schema({
 // Index for text search
 FacultySchema.index({ name: 'text', department: 'text', designation: 'text', cabinLocation: 'text', expertise: 'text' });
 
-export const Faculty = mongoose.model('Faculty', FacultySchema);
+export const Faculty = mongoose.model('Faculty', FacultySchema, 'faculty');

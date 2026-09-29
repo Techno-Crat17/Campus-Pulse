@@ -9,4 +9,4 @@ const LibraryOccupancySchema = new mongoose.Schema({
   timestamps: true
 });
 
-export const LibraryOccupancy = mongoose.model('LibraryOccupancy', LibraryOccupancySchema);
+export const LibraryOccupancy = mongoose.model('LibraryOccupancy', LibraryOccupancySchema, 'library_occupancy');

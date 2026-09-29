@@ -50,4 +50,4 @@ const IssueSchema = new mongoose.Schema({
 
 IssueSchema.index({ title: 'text', description: 'text', location: 'text', category: 'text' });
 
-export const Issue = mongoose.model('Issue', IssueSchema);
+export const Issue = mongoose.model('Issue', IssueSchema, 'issues');

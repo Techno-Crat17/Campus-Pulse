@@ -29,4 +29,4 @@ RoomSchema.pre('save', function (next) {
 
 RoomSchema.index({ roomNumber: 'text', building: 'text', department: 'text' });
 
-export const Room = mongoose.model('Room', RoomSchema);
+export const Room = mongoose.model('Room', RoomSchema, 'rooms');
