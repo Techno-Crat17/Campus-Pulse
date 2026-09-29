@@ -10,7 +10,7 @@
     "server": "node server/src/server.js",
     "seed": "node server/src/data/seed.js",
     "start": "node server/src/server.js",
-    "build": "tsc -b && vite build && cp -r dist/assets public/ && cp -r dist/assets .",
+    "build": "tsc -b && vite build && node -e \"import fs from 'fs'; fs.copyFileSync('dist/assets/index.js', 'public/assets/index.js'); fs.copyFileSync('dist/assets/index.css', 'public/assets/index.css');\"",
     "lint": "oxlint",
     "preview": "vite preview"
   },
