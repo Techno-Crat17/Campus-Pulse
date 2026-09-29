@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { MinimalNavbar } from './components/MinimalNavbar';
 import { EditorialHero } from './components/EditorialHero';
 import { EditorialAssistant } from './components/EditorialAssistant';
-import { EditorialOccupancy } from './components/EditorialOccupancy';
 import { GoogleMapsCampusExplorer } from './components/GoogleMapsCampusExplorer';
 import { EditorialRecommender } from './components/EditorialRecommender';
 import { EditorialFaculty } from './components/EditorialFaculty';
@@ -63,10 +62,7 @@ export function App() {
           }}
         />
 
-        {/* Section 03 — SEE (Live Occupancy Giant Numbers Flow) */}
-        <EditorialOccupancy />
-
-        {/* Section 04 — REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER */}
+        {/* Section 03 — REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER */}
         <ErrorBoundary
           fallbackTitle="Google Maps Explorer Unavailable"
           fallbackMessage="The interactive Google Maps explorer could not be initialized. All other campus telemetry features and building schedules remain active."

@@ -843,7 +843,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
         {/* Section Header Breadcrumb */}
         <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
           <Compass className="w-4 h-4 text-[#DC2626]" />
-          <span>SECTION 04 // REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER</span>
+          <span>SECTION 03 // REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER</span>
         </div>
 
         {/* Section Title & Map Controls */}

@@ -26,7 +26,6 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         { id: 'sec-faculty', navId: 'sec-faculty' },
         { id: 'sec-find', navId: 'sec-find' },
         { id: 'sec-map', navId: 'sec-map' },
-        { id: 'sec-see', navId: 'sec-map' },
         { id: 'sec-ask', navId: 'sec-ask' },
         { id: 'sec-hero', navId: 'sec-hero' },
       ];
