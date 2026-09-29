@@ -11,15 +11,6 @@ export const EditorialHero: React.FC<EditorialHeroProps> = ({ onAskClick, onExpl
   return (
     <section id="sec-hero" className="min-h-screen pt-24 sm:pt-32 pb-10 sm:pb-16 px-4 sm:px-8 lg:px-12 flex flex-col justify-between border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       
-      {/* Top Metadata Line */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 font-mono text-[10px] sm:text-xs text-[#666660] dark:text-[#9CA3AF]">
-        <div>01 // SYSTEM START — MSRIT DATASET ACTIVE</div>
-        <div className="sm:text-right">
-          <span className="text-[#DC2626] font-bold">SOURCE: MSRIT.EDU</span>
-          <span className="mx-2">•</span>
-          <span className="text-[#111111] dark:text-[#F3F3EE]">LIVE TELEMETRY</span>
-        </div>
-      </div>
 
       {/* Massive Typography Hero Title */}
       <div className="my-auto py-6 sm:py-8 space-y-4 sm:space-y-6">
