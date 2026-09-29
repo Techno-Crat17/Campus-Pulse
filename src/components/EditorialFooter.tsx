@@ -68,9 +68,6 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
               UVERMA
             </span>
           </div>
-          <div className="text-[11px] text-[#888880]">
-            CAMPUS PULSE • UVERMA
-          </div>
         </div>
 
       </div>
