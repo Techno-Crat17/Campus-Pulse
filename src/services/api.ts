@@ -1,3 +1,5 @@
+import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUsers';
+
 /**
  * Campus Pulse Frontend API Service Client
  * Connects Campus Pulse Frontend to Node.js REST API Server (http://localhost:5000/api)
@@ -276,6 +278,12 @@ export async function fetchIssues(filters: Record<string, string> = {}): Promise
 
 export async function createIssue(issueData: any): Promise<any> {
   const targetUrl = `${API_BASE_URL}/issues`;
+
+  // Pre-flight validation: check if reporter / user identifier is blocked
+  const idToCheck = issueData?.reportedBy || issueData?.user || issueData?.reporter || issueData?.username || issueData?.studentId;
+  if (isBlockedUser(idToCheck)) {
+    throw new Error(BLOCKED_USER_ERROR_MESSAGE);
+  }
 
   try {
     const res = await fetch(targetUrl, {

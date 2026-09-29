@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { INITIAL_ISSUES, BUILDINGS_DATA } from '../data/campusData';
 import type { CampusIssue } from '../data/campusData';
 import { createIssue } from '../services/api';
+import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUsers';
 
 export const IssueReportingSection: React.FC = () => {
   const [issues, setIssues] = useState<CampusIssue[]>(INITIAL_ISSUES);
@@ -28,6 +29,11 @@ export const IssueReportingSection: React.FC = () => {
     e.preventDefault();
     setErrorMessage('');
     if (!description.trim()) return;
+
+    if (isBlockedUser('Campus Student')) {
+      setErrorMessage(BLOCKED_USER_ERROR_MESSAGE);
+      return;
+    }
 
     const payload = {
       category: issueType,

@@ -19,6 +19,7 @@ import type {
   IssueReport
 } from '../data/issueReportsData';
 import { createIssue, fetchIssues } from '../services/api';
+import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUsers';
 
 export const EditorialIssues: React.FC = () => {
   const [issues, setIssues] = useState<IssueReport[]>(() => getStoredIssueReports());
@@ -28,6 +29,7 @@ export const EditorialIssues: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [reportedBy, setReportedBy] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // Status & Feedback
@@ -115,13 +117,19 @@ export const EditorialIssues: React.FC = () => {
       return;
     }
 
+    const reporterName = reportedBy.trim() || 'Anonymous';
+    if (isBlockedUser(reportedBy) || isBlockedUser(reporterName)) {
+      setErrorMsg(BLOCKED_USER_ERROR_MESSAGE);
+      return;
+    }
+
     const payload = {
       category,
       title: title.trim(),
       description: description.trim(),
       location: location.trim(),
       priority: 'Medium',
-      reportedBy: 'Anonymous',
+      reportedBy: reporterName,
       imageUrl: imagePreview || undefined
     };
 
@@ -159,6 +167,7 @@ export const EditorialIssues: React.FC = () => {
       setTitle('');
       setDescription('');
       setLocation('');
+      setReportedBy('');
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
 
@@ -327,10 +336,25 @@ export const EditorialIssues: React.FC = () => {
                 />
               </div>
 
+              {/* Reporter Name / Student ID */}
+              <div className="space-y-1.5">
+                <label htmlFor="issue-reporter-input" className="text-[#666660] uppercase tracking-widest font-bold block">
+                  5. YOUR NAME / STUDENT ID (OPTIONAL)
+                </label>
+                <input
+                  id="issue-reporter-input"
+                  type="text"
+                  value={reportedBy}
+                  onChange={(e) => setReportedBy(e.target.value)}
+                  placeholder="LEAVE BLANK FOR ANONYMOUS DISPATCH"
+                  className="w-full bg-white border border-[#111111]/25 px-3.5 py-2.5 text-base sm:text-sm text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-bold"
+                />
+              </div>
+
               {/* Optional Photo/Image Upload */}
               <div className="space-y-1.5">
                 <label className="text-[#666660] uppercase tracking-widest font-bold block">
-                  5. OPTIONAL PHOTO / ATTACHMENT
+                  6. OPTIONAL PHOTO / ATTACHMENT
                 </label>
                 
                 <input

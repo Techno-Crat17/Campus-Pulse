@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { Issue } from '../models/Issue.js';
 import { successResponse, errorResponse } from '../utils/apiResponse.js';
+import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUsers.js';
 
 export async function createIssue(req, res, next) {
   console.log('[Issues] POST /api/issues received');
@@ -12,7 +13,29 @@ export async function createIssue(req, res, next) {
       return errorResponse(res, 'Database connection is not active. Unable to save issue.', 'DATABASE_DISCONNECTED', 500);
     }
 
-    const { title, description, category, location, priority, reportedBy, imageUrl } = req.body;
+    const { title, description, category, location, priority, reportedBy, imageUrl, user, reporter, username, studentId } = req.body;
+
+    // Validate reporter / user identifier against centralized blocked list
+    const identifiersToCheck = [
+      reportedBy,
+      user,
+      reporter,
+      username,
+      studentId,
+      req.headers['x-user-id'],
+      req.headers['x-reporter-id'],
+      req.headers['x-username']
+    ];
+
+    for (const id of identifiersToCheck) {
+      if (isBlockedUser(id)) {
+        console.warn(`[Issues] Blocked issue submission attempt for identifier: "${id}"`);
+        return res.status(403).json({
+          success: false,
+          message: BLOCKED_USER_ERROR_MESSAGE
+        });
+      }
+    }
 
     if (!title || !description || !category || !location) {
       console.warn('[Issues] Validation Error: Missing required fields.');
