@@ -18,8 +18,9 @@ import {
   Calendar,
   Newspaper,
   Loader2,
-  UserCheck,
-  ShieldCheck
+  ShieldCheck,
+  Copy,
+  Check
 } from 'lucide-react';
 import { useTimeContext } from '../context/TimeContext';
 import { getLibraryOccupancyDetails } from '../data/libraryData';
@@ -104,12 +105,19 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   const [isListening, setIsListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
   const [queryHistory, setQueryHistory] = useState<string[]>([]);
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
   const aiContextRef = useRef<CampusAiContext>({ history: [] });
 
   const [activeResult, setActiveResult] = useState<CampusAiResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleCopyEmail = (email: string) => {
+    navigator.clipboard.writeText(email);
+    setCopiedEmail(email);
+    setTimeout(() => setCopiedEmail(null), 2000);
+  };
 
   // Load history & setup voice recognition
   useEffect(() => {
@@ -465,22 +473,76 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                 >
                   {/* Prompt */}
                   <div className="space-y-1">
-                    <span className="font-mono text-xs text-[#666660] dark:text-gray-400">QUERY PROMPT:</span>
-                    <h3 className="font-syne text-xl sm:text-2xl font-bold text-[#DC2626]">
+                    <span className="font-mono text-[11px] text-[#666660] dark:text-gray-400 uppercase tracking-widest">QUERY PROMPT:</span>
+                    <h3 className="font-syne text-sm sm:text-base font-bold text-[#DC2626]">
                       "{activeResult.queryText}"
                     </h3>
                   </div>
 
-                  {/* Primary Response Text */}
-                  <div className="space-y-2 p-5 bg-white/70 dark:bg-[#16181D]/80 border border-[#111111]/15 dark:border-white/15">
-                    <p className="text-xl sm:text-2xl font-syne font-bold text-[#111111] dark:text-[#F3F3EE] leading-snug whitespace-pre-line">
+                  {/* Primary Compact Response Card */}
+                  <div className="p-4 sm:p-5 bg-white dark:bg-[#16181D] border border-[#111111]/15 dark:border-white/15 space-y-3 shadow-xs">
+                    <div className="flex justify-between items-center border-b border-[#111111]/10 dark:border-white/10 pb-2 font-mono text-[11px]">
+                      <span className="text-[#DC2626] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-[#DC2626]" />
+                        <span>CAMPUS AI RESPONSE</span>
+                      </span>
+                      {activeResult.intents && activeResult.intents.length > 0 && (
+                        <span className="text-[#666660] dark:text-gray-400 text-[10px] uppercase font-mono">
+                          {activeResult.intents[0].replace(/_/g, ' ')}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-sm sm:text-base font-syne font-semibold text-[#111111] dark:text-[#F3F3EE] leading-relaxed whitespace-pre-line">
                       {activeResult.responseText}
                     </p>
+
                     {activeResult.subText && (
-                      <p className="text-xs sm:text-sm font-mono text-[#666660] dark:text-gray-400 pt-2 border-t border-[#111111]/10 dark:border-white/10">
+                      <p className="text-xs font-mono text-[#666660] dark:text-gray-400 pt-2 border-t border-[#111111]/10 dark:border-white/10">
                         {activeResult.subText}
                       </p>
                     )}
+
+                    {/* Compact Action Bar */}
+                    <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-[#111111]/10 dark:border-white/10 font-mono text-xs">
+                      {activeResult.matchedFaculty?.email ? (
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`mailto:${activeResult.matchedFaculty.email}`}
+                            className="text-[#DC2626] hover:underline font-bold text-xs"
+                          >
+                            📧 {activeResult.matchedFaculty.email}
+                          </a>
+                          <button
+                            onClick={() => handleCopyEmail(activeResult.matchedFaculty!.email!)}
+                            className="px-2 py-1 bg-gray-100 dark:bg-white/10 hover:bg-[#DC2626] hover:text-white text-[#111111] dark:text-gray-200 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                            title="Copy email to clipboard"
+                          >
+                            {copiedEmail === activeResult.matchedFaculty.email ? (
+                              <>
+                                <Check className="w-3 h-3 text-emerald-400" />
+                                <span>COPIED</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3 h-3" />
+                                <span>COPY EMAIL</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      ) : <div />}
+
+                      {activeResult.actionTargetId && (
+                        <button
+                          onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
+                          className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
+                        >
+                          <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                          <span>VIEW ON MAP →</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Ambiguity Guard Clarification Options */}
@@ -501,48 +563,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                             <span className="text-[10px] text-[#DC2626]">SELECT →</span>
                           </button>
                         ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Structured Faculty Card */}
-                  {activeResult.matchedFaculty && (
-                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
-                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
-                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
-                          <UserCheck className="w-3.5 h-3.5 text-[#DC2626]" />
-                          VERIFIED FACULTY PROFILE
-                        </span>
-                        <span className="text-[#DC2626] font-bold">{activeResult.matchedFaculty.department.toUpperCase()}</span>
-                      </div>
-
-                      <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
-                        {activeResult.matchedFaculty.name}
-                      </div>
-
-                      <div className="text-[#666660] dark:text-gray-300 space-y-1.5">
-                        <div>DESIGNATION: <strong className="text-[#111111] dark:text-white">{activeResult.matchedFaculty.designation}</strong></div>
-                        <div>CABIN LOCATION: <strong className="text-[#111111] dark:text-white">{activeResult.matchedFaculty.cabinLocation}</strong></div>
-                        {activeResult.matchedFaculty.currentLocation && (
-                          <div>LIVE LOCATION: <strong className="text-[#111111] dark:text-white">{activeResult.matchedFaculty.currentLocation}</strong></div>
-                        )}
-                        <div>LIVE STATUS: <strong className="text-[#DC2626]">{activeResult.matchedFaculty.status || 'Active'}</strong></div>
-                        {activeResult.matchedFaculty.email && (
-                          <div>EMAIL: <a href={`mailto:${activeResult.matchedFaculty.email}`} className="text-[#DC2626] underline font-bold">{activeResult.matchedFaculty.email}</a></div>
-                        )}
-                      </div>
-
-                      <div className="pt-3 flex justify-between items-center border-t border-[#111111]/10 dark:border-white/10">
-                        <span className="text-[#666660] dark:text-gray-400 text-[11px]">SOURCE: faculty_msrit_dynamic.json</span>
-                        {activeResult.actionTargetId && (
-                          <button
-                            onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
-                            className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
-                          >
-                            <MapPin className="w-3.5 h-3.5 text-rose-300" />
-                            <span>VIEW FACULTY ON MAP →</span>
-                          </button>
-                        )}
                       </div>
                     </div>
                   )}

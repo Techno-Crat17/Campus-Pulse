@@ -608,6 +608,7 @@ export function getFacultyAnswer(
   const wantsLocation = intents.includes('FACULTY_LOCATION') || intents.includes('FACULTY_CABIN') || /\b(where|location|find|cabin|office)\b/.test(normQ);
   const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|consult)\b/.test(normQ);
   const wantsSchedule = intents.includes('FACULTY_SCHEDULE') || /\b(schedule|timetable)\b/.test(normQ);
+  const wantsDesignation = intents.includes('FACULTY_DESIGNATION') || /\b(designation|title|post|position|role)\b/.test(normQ);
 
   const bldgId = fac.nodeId || (
     fac.primaryBuilding?.toLowerCase().includes('lhc') ? 'block-lhc' :
@@ -615,64 +616,79 @@ export function getFacultyAnswer(
     fac.primaryBuilding?.toLowerCase().includes('apex') ? 'block-apex' : 'block-lhc'
   );
 
-  // Multi-Intent: Email AND Location
-  if (wantsEmail && wantsLocation) {
-    const locText = liveInfo.activeEvent
-      ? `${liveInfo.liveLocation} (${liveInfo.activeEvent})`
-      : `Cabin: ${fac.cabinLocation}`;
+  // 1. Designation Only
+  if (wantsDesignation && !wantsEmail && !wantsLocation) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
-      intents: ['FACULTY_EMAIL', 'FACULTY_LOCATION'],
-      responseText: `${fac.name}\n${fac.designation} — ${fac.department}\n\n📍 Location: ${locText}\n📧 Email: ${fac.email || 'N/A'}\n🟢 Live Status: ${liveInfo.liveStatus}`,
-      subText: `Cabin: ${fac.cabinLocation} (${fac.primaryBuilding || 'LHC Block'})`,
+      intents: ['FACULTY_DESIGNATION'],
+      responseText: `${fac.name}\n${fac.designation}, ${fac.department}`,
+      subText: `Verified from official MSRIT faculty registry.`,
       matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // Single-Intent: Email
-  if (wantsEmail) {
+  // 2. Email Only
+  if (wantsEmail && !wantsLocation) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_EMAIL'],
-      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📧 Email: ${fac.email || 'N/A'}`,
+      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📧 ${fac.email || 'N/A'}`,
       subText: `Cabin: ${fac.cabinLocation}`,
       matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // Single-Intent: Location / Cabin
-  if (wantsLocation) {
+  // 3. Location / Cabin Only
+  if (wantsLocation && !wantsEmail) {
+    const locText = liveInfo.activeEvent
+      ? `${liveInfo.liveLocation} (${liveInfo.activeEvent})`
+      : fac.cabinLocation;
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_LOCATION'],
-      responseText: `${fac.name} is in their cabin at ${fac.cabinLocation}.\nLive Location: ${liveInfo.liveLocation || fac.cabinLocation}.`,
-      subText: `Status: ${liveInfo.liveStatus} • Building: ${fac.primaryBuilding || 'LHC Block'}.`,
+      responseText: `${fac.name}\n📍 ${locText}`,
+      subText: `Building: ${fac.primaryBuilding || 'LHC Block'} • Status: ${liveInfo.liveStatus}`,
       matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // Single-Intent: Availability
+  // 4. Multi-Intent: Email AND Location
+  if (wantsEmail && wantsLocation) {
+    const locText = liveInfo.activeEvent
+      ? `${liveInfo.liveLocation} (${liveInfo.activeEvent})`
+      : fac.cabinLocation;
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['FACULTY_EMAIL', 'FACULTY_LOCATION'],
+      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📍 ${locText}\n📧 ${fac.email || 'N/A'}`,
+      subText: `Building: ${fac.primaryBuilding || 'LHC Block'}`,
+      matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+      actionTargetId: bldgId
+    };
+  }
+
+  // 5. Availability Only
   if (wantsAvailability) {
+    const statusIcon = liveInfo.liveStatus === 'Available for Consultation' ? '🟢' : '🔴';
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_AVAILABILITY'],
-      responseText: liveInfo.liveStatus === 'Available for Consultation'
-        ? `Yes, ${fac.name} is available for consultation right now in ${fac.cabinLocation}.`
-        : `${fac.name} is currently ${liveInfo.liveStatus} in ${liveInfo.liveLocation || 'class'}.\nExpected free: ${liveInfo.liveNextAvailableTime}.`,
-      subText: `Department: ${fac.department} • Cabin: ${fac.cabinLocation}`,
+      responseText: `${fac.name}\n${statusIcon} ${liveInfo.liveStatus}\nCabin: ${fac.cabinLocation}`,
+      subText: `Department: ${fac.department}`,
       matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // Single-Intent: Schedule
+  // 6. Schedule Only
   if (wantsSchedule) {
     const schedList = (fac.todaySchedule && fac.todaySchedule.length > 0)
       ? fac.todaySchedule.map((s) => `• ${s.time}: ${s.event} (${s.room})`).join('\n')
@@ -689,12 +705,12 @@ export function getFacultyAnswer(
     };
   }
 
-  // Default Faculty Profile Response
+  // 7. General Detailed Faculty Inquiry ("Tell me about Dr Sumana")
   return {
     queryText: rawQuery,
     normalizedQuery: normQ,
     intents: ['FACULTY_SEARCH'],
-    responseText: `${fac.name}\n${fac.designation} — ${fac.department}\n\n📍 Cabin: ${fac.cabinLocation}\n📧 Email: ${fac.email || 'N/A'}\n🟢 Live Status: ${liveInfo.liveStatus}`,
+    responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📍 Cabin: ${fac.cabinLocation}\n📧 ${fac.email || 'N/A'}\n🟢 Live Status: ${liveInfo.liveStatus}`,
     subText: `Building: ${fac.primaryBuilding || 'LHC Block'}`,
     matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
     actionTargetId: bldgId
