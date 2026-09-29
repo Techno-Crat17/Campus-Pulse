@@ -300,14 +300,17 @@ export async function seedDatabase() {
     console.log(`✅ Seeded ${LIBRARIES.length} libraries (ESB, LHC, Apex).`);
 
     // 3. Initial Occupancy
-    const initialOccupancies = [
-      { libraryId: 'esb_main_library', occupancyPercentage: 45, source: 'estimated' },
-      { libraryId: 'lhc_unit_2_library', occupancyPercentage: 62, source: 'estimated' },
-    ];
-    for (const occ of initialOccupancies) {
-      await LibraryOccupancy.create(occ);
+    const countOccupancies = await LibraryOccupancy.countDocuments();
+    if (countOccupancies === 0) {
+      const initialOccupancies = [
+        { libraryId: 'esb_main_library', occupancyPercentage: 45, source: 'estimated' },
+        { libraryId: 'lhc_unit_2_library', occupancyPercentage: 62, source: 'estimated' },
+      ];
+      for (const occ of initialOccupancies) {
+        await LibraryOccupancy.create(occ);
+      }
+      console.log(`✅ Seeded initial library occupancies.`);
     }
-    console.log(`✅ Seeded initial library occupancies.`);
 
     // 4. Seed Buildings
     const buildingOps = VERIFIED_BUILDINGS.map((bldg) => ({

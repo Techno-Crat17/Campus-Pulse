@@ -6,10 +6,11 @@ export function getHealth(req, res) {
   const dbStatus = dbState === 1 ? 'connected' : dbState === 2 ? 'connecting' : 'disconnected';
 
   return successResponse(res, {
+    status: dbState === 1 ? 'ok' : 'degraded',
+    database: dbStatus,
     service: 'Campus Pulse API',
-    status: 'healthy',
     uptimeSeconds: Math.floor(process.uptime()),
-    database: {
+    databaseDetails: {
       status: dbStatus,
       name: mongoose.connection.name || 'campuspulse'
     },

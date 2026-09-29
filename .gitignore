@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules/
 server/node_modules/
 
+# Local persistent database storage
+server/data/
+
 # Production build outputs
 dist/
 dist-ssr/
