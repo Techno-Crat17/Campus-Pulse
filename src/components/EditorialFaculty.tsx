@@ -325,7 +325,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   onChange={(e) => setSelectedDept(e.target.value)}
                   className="bg-white border border-[#111111]/30 px-3 py-1.5 text-xs font-mono text-[#111111] uppercase focus:outline-none focus:border-[#DC2626] cursor-pointer"
                 >
-                  <option value="ALL">ALL DEPARTMENTS ({facultyData.length})</option>
+                  <option value="ALL">ALL DEPARTMENTS ({availableDepartments.length})</option>
                   {availableDepartments.map((dept) => (
                     <option key={dept} value={dept}>
                       {dept} ({deptCounts[dept] || 0} FACULTY)
@@ -352,7 +352,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                 : 'bg-white text-[#666660] border-[#111111]/20 hover:border-[#DC2626] hover:text-[#DC2626]'
             }`}
           >
-            ALL DEPARTMENTS ({facultyData.length})
+            ALL DEPARTMENTS ({availableDepartments.length})
           </button>
           {availableDepartments.map((dept) => (
             <button
