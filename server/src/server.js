@@ -16,16 +16,11 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    await connectDB();
-    if (process.env.SKIP_SEED !== 'true') {
-      await seedDatabase();
-    }
-
-    const server = app.listen(PORT, () => {
-      console.log(`[Server] Running on port ${PORT}`);
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[Server] Running on 0.0.0.0:${PORT}`);
       console.log(`==================================================`);
       console.log(`🚀 Campus Pulse REST API Server is running!`);
-      console.log(`🌍 Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`🌍 Health Check: http://0.0.0.0:${PORT}/api/health`);
       console.log(`⚡ Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`==================================================`);
     });
@@ -39,6 +34,17 @@ async function startServer() {
       }
       process.exit(1);
     });
+
+    // Asynchronously connect to MongoDB Atlas & seed data if needed
+    connectDB()
+      .then(() => {
+        if (process.env.SKIP_SEED !== 'true') {
+          return seedDatabase();
+        }
+      })
+      .catch((err) => {
+        console.error('[Server] Non-fatal database initialization warning:', err.message);
+      });
   } catch (err) {
     console.error('Fatal error starting server:', err.message);
     process.exit(1);

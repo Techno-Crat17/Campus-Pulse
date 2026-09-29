@@ -63,6 +63,19 @@ app.use('/api', async (req, res, next) => {
   }
 });
 
+// Root & Health Root Endpoint Handlers
+app.get('/', (req, res) => {
+  return res.status(200).json({
+    success: true,
+    message: 'Campus Pulse API is running',
+    health: '/api/health'
+  });
+});
+
+app.get('/health', (req, res) => {
+  return res.redirect('/api/health');
+});
+
 // API Routes Mounting
 app.use('/api/health', healthRoutes);
 app.use('/api/faculty', facultyRoutes);
