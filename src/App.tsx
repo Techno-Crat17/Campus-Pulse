@@ -7,6 +7,7 @@ import { EditorialRecommender } from './components/EditorialRecommender';
 import { EditorialFaculty } from './components/EditorialFaculty';
 import { EditorialIssues } from './components/EditorialIssues';
 import { EditorialLostFound } from './components/EditorialLostFound';
+import { EditorialOthers } from './components/EditorialOthers';
 import { EditorialFooter } from './components/EditorialFooter';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -87,6 +88,9 @@ export function App() {
 
         {/* Section 07 — LOST & FOUND (Community Recovery Telemetry) */}
         <EditorialLostFound />
+
+        {/* Section 08 — OTHERS (Campus Utilities & Resources) */}
+        <EditorialOthers onNavigateSection={scrollToSection} />
 
         {/* Final Section & Footer */}
         <EditorialFooter

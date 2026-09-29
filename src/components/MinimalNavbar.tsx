@@ -21,6 +21,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
       const scrollPosition = window.scrollY + window.innerHeight * 0.35;
       
       const sections = [
+        { id: 'sec-others', navId: 'sec-others' },
         { id: 'sec-lostfound', navId: 'sec-lostfound' },
         { id: 'sec-report', navId: 'sec-report' },
         { id: 'sec-faculty', navId: 'sec-faculty' },
@@ -65,6 +66,7 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
     { id: 'sec-faculty', label: '05 / FACULTY' },
     { id: 'sec-report', label: '06 / ISSUES' },
     { id: 'sec-lostfound', label: '07 / LOST & FOUND' },
+    { id: 'sec-others', label: '08 / OTHERS' },
   ];
 
   const handleNavClick = (id: string) => {
