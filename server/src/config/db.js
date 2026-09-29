@@ -18,32 +18,48 @@ try {
   // Ignore fallback error if environment restricts setting custom DNS servers
 }
 
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
 export async function connectDB() {
   const uri = process.env.MONGODB_URI;
 
   if (!uri) {
     console.error('[Database] Connection Error: MONGODB_URI environment variable is not set.');
-    console.error('[Database] Please define MONGODB_URI in server/.env or hosting environment variables.');
-    process.exit(1);
+    throw new Error('MONGODB_URI environment variable is not set.');
   }
 
-  try {
+  if (cached.conn && mongoose.connection.readyState === 1) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
     const isAtlas = uri.includes('mongodb+srv://');
     const safeHostDb = isAtlas
       ? 'MongoDB Atlas'
       : uri.replace(/^mongodb:\/\//, '').split('@').pop().split('?')[0];
 
-    await mongoose.connect(uri, {
+    cached.promise = mongoose.connect(uri, {
       serverSelectionTimeoutMS: 8000
+    }).then((m) => {
+      console.log(`[Database] Connected to ${isAtlas ? 'MongoDB Atlas' : 'MongoDB'}`);
+      console.log(`[Database] Connection Target: ${safeHostDb}`);
+      console.log(`[Database] Database: ${m.connection.name || 'campuspulse'}`);
+      return m;
     });
-
-    console.log(`[Database] Connected to ${isAtlas ? 'MongoDB Atlas' : 'MongoDB'}`);
-    console.log(`[Database] Connection Target: ${safeHostDb}`);
-    console.log(`[Database] Database: ${mongoose.connection.name || 'campuspulse'}`);
-  } catch (err) {
-    console.error(`[Database] Connection Error: Unable to connect to MongoDB.`);
-    console.error(`[Database] Error Details: ${err.message}`);
-    console.error('[Database] Terminating backend process.');
-    process.exit(1);
   }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (err) {
+    cached.promise = null;
+    console.error('[Database] Connection Error: Unable to connect to MongoDB.');
+    console.error(`[Database] Error Details: ${err.message}`);
+    throw err;
+  }
+
+  return cached.conn;
 }
