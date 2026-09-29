@@ -20,8 +20,7 @@ import {
   type CampusLibrary,
   getLibraryOccupancyDetails,
   formatOccupancy,
-  isLibraryOpen,
-  DIGITAL_LIBRARY
+  isLibraryOpen
 } from '../data/libraryData';
 import { useTimeContext } from '../context/TimeContext';
 
@@ -528,37 +527,6 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
           </div>
         )}
 
-        {/* Digital Library & Official MSRIT Information Footnote Banner */}
-        <div className="bg-white border border-[#111111]/15 p-6 sm:p-8 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 shadow-2xs">
-          <div className="space-y-2 max-w-3xl">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] font-mono text-[10px] font-bold uppercase tracking-wider border border-[#DC2626]/20">
-                OFFICIAL MSRIT REPOSITORY
-              </span>
-              <span className="font-mono text-xs text-[#666660]">
-                Source: {DIGITAL_LIBRARY.sourceUrl}
-              </span>
-            </div>
-            <h4 className="font-syne text-lg font-bold text-[#111111] uppercase tracking-tight">
-              MSRIT Digital Library & E-Resource Consortiums
-            </h4>
-            <p className="font-mono text-xs text-[#666660] leading-relaxed">
-              Official institutional access to online e-journals & digital literature from{' '}
-              <span className="font-bold text-[#111111]">Elsevier ScienceDirect, IEEE, Taylor & Francis, and SpringerLink</span>. Active member of national networks including{' '}
-              <span className="font-bold text-[#111111]">DELNET, CMTI, and VTU E-Library</span>.
-            </p>
-          </div>
-
-          <a
-            href="https://www.msrit.edu/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="shrink-0 px-4 py-2.5 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs font-bold uppercase inline-flex items-center gap-2 transition-colors shadow-2xs"
-          >
-            <span>OFFICIAL MSRIT PORTAL</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        </div>
 
       </div>
 

@@ -234,7 +234,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                     </a>
                   </div>
                   <div className="text-[11px] text-[#666660]">
-                    NODE: <span className="font-bold text-[#111111]">{fac.nodeId}</span> • SOURCE: <span className="font-bold text-[#111111]">FACULTY_MSRIT_DYNAMIC.JSON</span>
+                    NODE: <span className="font-bold text-[#111111]">{fac.nodeId}</span> • SOURCE: <span className="font-bold text-[#111111]">MSRIT FACULTY DIRECTORY</span>
                   </div>
                 </div>
 
@@ -280,11 +280,8 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
       <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
         {/* Section Label */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold">
           <span>SECTION 05 // DYNAMIC FACULTY TELEMETRY</span>
-          <span className="text-[#111111] bg-[#111111]/5 px-3 py-1 border border-[#111111]/15 self-start sm:self-auto text-[11px]">
-            DATASET: FACULTY_MSRIT_DYNAMIC.JSON ({facultyData.length} RECORDS)
-          </span>
         </div>
 
         {/* Section Heading & Search / Department Filters */}
