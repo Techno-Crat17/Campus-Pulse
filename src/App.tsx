@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { MinimalNavbar } from './components/MinimalNavbar';
 import { EditorialHero } from './components/EditorialHero';
-import { EditorialStatement } from './components/EditorialStatement';
 import { EditorialAssistant } from './components/EditorialAssistant';
 import { EditorialOccupancy } from './components/EditorialOccupancy';
 import { GoogleMapsCampusExplorer } from './components/GoogleMapsCampusExplorer';
@@ -53,11 +52,8 @@ export function App() {
         {/* 01. Editorial Hero */}
         <EditorialHero
           onAskClick={() => scrollToSection('sec-ask')}
-          onExploreClick={() => scrollToSection('sec-problem')}
+          onExploreClick={() => scrollToSection('sec-ask')}
         />
-
-        {/* Section 01 — THE PROBLEM */}
-        <EditorialStatement />
 
         {/* Section 02 — ASK (AI Assistant) */}
         <EditorialAssistant

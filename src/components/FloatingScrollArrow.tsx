@@ -10,7 +10,7 @@ interface FloatingScrollArrowProps {
 
 export const FloatingScrollArrow: React.FC<FloatingScrollArrowProps> = ({
   threshold = 280,
-  mainContentId = 'sec-problem'
+  mainContentId = 'sec-ask'
 }) => {
   const [isNearTop, setIsNearTop] = useState(true);
 
