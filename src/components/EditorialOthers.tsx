@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Megaphone,
   Calendar,
@@ -14,96 +14,100 @@ import {
   MapPin,
   AlertTriangle,
   Users,
-  Search
+  Search,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
+import { fetchAnnouncements, fetchEvents } from '../services/api';
 
 interface EditorialOthersProps {
   onNavigateSection: (sectionId: string) => void;
 }
 
-interface Announcement {
-  id: string;
+export interface AnnouncementItem {
   title: string;
-  category: 'Academic' | 'Placement' | 'Maintenance' | 'Events' | 'General';
   date: string;
-  summary: string;
-  details: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  location?: string | null;
+  description?: string | null;
+  sourceUrl: string;
+  source: string;
+  fetchedAt: string;
 }
 
-interface CampusEvent {
-  id: string;
-  name: string;
+export interface EventItem {
+  title: string;
   date: string;
-  time: string;
-  venue: string;
-  category: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  location?: string | null;
+  description?: string | null;
+  sourceUrl: string;
+  source: string;
+  fetchedAt: string;
 }
-
-const DEMO_ANNOUNCEMENTS: Announcement[] = [
-  {
-    id: 'ann-1',
-    title: 'Odd Semester Examination Timetable Published',
-    category: 'Academic',
-    date: '2026-09-28',
-    summary: 'The preliminary examination timetable for 3rd and 5th semester B.E. programs has been released.',
-    details: 'Students are advised to review the draft schedule published on the department notice board. Any overlapping paper requests must be submitted to the Controller of Examinations before Oct 5.'
-  },
-  {
-    id: 'ann-2',
-    title: 'Annual Campus Placement Drive — Phase I',
-    category: 'Placement',
-    date: '2026-09-25',
-    summary: 'Eligible 7th semester students must complete portal registration for Tier-1 technology companies.',
-    details: 'Registration closes on Friday at 17:00 IST. Ensure all CGPA records and resume details are updated on the placement portal.'
-  },
-  {
-    id: 'ann-3',
-    title: 'Scheduled Electrical Maintenance in ESB & LHC',
-    category: 'Maintenance',
-    date: '2026-09-22',
-    summary: 'Brief power disruptions expected on Saturday between 06:00 AM and 09:00 AM for transformer servicing.',
-    details: 'UPS backup power will remain active for critical server infrastructure. Lab activities will resume after 09:30 AM.'
-  },
-  {
-    id: 'ann-4',
-    title: 'Inter-College Technical Symposium "KLAUT 2026"',
-    category: 'Events',
-    date: '2026-09-20',
-    summary: 'Registrations are open for the annual hackathon and robotics competition hosted by IEEE Student Branch.',
-    details: 'Prizes worth ₹1,50,000 to be awarded across 6 tracks including AI/ML, Embedded Systems, and Web 3.0.'
-  }
-];
-
-const DEMO_EVENTS: CampusEvent[] = [
-  {
-    id: 'evt-1',
-    name: 'HackAI 2026 24-Hour Hackathon',
-    date: 'Oct 12, 2026',
-    time: '09:00 AM IST',
-    venue: 'Apex Block Auditorium',
-    category: 'Hackathon'
-  },
-  {
-    id: 'evt-2',
-    name: 'Guest Lecture: Advanced Autonomous Systems',
-    date: 'Oct 16, 2026',
-    time: '02:00 PM IST',
-    venue: 'LHC Seminar Hall 2',
-    category: 'Academic'
-  },
-  {
-    id: 'evt-3',
-    name: 'Ramaiah Annual Sports Meet',
-    date: 'Nov 04, 2026',
-    time: '08:30 AM IST',
-    venue: 'Campus Main Sports Ground',
-    category: 'Sports'
-  }
-];
 
 export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSection }) => {
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+  // Announcements State
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [announcementsLoading, setAnnouncementsLoading] = useState<boolean>(true);
+  const [announcementsError, setAnnouncementsError] = useState<string | null>(null);
+  const [announcementsLastFetched, setAnnouncementsLastFetched] = useState<string | null>(null);
+
+  // Events State
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [eventsLoading, setEventsLoading] = useState<boolean>(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+  const [eventsLastFetched, setEventsLastFetched] = useState<string | null>(null);
+
+  // Modals
   const [showAllAnnouncementsModal, setShowAllAnnouncementsModal] = useState<boolean>(false);
+  const [showAllEventsModal, setShowAllEventsModal] = useState<boolean>(false);
+
+  // Load News & Events from backend
+  const loadData = async () => {
+    setAnnouncementsLoading(true);
+    setEventsLoading(true);
+    setAnnouncementsError(null);
+    setEventsError(null);
+
+    try {
+      const annRes = await fetchAnnouncements();
+      if (annRes.success && Array.isArray(annRes.data) && annRes.data.length > 0) {
+        setAnnouncements(annRes.data);
+        if (annRes.lastFetched) {
+          setAnnouncementsLastFetched(new Date(annRes.lastFetched).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
+      } else {
+        setAnnouncementsError('No live announcements available at this time.');
+      }
+    } catch {
+      setAnnouncementsError('Failed to load announcements from backend.');
+    } finally {
+      setAnnouncementsLoading(false);
+    }
+
+    try {
+      const evtRes = await fetchEvents();
+      if (evtRes.success && Array.isArray(evtRes.data) && evtRes.data.length > 0) {
+        setEvents(evtRes.data);
+        if (evtRes.lastFetched) {
+          setEventsLastFetched(new Date(evtRes.lastFetched).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        }
+      } else {
+        setEventsError('No live events available at this time.');
+      }
+    } catch {
+      setEventsError('Failed to load events from backend.');
+    } finally {
+      setEventsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return (
     <section id="sec-others" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
@@ -114,7 +118,7 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
           <span>SECTION 08 // CAMPUS UTILITIES & RESOURCES</span>
           <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] bg-white dark:bg-[#1A1C24] px-3 py-1 border border-[#111111]/15 dark:border-white/15 text-[11px] self-start sm:self-auto">
             <Info className="w-3.5 h-3.5 text-[#DC2626]" />
-            <span>EXTENDED OPERATING LAYER</span>
+            <span>LIVE MSRIT DATA DISPATCH</span>
           </div>
         </div>
 
@@ -125,97 +129,195 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
               OTHERS.
             </h2>
             <h2 className="text-4xl sm:text-6xl font-syne text-[#DC2626] font-extrabold uppercase tracking-tighter leading-none">
-              UTILITIES & LINKS.
+              UTILITIES & LIVE FEEDS.
             </h2>
           </div>
           <p className="font-mono text-xs sm:text-sm text-[#666660] dark:text-[#9CA3AF] max-w-2xl">
-            Centralized portal for campus announcements, upcoming events, emergency contact information, quick links, and institutional references.
+            Real-time announcements and events fetched directly from the official MSRIT portal, paired with emergency contacts, quick links, and institutional references.
           </p>
         </div>
 
         {/* 7 Utility Cards Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-start pt-4 border-t border-[#111111]/10 dark:border-white/10">
           
-          {/* Card 1: 📢 Campus Announcements */}
+          {/* Card 1: 📢 Latest MSRIT News / Announcements */}
           <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all">
-            <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
-                <Megaphone className="w-4 h-4 text-[#DC2626]" />
-                <span>ANNOUNCEMENTS</span>
-              </div>
-              <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 text-[10px] font-bold uppercase">
-                DEMO / SAMPLE
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {DEMO_ANNOUNCEMENTS.slice(0, 3).map((ann) => (
-                <article
-                  key={ann.id}
-                  onClick={() => setSelectedAnnouncement(ann)}
-                  className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] cursor-pointer transition-all space-y-1.5 group"
+            <div className="flex flex-col space-y-1.5 border-b border-[#111111]/10 dark:border-white/10 pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
+                  <Megaphone className="w-4 h-4 text-[#DC2626]" />
+                  <span>LATEST MSRIT NEWS</span>
+                </div>
+                <button
+                  onClick={loadData}
+                  className="p-1 text-[#666660] hover:text-[#DC2626] dark:text-[#9CA3AF] transition-colors"
+                  title="Refresh MSRIT Live Feeds"
                 >
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="px-1.5 py-0.5 bg-[#111111] dark:bg-[#0E0F12] text-white font-bold uppercase text-[9px]">
-                      {ann.category}
-                    </span>
-                    <span className="text-[#666660] dark:text-[#9CA3AF]">{ann.date}</span>
-                  </div>
-                  <h4 className="font-syne font-bold text-xs text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
-                    {ann.title}
-                  </h4>
-                  <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] line-clamp-2">
-                    {ann.summary}
-                  </p>
-                </article>
-              ))}
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 font-bold uppercase">
+                  Live from MSRIT Official Website
+                </span>
+                {announcementsLastFetched && (
+                  <span className="text-[#666660] dark:text-[#9CA3AF]">
+                    Last updated: {announcementsLastFetched}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <button
-              onClick={() => setShowAllAnnouncementsModal(true)}
-              className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
-            >
-              <span>VIEW ALL ANNOUNCEMENTS ({DEMO_ANNOUNCEMENTS.length})</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
+            {/* Content List / Loader / Error */}
+            {announcementsLoading ? (
+              <div className="py-8 flex flex-col items-center justify-center space-y-2 text-[#666660] dark:text-[#9CA3AF]">
+                <Loader2 className="w-6 h-6 animate-spin text-[#DC2626]" />
+                <span className="text-[11px] uppercase tracking-wider">Fetching live MSRIT news...</span>
+              </div>
+            ) : announcementsError && announcements.length === 0 ? (
+              <div className="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-[11px] space-y-1">
+                <div className="font-bold uppercase">UNABLE TO REACH MSRIT FEED</div>
+                <p>{announcementsError}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {announcements.slice(0, 4).map((ann, idx) => (
+                  <article
+                    key={idx}
+                    className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-2 group"
+                  >
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="px-1.5 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold uppercase text-[9px]">
+                        OFFICIAL CIRCULAR
+                      </span>
+                      <span className="text-[#666660] dark:text-[#9CA3AF] font-bold">{ann.date}</span>
+                    </div>
+
+                    <h4 className="font-syne font-bold text-xs text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
+                      {ann.title}
+                    </h4>
+
+                    {ann.description && (
+                      <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] line-clamp-2 leading-relaxed">
+                        {ann.description}
+                      </p>
+                    )}
+
+                    <div className="pt-1 flex items-center justify-between border-t border-[#111111]/5 dark:border-white/5">
+                      <span className="text-[9px] text-[#888880] uppercase">Source: {ann.source}</span>
+                      <a
+                        href={ann.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-bold text-[#DC2626] hover:underline flex items-center gap-1 uppercase"
+                      >
+                        <span>READ MORE</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {announcements.length > 0 && (
+              <button
+                onClick={() => setShowAllAnnouncementsModal(true)}
+                className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>VIEW ALL MSRIT ANNOUNCEMENTS ({announcements.length})</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
-          {/* Card 2: 📅 Campus Events */}
+          {/* Card 2: 📅 Latest MSRIT Events */}
           <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all">
-            <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
-                <Calendar className="w-4 h-4 text-[#DC2626]" />
-                <span>UPCOMING EVENTS</span>
-              </div>
-              <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 text-[10px] font-bold uppercase">
-                DEMO / SAMPLE
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {DEMO_EVENTS.map((evt) => (
-                <div
-                  key={evt.id}
-                  className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-1.5"
-                >
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-[#DC2626] font-bold uppercase">{evt.category}</span>
-                    <span className="text-[#666660] dark:text-[#9CA3AF]">{evt.date}</span>
-                  </div>
-                  <h4 className="font-syne font-bold text-xs text-[#111111] dark:text-[#F3F3EE]">
-                    {evt.name}
-                  </h4>
-                  <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF] flex flex-wrap gap-2 pt-1 border-t border-[#111111]/5 dark:border-white/5">
-                    <span>🕒 {evt.time}</span>
-                    <span>📍 {evt.venue}</span>
-                  </div>
+            <div className="flex flex-col space-y-1.5 border-b border-[#111111]/10 dark:border-white/10 pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
+                  <Calendar className="w-4 h-4 text-[#DC2626]" />
+                  <span>LATEST MSRIT EVENTS</span>
                 </div>
-              ))}
+                <button
+                  onClick={loadData}
+                  className="p-1 text-[#666660] hover:text-[#DC2626] dark:text-[#9CA3AF] transition-colors"
+                  title="Refresh MSRIT Live Feeds"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <div className="flex items-center justify-between text-[10px]">
+                <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 font-bold uppercase">
+                  Live from MSRIT Official Website
+                </span>
+                {eventsLastFetched && (
+                  <span className="text-[#666660] dark:text-[#9CA3AF]">
+                    Last updated: {eventsLastFetched}
+                  </span>
+                )}
+              </div>
             </div>
 
-            <p className="text-[10px] text-[#888880] italic">
-              Notice: Listed events are sample demonstration entries. Official schedules are published on college notice boards.
-            </p>
+            {/* Content List / Loader / Error */}
+            {eventsLoading ? (
+              <div className="py-8 flex flex-col items-center justify-center space-y-2 text-[#666660] dark:text-[#9CA3AF]">
+                <Loader2 className="w-6 h-6 animate-spin text-[#DC2626]" />
+                <span className="text-[11px] uppercase tracking-wider">Fetching live MSRIT events...</span>
+              </div>
+            ) : eventsError && events.length === 0 ? (
+              <div className="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-[11px] space-y-1">
+                <div className="font-bold uppercase">UNABLE TO REACH MSRIT FEED</div>
+                <p>{eventsError}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {events.slice(0, 4).map((evt, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-2"
+                  >
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="text-[#DC2626] font-bold uppercase">📍 {evt.location}</span>
+                      <span className="text-[#111111] dark:text-[#F3F3EE] font-bold">{evt.date}</span>
+                    </div>
+
+                    <h4 className="font-syne font-bold text-xs text-[#111111] dark:text-[#F3F3EE] leading-tight">
+                      {evt.title}
+                    </h4>
+
+                    {evt.startDate && (
+                      <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
+                        Duration / Schedule: <strong className="text-[#111111] dark:text-[#F3F3EE]">{evt.startDate}</strong>
+                      </div>
+                    )}
+
+                    <div className="pt-1 flex items-center justify-between border-t border-[#111111]/5 dark:border-white/5">
+                      <span className="text-[9px] text-[#888880] uppercase">Source: {evt.source}</span>
+                      <a
+                        href={evt.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-bold text-[#DC2626] hover:underline flex items-center gap-1 uppercase"
+                      >
+                        <span>READ MORE</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {events.length > 0 && (
+              <button
+                onClick={() => setShowAllEventsModal(true)}
+                className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>VIEW ALL MSRIT EVENTS ({events.length})</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Card 3: 🆘 Emergency Contacts */}
@@ -449,55 +551,14 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
 
       </div>
 
-      {/* Modal: View Selected Announcement Details */}
-      {selectedAnnouncement && (
-        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1A1C24] border-2 border-[#111111] dark:border-white/20 max-w-lg w-full p-6 space-y-4 font-mono text-xs shadow-2xl relative animate-in fade-in">
-            <div className="flex items-start justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 gap-2">
-              <div>
-                <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold uppercase text-[10px]">
-                  {selectedAnnouncement.category}
-                </span>
-                <span className="ml-2 text-[10px] text-[#666660] dark:text-[#9CA3AF]">{selectedAnnouncement.date}</span>
-              </div>
-              <button
-                onClick={() => setSelectedAnnouncement(null)}
-                className="p-1 hover:bg-[#111111]/10 text-[#666660] dark:text-[#9CA3AF] hover:text-[#111111] dark:hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <h3 className="font-syne font-extrabold text-lg text-[#111111] dark:text-[#F3F3EE] uppercase leading-tight">
-              {selectedAnnouncement.title}
-            </h3>
-
-            <p className="text-[#111111] dark:text-[#F3F3EE] leading-relaxed border-t border-b border-[#111111]/5 dark:border-white/5 py-3">
-              {selectedAnnouncement.details}
-            </p>
-
-            <div className="text-[10px] text-[#DC2626] font-bold uppercase">
-              DEMO / SAMPLE ANNOUNCEMENT ENTRY
-            </div>
-
-            <button
-              onClick={() => setSelectedAnnouncement(null)}
-              className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-xs uppercase"
-            >
-              CLOSE NOTICE
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Modal: View All Announcements List */}
       {showAllAnnouncementsModal && (
         <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1A1C24] border-2 border-[#111111] dark:border-white/20 max-w-2xl w-full p-6 space-y-4 font-mono text-xs shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-white dark:bg-[#1A1C24] border-2 border-[#111111] dark:border-white/20 max-w-3xl w-full p-6 space-y-4 font-mono text-xs shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
               <div className="flex items-center gap-2 font-bold text-sm text-[#111111] dark:text-[#F3F3EE] uppercase font-syne">
                 <Megaphone className="w-4 h-4 text-[#DC2626]" />
-                <span>ALL CAMPUS ANNOUNCEMENTS ({DEMO_ANNOUNCEMENTS.length})</span>
+                <span>ALL LIVE MSRIT ANNOUNCEMENTS ({announcements.length})</span>
               </div>
               <button
                 onClick={() => setShowAllAnnouncementsModal(false)}
@@ -508,23 +569,37 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
             </div>
 
             <div className="space-y-3">
-              {DEMO_ANNOUNCEMENTS.map((ann) => (
+              {announcements.map((ann, idx) => (
                 <div
-                  key={ann.id}
+                  key={idx}
                   className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-2"
                 >
                   <div className="flex items-center justify-between text-[10px]">
                     <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold uppercase text-[9px]">
-                      {ann.category}
+                      OFFICIAL CIRCULAR
                     </span>
-                    <span className="text-[#666660] dark:text-[#9CA3AF]">{ann.date}</span>
+                    <span className="text-[#666660] dark:text-[#9CA3AF] font-bold">{ann.date}</span>
                   </div>
                   <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE]">
                     {ann.title}
                   </h4>
-                  <p className="text-xs text-[#666660] dark:text-[#9CA3AF] leading-relaxed">
-                    {ann.details}
-                  </p>
+                  {ann.description && (
+                    <p className="text-xs text-[#666660] dark:text-[#9CA3AF] leading-relaxed">
+                      {ann.description}
+                    </p>
+                  )}
+                  <div className="pt-2 flex items-center justify-between border-t border-[#111111]/5 dark:border-white/5">
+                    <span className="text-[10px] text-[#888880]">Source: {ann.source}</span>
+                    <a
+                      href={ann.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 bg-[#111111] dark:bg-[#DC2626] text-white text-[10px] font-bold uppercase flex items-center gap-1"
+                    >
+                      <span>READ MORE</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
@@ -534,6 +609,67 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
               className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-xs uppercase"
             >
               CLOSE ANNOUNCEMENTS INDEX
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: View All Events List */}
+      {showAllEventsModal && (
+        <div className="fixed inset-0 z-[999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#1A1C24] border-2 border-[#111111] dark:border-white/20 max-w-3xl w-full p-6 space-y-4 font-mono text-xs shadow-2xl relative max-h-[85vh] overflow-y-auto custom-scrollbar">
+            <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
+              <div className="flex items-center gap-2 font-bold text-sm text-[#111111] dark:text-[#F3F3EE] uppercase font-syne">
+                <Calendar className="w-4 h-4 text-[#DC2626]" />
+                <span>ALL LIVE MSRIT EVENTS ({events.length})</span>
+              </div>
+              <button
+                onClick={() => setShowAllEventsModal(false)}
+                className="p-1 hover:bg-[#111111]/10 text-[#666660] dark:text-[#9CA3AF] hover:text-[#111111] dark:hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {events.map((evt, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-2"
+                >
+                  <div className="flex items-center justify-between text-[10px]">
+                    <span className="text-[#DC2626] font-bold uppercase">📍 {evt.location}</span>
+                    <span className="text-[#111111] dark:text-[#F3F3EE] font-bold">{evt.date}</span>
+                  </div>
+                  <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE]">
+                    {evt.title}
+                  </h4>
+                  {evt.startDate && (
+                    <div className="text-xs text-[#666660] dark:text-[#9CA3AF]">
+                      Duration / Schedule: <strong className="text-[#111111] dark:text-[#F3F3EE]">{evt.startDate}</strong>
+                    </div>
+                  )}
+                  <div className="pt-2 flex items-center justify-between border-t border-[#111111]/5 dark:border-white/5">
+                    <span className="text-[10px] text-[#888880]">Source: {evt.source}</span>
+                    <a
+                      href={evt.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 bg-[#111111] dark:bg-[#DC2626] text-white text-[10px] font-bold uppercase flex items-center gap-1"
+                    >
+                      <span>READ MORE</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowAllEventsModal(false)}
+              className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-xs uppercase"
+            >
+              CLOSE EVENTS INDEX
             </button>
           </div>
         </div>

@@ -6,6 +6,7 @@ import { Issue } from '../models/Issue.js';
 import { calculateFacultyDynamicStatus } from './facultyStatusService.js';
 import { calculateEstimatedOccupancy, isLibraryOpen } from './occupancyService.js';
 import { normalizeRoomNumber } from '../utils/roomUtils.js';
+import { getLiveAnnouncements, getLiveEvents } from './msritService.js';
 
 // In-memory short-lived session context store
 const sessionContextStore = new Map();
@@ -52,6 +53,32 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
 
   if (/(it|that library|the library)/i.test(query) && context.lastLibraryId) {
     resolvedLibraryId = context.lastLibraryId;
+  }
+
+  // 0.5. MSRIT ANNOUNCEMENTS & EVENTS QUERY PATTERNS
+  const isAnnouncementQuery = lower.includes('announcement') || lower.includes('news') || lower.includes('circular') || lower.includes('timetable') || lower.includes('notification');
+  const isEventQuery = lower.includes('event') || lower.includes('symposium') || lower.includes('workshop') || lower.includes('fresher') || lower.includes('graduation');
+
+  if (isAnnouncementQuery) {
+    const result = await getLiveAnnouncements();
+    const list = (result.data || []).slice(0, 3);
+    if (list.length > 0) {
+      const itemsText = list.map((a, i) => `${i + 1}. "${a.title}" (${a.date})`).join('; ');
+      const ans = `Latest MSRIT Announcements (Source: ${result.source}, Updated: ${new Date(result.lastFetched).toLocaleTimeString()}): ${itemsText}. Total ${result.data.length} official announcements tracked.`;
+      return { intent: 'ANNOUNCEMENT_QUERY', answer: ans, data: { announcements: list, source: result.source, lastFetched: result.lastFetched } };
+    }
+    return { intent: 'ANNOUNCEMENT_QUERY', answer: 'No live MSRIT announcements are currently available from the official website.', data: null };
+  }
+
+  if (isEventQuery) {
+    const result = await getLiveEvents();
+    const list = (result.data || []).slice(0, 3);
+    if (list.length > 0) {
+      const itemsText = list.map((e, i) => `${i + 1}. "${e.title}" (${e.date}, Location: ${e.location})`).join('; ');
+      const ans = `Latest MSRIT Events (Source: ${result.source}, Updated: ${new Date(result.lastFetched).toLocaleTimeString()}): ${itemsText}. Total ${result.data.length} official events tracked.`;
+      return { intent: 'EVENT_QUERY', answer: ans, data: { events: list, source: result.source, lastFetched: result.lastFetched } };
+    }
+    return { intent: 'EVENT_QUERY', answer: 'No live MSRIT events are currently available from the official website.', data: null };
   }
 
   // 1. FACULTY QUERY PATTERNS

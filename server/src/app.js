@@ -17,6 +17,8 @@ import adminRoutes from './routes/adminRoutes.js';
 import searchRoutes from './routes/searchRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import announcementRoutes from './routes/announcementRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
 
 import { connectDB } from './config/db.js';
 
@@ -91,6 +93,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/events', eventRoutes);
 
 // 404 Route Handler
 app.use((req, res) => {
