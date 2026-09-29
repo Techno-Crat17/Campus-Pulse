@@ -10,7 +10,7 @@
     "server": "node server/src/server.js",
     "seed": "node server/src/data/seed.js",
     "start": "node server/src/server.js",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && cp dist/assets/index.js public/assets/index.js && cp dist/assets/index.css public/assets/index.css",
     "lint": "oxlint",
     "preview": "vite preview"
   },

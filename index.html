@@ -45,16 +45,17 @@
     <script>
       // Self-healing fallback for GitHub Pages branch deployments (e.g. main / root)
       if (typeof window !== 'undefined' && !window.__CAMPUS_PULSE_MOUNTED__ && window.location.hostname.includes('github.io')) {
+        var v = 'v=' + Date.now();
         var link = document.createElement('link');
         link.rel = 'stylesheet';
         link.crossOrigin = 'anonymous';
-        link.href = '/Campus-Pulse/assets/index.css';
+        link.href = '/Campus-Pulse/assets/index.css?' + v;
         document.head.appendChild(link);
 
         var script = document.createElement('script');
         script.type = 'module';
         script.crossOrigin = 'anonymous';
-        script.src = '/Campus-Pulse/assets/index.js';
+        script.src = '/Campus-Pulse/assets/index.js?' + v;
         document.body.appendChild(script);
       }
     </script>
