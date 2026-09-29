@@ -50,12 +50,22 @@
         link.rel = 'stylesheet';
         link.crossOrigin = 'anonymous';
         link.href = '/Campus-Pulse/assets/index.css?' + v;
+        link.onerror = function() {
+          this.href = '/Campus-Pulse/public/assets/index.css?' + v;
+        };
         document.head.appendChild(link);
 
         var script = document.createElement('script');
         script.type = 'module';
         script.crossOrigin = 'anonymous';
         script.src = '/Campus-Pulse/assets/index.js?' + v;
+        script.onerror = function() {
+          var fallback = document.createElement('script');
+          fallback.type = 'module';
+          fallback.crossOrigin = 'anonymous';
+          fallback.src = '/Campus-Pulse/public/assets/index.js?' + v;
+          document.body.appendChild(fallback);
+        };
         document.body.appendChild(script);
       }
     </script>

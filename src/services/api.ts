@@ -483,7 +483,7 @@ function fallbackGetIssues(filters: Record<string, string>) {
   return list;
 }
 
-function fallbackCreateIssue(data: any) {
+export function fallbackCreateIssue(data: any) {
   return {
     id: `iss-local-${Date.now()}`,
     ...data,

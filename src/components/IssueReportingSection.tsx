@@ -4,7 +4,7 @@ import { AlertTriangle, ThumbsUp, CheckCircle2, MapPin, Camera } from 'lucide-re
 import confetti from 'canvas-confetti';
 import { INITIAL_ISSUES, BUILDINGS_DATA } from '../data/campusData';
 import type { CampusIssue } from '../data/campusData';
-import { createIssue, fetchIssues } from '../services/api';
+import { createIssue } from '../services/api';
 
 export const IssueReportingSection: React.FC = () => {
   const [issues, setIssues] = useState<CampusIssue[]>(INITIAL_ISSUES);
