@@ -5,7 +5,6 @@ import {
   Layers,
   AlertCircle,
   Compass,
-  CheckCircle2,
   BookOpen,
   Users,
   Building2,
@@ -842,17 +841,9 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
       <div id="sec-map-explore" className="max-w-[1700px] mx-auto space-y-10">
         
         {/* Section Header Breadcrumb */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Compass className="w-4 h-4 text-[#DC2626]" />
-            <span>SECTION 04 // REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER</span>
-          </div>
-          <div className="flex items-center gap-2 text-[#111111] bg-white px-3 py-1.5 border border-[#111111]/15 shadow-xs">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>
-              EXACT 4-CORNER GEOMETRY // 8 VERIFIED CAMPUS BLOCKS // NO FAKE COORDINATES
-            </span>
-          </div>
+        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
+          <Compass className="w-4 h-4 text-[#DC2626]" />
+          <span>SECTION 04 // REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER</span>
         </div>
 
         {/* Section Title & Map Controls */}
@@ -864,12 +855,9 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
             <h2 className="text-4xl sm:text-6xl font-syne text-[#DC2626] font-extrabold uppercase tracking-tighter leading-none">
               BLOCK MAP.
             </h2>
-            <p className="font-mono text-xs text-[#666660] mt-3">
-              Real Google Maps JavaScript API satellite layer • Exact survey corner coordinates • Collision-free polygon label cards
-            </p>
           </div>
 
-          <div className="lg:col-span-5 space-y-3 font-mono text-xs lg:text-right">
+          <div className="lg:col-span-5 font-mono text-xs lg:text-right">
             {/* Google Map Type Switcher */}
             <div className="flex items-center lg:justify-end gap-2">
               <Layers className="w-4 h-4 text-[#DC2626]" />
@@ -889,10 +877,6 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div className="text-[11px] text-[#888880]">
-              PROJECTION: Real WGS-84 Geographic Coordinates (Lat, Lng)
             </div>
           </div>
         </div>
@@ -958,19 +942,6 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
               <span className="w-2 h-2 rounded-full border border-gray-400 bg-gray-300" />
               <span>CRD (NON-GEOGRAPHIC)</span>
             </button>
-          </div>
-
-          {/* Color Legend & Scheme */}
-          <div className="flex items-center gap-4 overflow-x-auto text-[10px] font-mono text-[#666660] py-1 no-scrollbar">
-            <span className="font-bold text-[#111111] uppercase shrink-0">CAMPUS PULSE COLOR SPECIFICATION:</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-yellow-400 border border-black/30" /> LHC → Yellow</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-orange-500 border border-black/30" /> DES → Orange</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-cyan-400 border border-black/30" /> Apex → Cyan</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-purple-500 border border-black/30" /> Multipurpose → Purple</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-red-500 border border-black/30" /> ESB → Red</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-green-500 border border-black/30" /> Quadrangle → Green</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-white border border-gray-700" /> Architecture → White</span>
-            <span className="inline-flex items-center gap-1 shrink-0"><span className="w-2.5 h-2.5 rounded-full bg-slate-400 border border-black/30" /> Workshop → Slate</span>
           </div>
         </div>
 
