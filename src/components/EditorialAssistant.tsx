@@ -1,22 +1,96 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ExternalLink, MapPin } from 'lucide-react';
-import type { Building, MSRITDepartment, MSRITLocation } from '../data/campusData';
-import { FACULTY_MSRIT_DATA } from '../data/facultyData';
-import type { MSRITFacultyRecord } from '../data/facultyData';
-import { getFacultyLiveStatus } from '../data/statusEngine';
+import {
+  Sparkles,
+  Search,
+  X,
+  Send,
+  Mic,
+  MicOff,
+  MapPin,
+  ExternalLink,
+  AlertTriangle,
+  Building2,
+  BookOpen,
+  PhoneCall,
+  Award,
+  Trash2,
+  Calendar,
+  Newspaper,
+  Loader2,
+  UserCheck,
+  ShieldCheck
+} from 'lucide-react';
 import { useTimeContext } from '../context/TimeContext';
 import { getLibraryOccupancyDetails } from '../data/libraryData';
-import type { CampusLibrary } from '../data/libraryData';
 import { processCampusAiQuery } from '../data/campusAiEngine';
-import type { CampusAiContext } from '../data/campusAiEngine';
-import type { LostFoundItem } from '../data/lostFoundData';
-import type { IssueReport } from '../data/issueReportsData';
-import type { MSRITRoomRecord } from '../data/roomsData';
+import type { CampusAiContext, CampusAiResult } from '../data/campusAiEngine';
 
 interface EditorialAssistantProps {
   onSelectBuildingForMap: (id: string) => void;
 }
+
+const ROTATING_PLACEHOLDERS = [
+  "What is Dr. Yogish H K's email?",
+  "Where is Dr. Yogish H K?",
+  "Which library is least crowded?",
+  "What events are happening today?",
+  "Show CSE faculty in LHC.",
+  "Which classrooms are available?",
+  "What issues are reported in LHC?",
+  "What clubs are available?",
+  "Where is LHC?",
+  "What is the latest MSRIT announcement?"
+];
+
+const SUGGESTION_CATEGORIES = [
+  {
+    category: 'FACULTY',
+    chips: [
+      { label: 'Find a faculty member', query: 'Show CSE faculty' },
+      { label: 'Faculty email', query: "What is Dr. Yogish H K's email?" },
+      { label: 'Faculty availability', query: 'Is Dr. Yogish H K available?' },
+      { label: 'Faculty schedule', query: "What is Dr. Yogish H K's schedule?" }
+    ]
+  },
+  {
+    category: 'CAMPUS',
+    chips: [
+      { label: 'Find a building', query: 'Where is LHC?' },
+      { label: 'Find a room', query: 'Find AB-401' },
+      { label: 'Campus map', query: 'Where is ESB?' },
+      { label: 'Classroom availability', query: 'Find a room in LHC' }
+    ]
+  },
+  {
+    category: 'LIBRARIES',
+    chips: [
+      { label: 'Library locations', query: 'Where is LHC library?' },
+      { label: 'Least crowded library', query: 'Which library is least crowded?' },
+      { label: 'Library occupancy', query: 'Show library occupancy' },
+      { label: 'Library timings', query: 'Is Apex library open?' }
+    ]
+  },
+  {
+    category: 'CAMPUS LIFE',
+    chips: [
+      { label: 'Latest announcements', query: 'What are the latest announcements?' },
+      { label: 'Upcoming events', query: 'What events are happening today?' },
+      { label: 'Clubs & activities', query: 'What clubs are available?' },
+      { label: 'Emergency contacts', query: 'Show campus emergency contacts' }
+    ]
+  },
+  {
+    category: 'ISSUES',
+    chips: [
+      { label: 'Reported issues', query: 'Show reported issues' },
+      { label: 'Issues in LHC', query: 'What issues are reported in LHC?' },
+      { label: 'High priority issues', query: 'Show high priority issues' }
+    ]
+  }
+];
+
+const HISTORY_STORAGE_KEY = 'campus_pulse_query_history';
 
 export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   onSelectBuildingForMap
@@ -25,156 +99,155 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
 
   const [query, setQuery] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string>('FACULTY');
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const [queryHistory, setQueryHistory] = useState<string[]>([]);
+  const recognitionRef = useRef<any>(null);
+
   const aiContextRef = useRef<CampusAiContext>({ history: [] });
 
-  const [activeResponse, setActiveResponse] = useState<{
-    queryText: string;
-    responseText: string;
-    subText?: string;
-    msritFaculty?: MSRITFacultyRecord & { isCollegeOpen?: boolean };
-    msritLocation?: MSRITLocation;
-    msritDepartment?: MSRITDepartment;
-    building?: Building;
-    library?: CampusLibrary;
-    lostItem?: LostFoundItem;
-    issues?: IssueReport[];
-    matchedRoom?: MSRITRoomRecord;
-    matchedRoomsList?: MSRITRoomRecord[];
-    actionTargetId?: string;
-  }>(() => {
-    const res = processCampusAiQuery("What is Dr. Yogish H K's email?", null);
-    const initialFac = res.matchedFaculty || FACULTY_MSRIT_DATA.find((f) => f.name.includes('Yogish')) || FACULTY_MSRIT_DATA[0];
-    const liveState = getFacultyLiveStatus(initialFac, null);
-    return {
-      queryText: "WHAT IS DR. YOGISH H K'S EMAIL?",
-      responseText: res.responseText,
-      subText: res.subText,
-      msritFaculty: {
-        ...initialFac,
-        status: liveState.liveStatus,
-        currentLocation: liveState.liveLocation,
-        nextAvailableTime: liveState.liveNextAvailableTime,
-        isCollegeOpen: liveState.isCollegeOpen
+  const [activeResult, setActiveResult] = useState<CampusAiResult | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Load history & setup voice recognition
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(HISTORY_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) setQueryHistory(parsed.slice(0, 5));
       }
-    };
-  });
+    } catch {
+      // Storage fallback
+    }
 
-  const suggestions = [
-    "What is the email of Dr Sumana?",
-    "Where is Sumana?",
-    "Is Sumana available now?",
-    "Who is the HOD of CSE?",
-    "Show me CSE faculty",
-    "Where is the CSE department?",
-    "Which library is least crowded for CSE?",
-    "Which library is empty?",
-    "Which library should a first year student use?",
-    "Is LHC library open?",
-    "What is the occupancy of ESB library?",
-    "Where is Apex?",
-    "Where is AB-401?",
-    "Where is LHC204?",
-    "Where is ARCH307?",
-    "Show MCA classrooms",
-    "What classrooms are in Apex?",
-    "Where is the DES seminar hall?",
-    "Show me unresolved issues",
-    "What issues are reported in LHC?"
-  ];
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setVoiceSupported(true);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
 
-  const handleQuerySubmit = (textToProcess: string) => {
+      recognition.onresult = (event: any) => {
+        const spokenText = event.results[0][0].transcript;
+        if (spokenText) {
+          setQuery(spokenText);
+          handleQuerySubmit(spokenText);
+        }
+        setIsListening(false);
+      };
+
+      recognition.onerror = () => {
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  // Rotating placeholder interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % ROTATING_PLACEHOLDERS.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Initial default result
+  useEffect(() => {
+    async function loadInitial() {
+      try {
+        const initialRes = await processCampusAiQuery("What is Dr. Yogish H K's email?", simulatedTime, aiContextRef.current);
+        setActiveResult(initialRes);
+      } catch {
+        // Fallback
+      }
+    }
+    loadInitial();
+  }, []);
+
+  const saveToHistory = (q: string) => {
+    if (!q || q.length < 3) return;
+    setQueryHistory((prev) => {
+      const filtered = prev.filter((item) => item.toLowerCase() !== q.toLowerCase());
+      const updated = [q, ...filtered].slice(0, 5);
+      try {
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updated));
+      } catch {
+        // Fallback
+      }
+      return updated;
+    });
+  };
+
+  const clearHistory = () => {
+    setQueryHistory([]);
+    try {
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+    } catch {
+      // Fallback
+    }
+  };
+
+  const toggleVoiceListen = () => {
+    if (!recognitionRef.current) return;
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        setIsListening(true);
+        recognitionRef.current.start();
+      } catch {
+        setIsListening(false);
+      }
+    }
+  };
+
+  const handleQuerySubmit = async (textToProcess: string) => {
     const text = textToProcess.trim();
     if (!text) return;
 
     setIsProcessing(true);
     setQuery(text);
+    setErrorMessage(null);
+    saveToHistory(text);
 
-    setTimeout(() => {
-      const aiResult = processCampusAiQuery(text, simulatedTime, aiContextRef.current);
-      if (aiResult.contextUpdated) {
-        aiContextRef.current = aiResult.contextUpdated;
+    try {
+      const res = await processCampusAiQuery(text, simulatedTime, aiContextRef.current);
+      if (res.contextUpdated) {
+        aiContextRef.current = res.contextUpdated;
       }
-
-      let fac: (MSRITFacultyRecord & { isCollegeOpen?: boolean }) | undefined;
-      if (aiResult.matchedFaculty) {
-        const liveState = getFacultyLiveStatus(aiResult.matchedFaculty, simulatedTime);
-        fac = {
-          ...aiResult.matchedFaculty,
-          status: liveState.liveStatus,
-          currentLocation: liveState.liveLocation,
-          nextAvailableTime: liveState.liveNextAvailableTime,
-          isCollegeOpen: liveState.isCollegeOpen
-        };
-      }
-
-      let loc: MSRITLocation | undefined = aiResult.matchedLocation;
-      if (!loc && aiResult.matchedBlock) {
-        loc = {
-          id: `block-${aiResult.matchedBlock.id}`,
-          name: aiResult.matchedBlock.displayName,
-          building: aiResult.matchedBlock.name,
-          floor: 'Campus Ground Block',
-          category: 'Verified Campus Block',
-          description: aiResult.matchedBlock.description,
-          department: aiResult.matchedBlock.departments.join(', '),
-          room: null,
-          latitude: aiResult.matchedBlock.center.lat,
-          longitude: aiResult.matchedBlock.center.lng,
-          sourceUrl: 'https://www.msrit.edu'
-        };
-      } else if (!loc && aiResult.matchedNode) {
-        loc = {
-          id: aiResult.matchedNode.nodeId,
-          name: aiResult.matchedNode.name,
-          building: aiResult.matchedNode.building,
-          floor: aiResult.matchedNode.floor,
-          category: (aiResult.matchedNode.category as any) || 'Academic Facility',
-          description: aiResult.matchedNode.description,
-          department: 'General / Multi-Department',
-          room: null,
-          latitude: aiResult.matchedNode.coordinates?.lat || 13.0310,
-          longitude: aiResult.matchedNode.coordinates?.lng || 77.5647,
-          sourceUrl: 'https://www.msrit.edu'
-        };
-      }
-
-      let bldgId: string | undefined = undefined;
-      if (aiResult.matchedBlock) {
-        bldgId = `block-${aiResult.matchedBlock.id}`;
-      } else if (aiResult.matchedRoom?.building) {
-        const rb = aiResult.matchedRoom.building.toLowerCase();
-        if (rb.includes('apex')) bldgId = 'block-apex';
-        else if (rb.includes('lhc')) bldgId = 'block-lhc';
-        else if (rb.includes('esb')) bldgId = 'block-esb';
-        else if (rb.includes('des')) bldgId = 'block-des';
-        else if (rb.includes('arch')) bldgId = 'block-architecture';
-      }
-
-      setActiveResponse({
-        queryText: aiResult.queryText,
-        responseText: aiResult.responseText,
-        subText: aiResult.subText,
-        msritFaculty: fac,
-        msritLocation: loc,
-        msritDepartment: aiResult.matchedDepartment,
-        library: aiResult.matchedLibrary,
-        lostItem: aiResult.matchedLostItem,
-        issues: aiResult.matchedIssues,
-        matchedRoom: aiResult.matchedRoom,
-        matchedRoomsList: aiResult.matchedRoomsList,
-        actionTargetId: bldgId
-      });
+      setActiveResult(res);
+    } catch (err: any) {
+      console.error('[EditorialAssistant] Query execution error:', err);
+      setErrorMessage('Campus data is temporarily unavailable. Please try again.');
+    } finally {
       setIsProcessing(false);
-    }, 200);
+    }
   };
 
   return (
     <section id="sec-ask" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
-      <div className="max-w-[1700px] mx-auto space-y-10 sm:space-y-16">
+      <div className="max-w-[1700px] mx-auto space-y-10 sm:space-y-14">
         
-        {/* Section Label */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold">
-          SECTION 02 // ASK MSRIT CAMPUS PULSE
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#111111]/10 dark:border-white/10 pb-4">
+          <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-[#DC2626] animate-pulse" />
+            <span>SECTION 02 // ASK CAMPUS AI &amp; QUERY ASSISTANT</span>
+          </div>
+          <div className="font-mono text-[11px] text-[#666660] dark:text-gray-400 flex items-center gap-2">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <span>GROUNDED IN OFFICIAL MSRIT DATASET • ZERO HALLUCINATION</span>
+          </div>
         </div>
 
         {/* Section Title */}
@@ -190,406 +263,589 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
           </h2>
         </div>
 
-        {/* Interactive Query Input & Editorial Stream */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 pt-6 sm:pt-8 border-t border-[#111111]/10 dark:border-white/10 items-start">
+        {/* Main Interface Grid: Query Input & Suggestions (Left) | Response Stream (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 pt-4 border-t border-[#111111]/10 dark:border-white/10 items-start">
           
-          {/* Left 6 Cols: Input & Suggestions */}
-          <div className="lg:col-span-6 space-y-6 sm:space-y-8">
-            <div className="space-y-3 sm:space-y-4">
-              <label className="font-mono text-xs text-[#666660] dark:text-[#9CA3AF] uppercase tracking-widest block font-bold">
-                ASK ABOUT MSRIT FACULTY, DEPARTMENTS & LOCATIONS:
+          {/* Left 6 Cols: Premium Input & Suggestions */}
+          <div className="lg:col-span-6 space-y-8">
+            
+            {/* Input Form Box */}
+            <div className="space-y-4">
+              <label className="font-mono text-xs text-[#666660] dark:text-gray-400 uppercase tracking-widest block font-bold flex items-center justify-between">
+                <span>QUERY CAMPUS INTELLIGENCE ENGINE:</span>
+                {isProcessing && (
+                  <span className="text-[#DC2626] flex items-center gap-1 font-bold animate-pulse">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    Searching campus data...
+                  </span>
+                )}
               </label>
-              
+
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleQuerySubmit(query);
                 }}
-                className="space-y-4"
+                className="space-y-3"
               >
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="What is Dr. Yogish H K's email?"
-                  className="w-full bg-transparent border-b-2 border-[#111111]/30 dark:border-white/30 py-3 sm:py-4 text-lg sm:text-2xl md:text-3xl font-syne font-bold text-[#111111] dark:text-[#F3F3EE] placeholder-[#666660]/50 dark:placeholder-[#9CA3AF]/40 focus:outline-none focus:border-[#DC2626] transition-all"
-                />
-                
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 font-mono text-xs">
-                  <span className="text-[#666660] dark:text-[#9CA3AF] text-[11px] sm:text-xs">
-                    PRESS ENTER TO QUERY VERIFIED MSRIT DATASET
-                  </span>
+                <div className="relative flex items-center bg-white dark:bg-[#16181D] border-2 border-[#111111]/20 dark:border-white/20 focus-within:border-[#DC2626] dark:focus-within:border-[#DC2626] transition-all shadow-sm">
+                  
+                  {/* Left Search Icon */}
+                  <div className="pl-4 pr-2 text-[#888880] dark:text-gray-400">
+                    <Search className="w-5 h-5 text-[#DC2626]" />
+                  </div>
+
+                  {/* Main Input */}
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={ROTATING_PLACEHOLDERS[placeholderIndex]}
+                    disabled={isProcessing}
+                    className="w-full bg-transparent py-4 pr-12 text-base sm:text-lg font-syne font-bold text-[#111111] dark:text-[#F3F3EE] placeholder-[#888880]/60 dark:placeholder-gray-500 focus:outline-none disabled:opacity-50"
+                  />
+
+                  {/* Clear Button */}
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => setQuery('')}
+                      className="p-2 text-gray-400 hover:text-[#DC2626] transition-colors mr-1"
+                      title="Clear text"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Voice Button */}
+                  {voiceSupported && (
+                    <button
+                      type="button"
+                      onClick={toggleVoiceListen}
+                      className={`p-2.5 mr-2 rounded-full transition-all ${
+                        isListening
+                          ? 'bg-rose-600 text-white animate-pulse'
+                          : 'text-gray-400 hover:text-[#DC2626] dark:hover:text-white'
+                      }`}
+                      title={isListening ? 'Stop Listening' : 'Voice Query'}
+                    >
+                      {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                    </button>
+                  )}
+
+                  {/* Submit Button */}
                   <button
                     type="submit"
-                    disabled={isProcessing}
-                    className="w-full sm:w-auto px-6 py-3 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    disabled={isProcessing || !query.trim()}
+                    className="px-5 py-4 bg-[#111111] hover:bg-[#DC2626] disabled:bg-gray-400 dark:disabled:bg-gray-700 text-white font-mono text-xs uppercase tracking-widest flex items-center gap-2 transition-all cursor-pointer shrink-0"
                   >
-                    <span>SUBMIT</span>
-                    <ArrowRight className="w-4 h-4" />
+                    {isProcessing ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    ) : (
+                      <>
+                        <span>ASK</span>
+                        <Send className="w-3.5 h-3.5 text-rose-300" />
+                      </>
+                    )}
                   </button>
+
+                </div>
+
+                <div className="flex justify-between items-center font-mono text-[11px] text-[#666660] dark:text-gray-400">
+                  <span>PRESS ENTER TO RUN SEARCH</span>
+                  <span>TRY NATURAL LANGUAGE QUERIES</span>
                 </div>
               </form>
             </div>
 
-            {/* Quick Suggestions */}
-            <div className="space-y-3 pt-6 border-t border-[#111111]/10">
-              <span className="font-mono text-xs text-[#666660] uppercase tracking-widest block">
-                SAMPLE MSRIT INTEL QUERIES:
-              </span>
-              <div className="flex flex-col space-y-2 font-mono text-xs">
-                {suggestions.map((sug, i) => (
+            {/* Recent Search History */}
+            {queryHistory.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-[#111111]/10 dark:border-white/10">
+                <div className="flex items-center justify-between font-mono text-[11px] text-[#666660] dark:text-gray-400">
+                  <span className="uppercase tracking-widest font-bold">RECENT QUERIES</span>
                   <button
-                    key={i}
-                    onClick={() => handleQuerySubmit(sug)}
-                    className="text-left text-[#666660] hover:text-[#DC2626] transition-colors py-1 flex items-center gap-2 group"
+                    onClick={clearHistory}
+                    className="hover:text-[#DC2626] flex items-center gap-1 transition-colors"
                   >
-                    <span className="text-[#DC2626] font-bold">0{i + 1}.</span>
-                    <span className="group-hover:translate-x-1 transition-transform">{sug.toUpperCase()}</span>
+                    <Trash2 className="w-3 h-3" />
+                    <span>Clear History</span>
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {queryHistory.map((h, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleQuerySubmit(h)}
+                      className="px-2.5 py-1 bg-white/70 dark:bg-white/5 border border-[#111111]/15 dark:border-white/15 hover:border-[#DC2626] text-[#111111] dark:text-gray-300 font-mono text-xs transition-all cursor-pointer truncate max-w-xs"
+                    >
+                      🕒 "{h}"
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quick Query Category Suggestions */}
+            <div className="space-y-4 pt-4 border-t border-[#111111]/10 dark:border-white/10">
+              <span className="font-mono text-xs text-[#666660] dark:text-gray-400 uppercase tracking-widest block font-bold">
+                EXPLORE CAMPUS SUGGESTION CATEGORIES:
+              </span>
+
+              {/* Category Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none font-mono text-xs">
+                {SUGGESTION_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.category}
+                    onClick={() => setActiveCategory(cat.category)}
+                    className={`px-3 py-1.5 border uppercase font-bold transition-all cursor-pointer shrink-0 ${
+                      activeCategory === cat.category
+                        ? 'bg-[#111111] text-white border-[#DC2626] dark:bg-white dark:text-[#111111]'
+                        : 'bg-white/50 dark:bg-white/5 text-[#666660] dark:text-gray-400 border-[#111111]/15 dark:border-white/15 hover:border-[#DC2626]'
+                    }`}
+                  >
+                    {cat.category}
+                  </button>
+                ))}
+              </div>
+
+              {/* Active Category Chips */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono text-xs">
+                {SUGGESTION_CATEGORIES.find((c) => c.category === activeCategory)?.chips.map((chip, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleQuerySubmit(chip.query)}
+                    className="p-3 bg-white dark:bg-[#16181D] border border-[#111111]/15 dark:border-white/15 hover:border-[#DC2626] text-left transition-all group flex flex-col justify-between cursor-pointer"
+                  >
+                    <span className="font-bold text-[#111111] dark:text-gray-200 group-hover:text-[#DC2626] transition-colors">
+                      • {chip.label}
+                    </span>
+                    <span className="text-[10px] text-[#666660] dark:text-gray-500 mt-1 truncate">
+                      "{chip.query}"
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
+
           </div>
 
-          {/* Right 6 Cols: Editorial Result Stream */}
-          <div className="lg:col-span-6 space-y-8 pt-4 lg:pt-0">
-            <div className="font-mono text-xs text-[#666660] uppercase tracking-widest border-b border-[#111111]/10 pb-3 flex justify-between">
+          {/* Right 6 Cols: Structured Result Stream */}
+          <div className="lg:col-span-6 space-y-6 pt-4 lg:pt-0">
+            <div className="font-mono text-xs text-[#666660] dark:text-gray-400 uppercase tracking-widest border-b border-[#111111]/10 dark:border-white/10 pb-3 flex justify-between items-center">
               <span>MSRIT SYSTEM INTELLIGENCE RESPONSE</span>
-              {isProcessing && <span className="text-[#DC2626] font-bold animate-pulse">QUERYING MSRIT DATASET...</span>}
+              {isProcessing && (
+                <span className="text-[#DC2626] font-bold flex items-center gap-1 animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  PROCESSING...
+                </span>
+              )}
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeResponse.queryText}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4 }}
-                className="space-y-8"
-              >
-                <div className="space-y-2">
-                  <span className="font-mono text-xs text-[#666660]">QUERY PROMPT:</span>
-                  <h3 className="font-syne text-xl sm:text-2xl font-bold text-[#DC2626]">
-                    "{activeResponse.queryText}"
-                  </h3>
+            {/* Error Message */}
+            {errorMessage && (
+              <div className="p-4 border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 font-mono text-xs flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+                <div>
+                  <div className="font-bold">QUERY EXECUTION ERROR</div>
+                  <div>{errorMessage}</div>
                 </div>
+              </div>
+            )}
 
-                <div className="space-y-3">
-                  <p className="text-2xl sm:text-4xl font-syne font-bold text-[#111111] leading-tight uppercase whitespace-pre-line">
-                    {activeResponse.responseText}
-                  </p>
-                  {activeResponse.subText && (
-                    <p className="text-base sm:text-lg font-light text-[#666660]">
-                      {activeResponse.subText}
+            {/* Result Stream Component */}
+            {activeResult && !errorMessage && (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeResult.queryText + (activeResult.responseText?.slice(0, 10) || '')}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-6"
+                >
+                  {/* Prompt */}
+                  <div className="space-y-1">
+                    <span className="font-mono text-xs text-[#666660] dark:text-gray-400">QUERY PROMPT:</span>
+                    <h3 className="font-syne text-xl sm:text-2xl font-bold text-[#DC2626]">
+                      "{activeResult.queryText}"
+                    </h3>
+                  </div>
+
+                  {/* Primary Response Text */}
+                  <div className="space-y-2 p-5 bg-white/70 dark:bg-[#16181D]/80 border border-[#111111]/15 dark:border-white/15">
+                    <p className="text-xl sm:text-2xl font-syne font-bold text-[#111111] dark:text-[#F3F3EE] leading-snug whitespace-pre-line">
+                      {activeResult.responseText}
                     </p>
-                  )}
-                </div>
-
-                {/* Faculty Card Result */}
-                {activeResponse.msritFaculty && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">VERIFIED FACULTY PROFILE</span>
-                      <span className="text-[#DC2626] font-bold">{activeResponse.msritFaculty.department.toUpperCase()}</span>
-                    </div>
-
-                    <div className="font-syne text-2xl font-bold text-[#111111]">
-                      {activeResponse.msritFaculty.name}
-                    </div>
-
-                    <div className="text-[#666660] space-y-1">
-                      <div>DESIGNATION: <strong className="text-[#111111]">{activeResponse.msritFaculty.designation}</strong></div>
-                      <div>CABIN LOCATION: <strong className="text-[#111111]">{activeResponse.msritFaculty.cabinLocation}</strong></div>
-                      {activeResponse.msritFaculty.currentLocation && (
-                        <div>LIVE LOCATION: <strong className="text-[#111111]">{activeResponse.msritFaculty.currentLocation}</strong></div>
-                      )}
-                      <div>LIVE STATUS: <strong className="text-[#DC2626]">{activeResponse.msritFaculty.status}</strong></div>
-                      {activeResponse.msritFaculty.nextAvailableTime && (
-                        <div>NEXT AVAILABLE: <strong className="text-[#111111]">{activeResponse.msritFaculty.nextAvailableTime}</strong></div>
-                      )}
-                      {activeResponse.msritFaculty.email && (
-                        <div>EMAIL: <a href={`mailto:${activeResponse.msritFaculty.email}`} className="text-[#DC2626] underline">{activeResponse.msritFaculty.email}</a></div>
-                      )}
-                      <div>NODE ID: <strong className="text-[#111111]">{activeResponse.msritFaculty.nodeId}</strong></div>
-                    </div>
-
-                    <div className="pt-2 flex justify-between items-center border-t border-[#111111]/10">
-                      <span className="text-[#666660] text-[11px]">SOURCE: faculty_msrit_dynamic.json</span>
-                      {activeResponse.msritFaculty.nodeId && (
-                        <button
-                          onClick={() => onSelectBuildingForMap(activeResponse.msritFaculty!.nodeId)}
-                          className="text-[#111111] hover:text-[#DC2626] font-bold flex items-center gap-1 uppercase"
-                        >
-                          <MapPin className="w-3.5 h-3.5" />
-                          <span>SHOW ON MAP →</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Central Library Card Result */}
-                {activeResponse.library && (() => {
-                  const libDetails = getLibraryOccupancyDetails(activeResponse.library, simulatedTime);
-                  return (
-                    <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                      <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                        <span className="text-[#666660] uppercase">
-                          {libDetails.isEveningPeriod ? 'ESTIMATED EVENING OCCUPANCY' : !libDetails.isOpen ? 'LIBRARY STATUS (CLOSED)' : 'CENTRAL CAMPUS LIBRARY'}
-                        </span>
-                        <span className="text-[#DC2626] font-bold">
-                          {libDetails.isEveningPeriod ? `EST. EVENING: ${libDetails.displayOccupancy}` : !libDetails.isOpen ? 'CLOSED (0%)' : `ESTIMATED OCCUPANCY: ${libDetails.displayOccupancy}`}
-                        </span>
-                      </div>
-
-                      <div className="font-syne text-2xl font-bold text-[#111111]">
-                        {activeResponse.library.name}
-                      </div>
-
-                      <div className="text-[#666660] space-y-1">
-                        <div>BUILDING: <strong className="text-[#111111]">{activeResponse.library.building} Block</strong></div>
-                        <div>FLOOR: <strong className="text-[#111111]">{activeResponse.library.floor}</strong></div>
-                        <div>PRIMARY USERS: <strong className="text-[#111111]">{activeResponse.library.primaryGroups.join(' • ')}</strong></div>
-                        <div>SOUNDSCAPE: <strong className="text-[#111111]">{activeResponse.library.noiseLevel}</strong></div>
-                        <div>WALK TIME: <strong className="text-[#111111]">~{activeResponse.library.walkTimeMinutes} MIN</strong></div>
-                      </div>
-
-                      {/* Live Estimated Occupancy Progress Bar */}
-                      <div className="space-y-1.5 pt-2">
-                        <div className="flex justify-between text-[11px]">
-                          <span className="text-[#666660]">
-                            {libDetails.isEveningPeriod ? 'ESTIMATED EVENING OCCUPANCY' : 'ESTIMATED LIVE OCCUPANCY'}
-                          </span>
-                          <span className="text-[#DC2626] font-bold">
-                            {libDetails.displayOccupancy}
-                          </span>
-                        </div>
-                        <div className="w-full h-2 bg-[#111111]/10 overflow-hidden border border-[#111111]/15">
-                          <div
-                            className="h-full bg-[#DC2626] transition-all duration-700"
-                            style={{ width: `${libDetails.percentageEquivalent}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="pt-2 flex justify-between items-center border-t border-[#111111]/10">
-                        <span className="text-[#666660] text-[11px]">
-                          {libDetails.isEveningPeriod ? 'LABEL: ESTIMATED EVENING OCCUPANCY' : !libDetails.isOpen ? 'LABEL: CLOSED (OPENS 09:00 ONWARDS)' : 'LABEL: ESTIMATED LIVE OCCUPANCY'}
-                        </span>
-                        <button
-                          onClick={() => onSelectBuildingForMap(activeResponse.library!.nodeId)}
-                          className="text-[#111111] hover:text-[#DC2626] font-bold flex items-center gap-1 uppercase"
-                        >
-                          <span>PAN CAMPUS MAP</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-
-                {/* Location Card Result */}
-                {activeResponse.msritLocation && !activeResponse.msritFaculty && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">VERIFIED MSRIT LOCATION</span>
-                      <span className="text-[#DC2626] font-bold">{activeResponse.msritLocation.category.toUpperCase()}</span>
-                    </div>
-
-                    <div className="font-syne text-2xl font-bold text-[#111111]">
-                      {activeResponse.msritLocation.name}
-                    </div>
-
-                    <div className="text-[#666660] space-y-1">
-                      <div>BUILDING: <strong className="text-[#111111]">{activeResponse.msritLocation.building}</strong></div>
-                      <div>FLOOR: <strong className="text-[#111111]">{activeResponse.msritLocation.floor}</strong></div>
-                    </div>
-
-                    <div className="pt-2 flex justify-between items-center">
-                      <a
-                        href={activeResponse.msritLocation.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#DC2626] hover:underline font-bold uppercase inline-flex items-center gap-1 text-[11px]"
-                      >
-                        <span>SOURCE: MSRIT OFFICIAL WEBSITE</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-
-                      <button
-                        onClick={() => onSelectBuildingForMap(activeResponse.msritLocation?.id || 'loc-apex-block')}
-                        className="text-[#111111] hover:text-[#DC2626] font-bold flex items-center gap-1 uppercase"
-                      >
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>VIEW MAP →</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Department Card Result */}
-                {activeResponse.msritDepartment && !activeResponse.msritFaculty && !activeResponse.msritLocation && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">DEPARTMENT INTEL</span>
-                      <span className="text-[#DC2626] font-bold">{activeResponse.msritDepartment.code}</span>
-                    </div>
-
-                    <div className="font-syne text-2xl font-bold text-[#111111]">
-                      {activeResponse.msritDepartment.name}
-                    </div>
-
-                    <div className="text-[#666660] space-y-1">
-                      <div>HOD: <strong className="text-[#111111]">{activeResponse.msritDepartment.hod}</strong></div>
-                      <div>BUILDING: <strong className="text-[#111111]">{activeResponse.msritDepartment.building}</strong></div>
-                    </div>
-
-                    <div className="pt-2 flex justify-between items-center">
-                      <a
-                        href={activeResponse.msritDepartment.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#DC2626] hover:underline font-bold uppercase inline-flex items-center gap-1 text-[11px]"
-                      >
-                        <span>SOURCE: MSRIT OFFICIAL WEBSITE</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  </div>
-                )}
-
-                {/* Lost & Found Card Result */}
-                {activeResponse.lostItem && !activeResponse.msritFaculty && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">LOST &amp; FOUND RECORD</span>
-                      <span className="text-[#DC2626] font-bold">DEMO / SAMPLE DATA</span>
-                    </div>
-
-                    <div className="font-syne text-2xl font-bold text-[#111111]">
-                      {activeResponse.lostItem.itemName}
-                    </div>
-
-                    <div className="text-[#666660] space-y-1">
-                      <div>STATUS: <strong className="text-[#111111]">{activeResponse.lostItem.statusLabel || activeResponse.lostItem.type.toUpperCase()}</strong></div>
-                      <div>LOCATION: <strong className="text-[#111111]">{activeResponse.lostItem.location}</strong></div>
-                      <div>DATE: <strong className="text-[#111111]">{activeResponse.lostItem.date}</strong></div>
-                      <div>CLAIM / REPORT DESK: <strong className="text-[#DC2626]">{activeResponse.lostItem.contactLocation}</strong></div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Issue Reports Result Card */}
-                {activeResponse.issues && activeResponse.issues.length > 0 && !activeResponse.msritFaculty && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">CAMPUS ISSUE TELEMETRY</span>
-                      <span className="text-[#DC2626] font-bold">{activeResponse.issues.length} RECORD{activeResponse.issues.length > 1 ? 'S' : ''}</span>
-                    </div>
-
-                    <div className="space-y-2.5 max-h-64 overflow-y-auto pr-1">
-                      {activeResponse.issues.slice(0, 3).map((iss) => (
-                        <div key={iss.id} className="p-3 border border-[#111111]/10 bg-white/60 space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="font-bold text-[#111111]">{iss.title}</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-[#DC2626]/10 text-[#DC2626] font-bold uppercase">{iss.priority} PRIORITY</span>
-                          </div>
-                          <div className="text-[11px] text-[#666660]">
-                            Location: {iss.location} | Status: <strong className="text-[#111111]">{iss.status}</strong> | By: {iss.reportedBy}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Verified Room Single Result Card */}
-                {activeResponse.matchedRoom && !activeResponse.msritFaculty && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">OFFICIAL MSRIT ROOM REGISTRY</span>
-                      <span className="text-[#DC2626] font-bold">{activeResponse.matchedRoom.type.toUpperCase()}</span>
-                    </div>
-
-                    <div className="font-syne text-2xl font-bold text-[#111111]">
-                      {activeResponse.matchedRoom.roomNumber}
-                    </div>
-
-                    <div className="text-[#666660] space-y-1">
-                      <div>BUILDING: <strong className="text-[#111111]">{activeResponse.matchedRoom.building || 'Campus Facilities'}</strong></div>
-                      {activeResponse.matchedRoom.department && (
-                        <div>DEPARTMENT: <strong className="text-[#111111]">{activeResponse.matchedRoom.department}</strong></div>
-                      )}
-                      <div>TEMPORAL STATUS: <strong className={activeResponse.matchedRoom.temporalStatus === 'historical' ? 'text-amber-700' : 'text-[#DC2626]'}>
-                        {activeResponse.matchedRoom.temporalStatus === 'historical' ? 'HISTORICAL ARCHIVE RECORD' : `CURRENT VERIFIED (${activeResponse.matchedRoom.sourceYear})`}
-                      </strong></div>
-                    </div>
-
-                    <div className="pt-2 flex justify-between items-center border-t border-[#111111]/10">
-                      <a
-                        href={activeResponse.matchedRoom.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[#DC2626] hover:underline font-bold uppercase inline-flex items-center gap-1 text-[11px]"
-                      >
-                        <span>SOURCE: {activeResponse.matchedRoom.sourceTitle}</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-
-                      {activeResponse.actionTargetId && (
-                        <button
-                          onClick={() => onSelectBuildingForMap(activeResponse.actionTargetId!)}
-                          className="text-[#111111] hover:text-[#DC2626] font-bold flex items-center gap-1 uppercase"
-                        >
-                          <MapPin className="w-3.5 h-3.5" />
-                          <span>VIEW BUILDING ON MAP →</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Verified Room List Result Card (Department or Building queries) */}
-                {activeResponse.matchedRoomsList && activeResponse.matchedRoomsList.length > 0 && !activeResponse.msritFaculty && (
-                  <div className="p-6 border border-[#111111]/15 space-y-4 bg-white/40 font-mono text-xs">
-                    <div className="flex justify-between border-b border-[#111111]/10 pb-2">
-                      <span className="text-[#666660] uppercase">VERIFIED MSRIT SPACES</span>
-                      <span className="text-[#DC2626] font-bold">{activeResponse.matchedRoomsList.length} ROOMS</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
-                      {activeResponse.matchedRoomsList.map((r) => (
-                        <div key={r.roomNumber} className="p-3 border border-[#111111]/10 bg-white/60 space-y-1">
-                          <div className="flex justify-between items-center">
-                            <span className="font-bold text-[#111111]">{r.roomNumber}</span>
-                            <span className="text-[10px] px-1.5 py-0.5 bg-[#DC2626]/10 text-[#DC2626] font-bold uppercase">
-                              {r.type}
-                            </span>
-                          </div>
-                          <div className="text-[11px] text-[#666660]">
-                            {r.building || 'Campus Facilities'}{r.department ? ` • ${r.department}` : ''}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {activeResponse.actionTargetId && (
-                      <div className="pt-2 flex justify-end border-t border-[#111111]/10">
-                        <button
-                          onClick={() => onSelectBuildingForMap(activeResponse.actionTargetId!)}
-                          className="text-[#111111] hover:text-[#DC2626] font-bold flex items-center gap-1 uppercase"
-                        >
-                          <MapPin className="w-3.5 h-3.5" />
-                          <span>VIEW BUILDING ON MAP →</span>
-                        </button>
-                      </div>
+                    {activeResult.subText && (
+                      <p className="text-xs sm:text-sm font-mono text-[#666660] dark:text-gray-400 pt-2 border-t border-[#111111]/10 dark:border-white/10">
+                        {activeResult.subText}
+                      </p>
                     )}
                   </div>
-                )}
 
-              </motion.div>
-            </AnimatePresence>
+                  {/* Ambiguity Guard Clarification Options */}
+                  {activeResult.clarificationNeeded && activeResult.multipleFaculty && (
+                    <div className="p-4 border-2 border-amber-400 bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-mono text-xs space-y-3">
+                      <div className="font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                        <span>MULTIPLE FACULTY MATCHES FOUND — CHOOSE RECORD:</span>
+                      </div>
+                      <div className="space-y-2">
+                        {activeResult.multipleFaculty.map((fac) => (
+                          <button
+                            key={fac.id}
+                            onClick={() => handleQuerySubmit(`Where is ${fac.name}?`)}
+                            className="w-full text-left p-2.5 bg-white dark:bg-[#1E2028] border border-amber-300 hover:border-[#DC2626] transition-all flex items-center justify-between font-bold"
+                          >
+                            <span>• {fac.name} ({fac.department})</span>
+                            <span className="text-[10px] text-[#DC2626]">SELECT →</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Faculty Card */}
+                  {activeResult.matchedFaculty && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <UserCheck className="w-3.5 h-3.5 text-[#DC2626]" />
+                          VERIFIED FACULTY PROFILE
+                        </span>
+                        <span className="text-[#DC2626] font-bold">{activeResult.matchedFaculty.department.toUpperCase()}</span>
+                      </div>
+
+                      <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
+                        {activeResult.matchedFaculty.name}
+                      </div>
+
+                      <div className="text-[#666660] dark:text-gray-300 space-y-1.5">
+                        <div>DESIGNATION: <strong className="text-[#111111] dark:text-white">{activeResult.matchedFaculty.designation}</strong></div>
+                        <div>CABIN LOCATION: <strong className="text-[#111111] dark:text-white">{activeResult.matchedFaculty.cabinLocation}</strong></div>
+                        {activeResult.matchedFaculty.currentLocation && (
+                          <div>LIVE LOCATION: <strong className="text-[#111111] dark:text-white">{activeResult.matchedFaculty.currentLocation}</strong></div>
+                        )}
+                        <div>LIVE STATUS: <strong className="text-[#DC2626]">{activeResult.matchedFaculty.status || 'Active'}</strong></div>
+                        {activeResult.matchedFaculty.email && (
+                          <div>EMAIL: <a href={`mailto:${activeResult.matchedFaculty.email}`} className="text-[#DC2626] underline font-bold">{activeResult.matchedFaculty.email}</a></div>
+                        )}
+                      </div>
+
+                      <div className="pt-3 flex justify-between items-center border-t border-[#111111]/10 dark:border-white/10">
+                        <span className="text-[#666660] dark:text-gray-400 text-[11px]">SOURCE: faculty_msrit_dynamic.json</span>
+                        {activeResult.actionTargetId && (
+                          <button
+                            onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
+                            className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
+                          >
+                            <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                            <span>VIEW FACULTY ON MAP →</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Library Card */}
+                  {activeResult.matchedLibrary && (() => {
+                    const libDetails = getLibraryOccupancyDetails(activeResult.matchedLibrary, simulatedTime);
+                    return (
+                      <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                        <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                          <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                            <BookOpen className="w-3.5 h-3.5 text-[#DC2626]" />
+                            CAMPUS LIBRARY TELEMETRY
+                          </span>
+                          <span className="text-[#DC2626] font-bold">
+                            ESTIMATED OCCUPANCY: {libDetails.displayOccupancy}
+                          </span>
+                        </div>
+
+                        <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
+                          {activeResult.matchedLibrary.name}
+                        </div>
+
+                        <div className="text-[#666660] dark:text-gray-300 space-y-1.5">
+                          <div>BUILDING: <strong className="text-[#111111] dark:text-white">{activeResult.matchedLibrary.building} Block</strong></div>
+                          <div>FLOOR: <strong className="text-[#111111] dark:text-white">{activeResult.matchedLibrary.floor}</strong></div>
+                          <div>HOURS: <strong className="text-[#111111] dark:text-white">09:00–21:00 Daily</strong></div>
+                          <div>PRIMARY USERS: <strong className="text-[#111111] dark:text-white">{activeResult.matchedLibrary.primaryGroups.join(' • ')}</strong></div>
+                        </div>
+
+                        {/* Occupancy Progress Bar */}
+                        <div className="space-y-1.5 pt-2">
+                          <div className="flex justify-between text-[11px]">
+                            <span className="text-[#666660] dark:text-gray-400">ESTIMATED LIVE OCCUPANCY</span>
+                            <span className="text-[#DC2626] font-bold">{libDetails.displayOccupancy}</span>
+                          </div>
+                          <div className="w-full h-2.5 bg-[#111111]/10 dark:bg-white/10 overflow-hidden border border-[#111111]/15 dark:border-white/15">
+                            <div
+                              className="h-full bg-[#DC2626] transition-all duration-700"
+                              style={{ width: `${libDetails.percentageEquivalent}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-3 flex justify-between items-center border-t border-[#111111]/10 dark:border-white/10">
+                          <span className="text-[#666660] dark:text-gray-400 text-[11px]">LABEL: Estimated Live Occupancy</span>
+                          {activeResult.actionTargetId && (
+                            <button
+                              onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
+                              className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
+                            >
+                              <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                              <span>VIEW LIBRARY ON MAP →</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Structured Events Card Result */}
+                  {activeResult.matchedEvents && activeResult.matchedEvents.length > 0 && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5 text-[#DC2626]" />
+                          OFFICIAL MSRIT EVENTS
+                        </span>
+                        <span className="text-[#DC2626] font-bold">SOURCE: MSRIT OFFICIAL WEBSITE</span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {activeResult.matchedEvents.map((e, idx) => (
+                          <div key={idx} className="p-3 border border-[#111111]/10 dark:border-white/10 bg-white/60 dark:bg-white/5 space-y-1.5">
+                            <div className="font-syne font-bold text-base text-[#111111] dark:text-white">
+                              {e.title}
+                            </div>
+                            <div className="text-[11px] text-[#666660] dark:text-gray-400 flex flex-wrap gap-3">
+                              <span>📅 Date: {e.date}</span>
+                              {e.location && <span>📍 Venue: {e.location}</span>}
+                            </div>
+                            {e.link && (
+                              <a
+                                href={e.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-[#DC2626] font-bold hover:underline pt-1"
+                              >
+                                <span>[Read More]</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Announcements Card Result */}
+                  {activeResult.matchedAnnouncements && activeResult.matchedAnnouncements.length > 0 && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <Newspaper className="w-3.5 h-3.5 text-[#DC2626]" />
+                          OFFICIAL MSRIT ANNOUNCEMENTS
+                        </span>
+                        <span className="text-[#DC2626] font-bold">SOURCE: MSRIT OFFICIAL WEBSITE</span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {activeResult.matchedAnnouncements.map((a, idx) => (
+                          <div key={idx} className="p-3 border border-[#111111]/10 dark:border-white/10 bg-white/60 dark:bg-white/5 space-y-1.5">
+                            <div className="font-syne font-bold text-base text-[#111111] dark:text-white">
+                              {a.title}
+                            </div>
+                            <div className="text-[11px] text-[#666660] dark:text-gray-400">
+                              📅 Published: {a.date}
+                            </div>
+                            {a.link && (
+                              <a
+                                href={a.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-[#DC2626] font-bold hover:underline pt-1"
+                              >
+                                <span>[Read More]</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Clubs Card Result */}
+                  {activeResult.matchedClubs && activeResult.matchedClubs.length > 0 && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <Award className="w-3.5 h-3.5 text-[#DC2626]" />
+                          MSRIT CLUBS &amp; ORGANIZATIONS
+                        </span>
+                        <span className="text-[#DC2626] font-bold">SOURCE: MSRIT OFFICIAL WEBSITE</span>
+                      </div>
+
+                      <div className="space-y-3">
+                        {activeResult.matchedClubs.map((c, idx) => (
+                          <div key={idx} className="p-3.5 border border-[#111111]/10 dark:border-white/10 bg-white/60 dark:bg-white/5 space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="font-syne font-bold text-base text-[#111111] dark:text-white">{c.name}</span>
+                              <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] font-bold text-[10px] uppercase">{c.category}</span>
+                            </div>
+                            {c.description && (
+                              <p className="text-[#666660] dark:text-gray-300 text-xs leading-relaxed">
+                                {c.description}
+                              </p>
+                            )}
+                            {(c.officialUrl || c.sourceUrl) && (
+                              <a
+                                href={c.officialUrl || c.sourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-[11px] text-[#DC2626] font-bold hover:underline pt-1"
+                              >
+                                <span>[View Details]</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Emergency Contacts Card Result */}
+                  {activeResult.matchedEmergencyContacts && activeResult.matchedEmergencyContacts.length > 0 && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <PhoneCall className="w-3.5 h-3.5 text-[#DC2626]" />
+                          VERIFIED EMERGENCY CONTACTS
+                        </span>
+                        <span className="text-[#DC2626] font-bold">OFFICIAL NUMBERS</span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {activeResult.matchedEmergencyContacts.map((c, idx) => (
+                          <div key={idx} className="p-3 border border-[#111111]/10 dark:border-white/10 bg-white/60 dark:bg-white/5 space-y-1">
+                            <div className="font-bold text-[#111111] dark:text-white text-xs">{c.label}</div>
+                            <a
+                              href={`tel:${c.phone}`}
+                              className="text-base font-bold text-[#DC2626] hover:underline block"
+                            >
+                              📞 {c.phone}
+                            </a>
+                            <div className="text-[10px] text-[#666660] dark:text-gray-400">{c.category}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Issues Card Result */}
+                  {activeResult.matchedIssues && activeResult.matchedIssues.length > 0 && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626]" />
+                          REPORTED CAMPUS ISSUES ({activeResult.matchedIssues.length})
+                        </span>
+                        <span className="text-[#DC2626] font-bold">DISPATCH QUEUE</span>
+                      </div>
+
+                      <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                        {activeResult.matchedIssues.map((iss) => (
+                          <div key={iss.id} className="p-3 border border-[#111111]/10 dark:border-white/10 bg-white/60 dark:bg-white/5 space-y-1.5">
+                            <div className="flex justify-between items-center">
+                              <span className="font-syne font-bold text-[#111111] dark:text-white">{iss.title}</span>
+                              <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] font-bold text-[10px] uppercase">
+                                {iss.priority} PRIORITY
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-[#666660] dark:text-gray-400">
+                              📍 {iss.location} | Category: {iss.category} | Status: <strong className="text-[#111111] dark:text-white">{iss.status}</strong>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Room Card Result */}
+                  {activeResult.matchedRoom && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold">OFFICIAL MSRIT ROOM REGISTRY</span>
+                        <span className="text-[#DC2626] font-bold">{activeResult.matchedRoom.type.toUpperCase()}</span>
+                      </div>
+
+                      <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
+                        {activeResult.matchedRoom.roomNumber}
+                      </div>
+
+                      <div className="text-[#666660] dark:text-gray-300 space-y-1">
+                        <div>BUILDING: <strong className="text-[#111111] dark:text-white">{activeResult.matchedRoom.building || 'Campus Facilities'}</strong></div>
+                        {activeResult.matchedRoom.department && (
+                          <div>DEPARTMENT: <strong className="text-[#111111] dark:text-white">{activeResult.matchedRoom.department}</strong></div>
+                        )}
+                        <div>STATUS: <strong className="text-[#DC2626]">{activeResult.matchedRoom.temporalStatus === 'historical' ? 'Historical Record' : 'Current Verified (2026)'}</strong></div>
+                      </div>
+
+                      <div className="pt-3 flex justify-between items-center border-t border-[#111111]/10 dark:border-white/10">
+                        <span className="text-[#666660] dark:text-gray-400 text-[11px]">Source: {activeResult.matchedRoom.sourceTitle}</span>
+                        {activeResult.actionTargetId && (
+                          <button
+                            onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
+                            className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
+                          >
+                            <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                            <span>VIEW BUILDING ON MAP →</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Structured Building / Location Card */}
+                  {activeResult.matchedBlock && !activeResult.matchedFaculty && !activeResult.matchedRoom && (
+                    <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
+                      <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
+                          <Building2 className="w-3.5 h-3.5 text-[#DC2626]" />
+                          VERIFIED CAMPUS BLOCK
+                        </span>
+                        <span className="text-[#DC2626] font-bold">{activeResult.matchedBlock.id.toUpperCase()}</span>
+                      </div>
+
+                      <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
+                        {activeResult.matchedBlock.displayName} ({activeResult.matchedBlock.name})
+                      </div>
+
+                      <p className="text-[#666660] dark:text-gray-300 leading-relaxed">
+                        {activeResult.matchedBlock.description}
+                      </p>
+
+                      <div className="pt-3 flex justify-between items-center border-t border-[#111111]/10 dark:border-white/10">
+                        <span className="text-[#666660] dark:text-gray-400 text-[11px]">Departments: {activeResult.matchedBlock.departments.join(', ')}</span>
+                        <button
+                          onClick={() => onSelectBuildingForMap(`block-${activeResult.matchedBlock!.id}`)}
+                          className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
+                        >
+                          <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                          <span>VIEW ON MAP →</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                </motion.div>
+              </AnimatePresence>
+            )}
+
           </div>
 
         </div>

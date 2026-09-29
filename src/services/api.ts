@@ -7,7 +7,7 @@ import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUser
  */
 
 const getApiBaseUrl = (): string => {
-  let envUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').trim();
+  let envUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL ? import.meta.env.VITE_API_URL : 'http://localhost:5000/api').trim();
   if (envUrl.endsWith('/')) {
     envUrl = envUrl.slice(0, -1);
   }
@@ -596,8 +596,8 @@ function fallbackGlobalSearch(query: string) {
   return { query, faculty, libraries, buildings, rooms, issues };
 }
 
-function fallbackQueryCampusAi(query: string) {
-  const result = processCampusAiQuery(query);
+async function fallbackQueryCampusAi(query: string) {
+  const result = await processCampusAiQuery(query);
   const textAnswer = (typeof result === 'object' && result?.responseText) ? result.responseText : "I don't have that information in the current Campus Pulse data.";
   return {
     intent: (typeof result === 'object' && result?.intents?.[0]) ? result.intents[0] : 'GENERAL_CAMPUS_QUERY',
