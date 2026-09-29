@@ -71,7 +71,7 @@ export const EditorialLostFound: React.FC = () => {
           <div>
             <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold mb-3 flex items-center gap-2 flex-wrap">
               <Tag className="w-4 h-4 text-[#DC2626]" />
-              <span>SECTION 08B // COMMUNITY LOST &amp; FOUND DISPATCH</span>
+              <span>SECTION 07 // COMMUNITY LOST &amp; FOUND DISPATCH</span>
               {!LOST_AND_FOUND_ENABLED && (
                 <span className="px-2 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30">
                   Coming Soon

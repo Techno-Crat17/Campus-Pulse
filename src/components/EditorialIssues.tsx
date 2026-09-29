@@ -192,7 +192,7 @@ export const EditorialIssues: React.FC = () => {
         
         {/* Section Header Breadcrumb */}
         <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <span>SECTION 08 // COMMUNITY ISSUE DISPATCH</span>
+          <span>SECTION 06 // COMMUNITY ISSUE DISPATCH</span>
           <div className="flex items-center gap-2 text-[#111111] bg-white px-3 py-1 border border-[#111111]/15 text-[11px] self-start sm:self-auto">
             <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626]" />
             <span>ANONYMOUS DISPATCH PROTOCOL</span>

@@ -7,7 +7,6 @@ import { EditorialRecommender } from './components/EditorialRecommender';
 import { EditorialFaculty } from './components/EditorialFaculty';
 import { EditorialIssues } from './components/EditorialIssues';
 import { EditorialLostFound } from './components/EditorialLostFound';
-import { EditorialPredict } from './components/EditorialPredict';
 import { EditorialFooter } from './components/EditorialFooter';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -72,7 +71,7 @@ export function App() {
           />
         </ErrorBoundary>
 
-        {/* Section 05 — FIND YOUR SPACE (Recommendations) */}
+        {/* Section 04 — FIND YOUR SPACE (Recommendations) */}
         <EditorialRecommender
           onSelectBuildingForMap={(id) => {
             setSelectedBuildingId(id);
@@ -80,17 +79,14 @@ export function App() {
           }}
         />
 
-        {/* Section 07 — FACULTY (WHO CAN I MEET?) */}
+        {/* Section 05 — FACULTY (WHO CAN I MEET?) */}
         <EditorialFaculty onSelectFacultyForMap={handleSelectBuildingForMap} />
 
-        {/* Section 08 — REPORT (Issue Dispatch) */}
+        {/* Section 06 — REPORT (Issue Dispatch) */}
         <EditorialIssues />
 
-        {/* Section 08B — LOST & FOUND (Community Recovery Telemetry) */}
+        {/* Section 07 — LOST & FOUND (Community Recovery Telemetry) */}
         <EditorialLostFound />
-
-        {/* Section 09 — PREDICT (THE CAMPUS LEARNS) */}
-        <EditorialPredict />
 
         {/* Final Section & Footer */}
         <EditorialFooter
