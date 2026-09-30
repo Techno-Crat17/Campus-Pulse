@@ -11,8 +11,12 @@ export const EditorialFooter: React.FC = () => {
             UVERMA
           </span>
           <span className="text-[#111111]/20 dark:text-white/20">•</span>
-          <span className="text-[10px] text-[#888880] tracking-widest uppercase hover:text-[#DC2626] transition-colors cursor-default" title="Contributor: SPAUL RSHEKHAR">
-            SPAUL RSHEKHAR
+          <span className="text-[10px] text-[#888880] tracking-widest uppercase hover:text-[#DC2626] transition-colors cursor-default" title="Contributor: SPAUL">
+            SPAUL
+          </span>
+          <span className="text-[#111111]/20 dark:text-white/20">•</span>
+          <span className="text-[10px] text-[#888880] tracking-widest uppercase hover:text-[#DC2626] transition-colors cursor-default" title="Contributor: RSHEKHAR">
+            RSHEKHAR
           </span>
         </div>
       </div>
