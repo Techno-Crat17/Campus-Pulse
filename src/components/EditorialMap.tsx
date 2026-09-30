@@ -286,11 +286,6 @@ export const EditorialMap: React.FC<EditorialMapProps> = ({ onSelectBuildingForN
     <section id="sec-map" className="py-32 px-6 sm:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-16">
         
-        {/* Section Label */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold">
-          SECTION 04 // SPATIAL CANVAS &amp; MSRIT CAMPUS LOCATIONS
-        </div>
-
         {/* Section Title */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
           <div className="lg:col-span-8">

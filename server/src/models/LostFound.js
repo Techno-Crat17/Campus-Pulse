@@ -9,6 +9,7 @@ const LostFoundSchema = new mongoose.Schema({
     default: () => 'lf-' + Math.random().toString(36).substring(2, 9)
   },
   itemName: { type: String, required: true, trim: true },
+  itemTitle: { type: String, trim: true },
   title: { type: String, trim: true },
   category: {
     type: String,
@@ -44,6 +45,7 @@ const LostFoundSchema = new mongoose.Schema({
   },
   contactLocation: { type: String, default: 'Security Enquiry Desk' },
   image: { type: String, default: '' },
+  images: { type: [String], default: [] },
   isDemo: { type: Boolean, default: false }
 }, {
   timestamps: true

@@ -23,6 +23,8 @@ import { Building } from '../models/Building.js';
 import { Room } from '../models/Room.js';
 import { Issue } from '../models/Issue.js';
 import { User } from '../models/User.js';
+import { LostFound } from '../models/LostFound.js';
+import { INITIAL_LOST_FOUND_SEED } from '../controllers/lostFoundController.js';
 
 // Buildings verified data
 const VERIFIED_BUILDINGS = [
@@ -371,6 +373,16 @@ export async function seedDatabase() {
       );
     }
     console.log(`✅ Seeded ${SAMPLE_ISSUES.length} sample issue reports.`);
+
+    for (const lf of INITIAL_LOST_FOUND_SEED) {
+      await LostFound.findOneAndUpdate(
+        { id: lf.id },
+        { $setOnInsert: lf },
+        { upsert: true, new: true }
+      );
+    }
+    console.log(`✅ Seeded ${INITIAL_LOST_FOUND_SEED.length} sample Lost & Found records.`);
+
     const adminEmail = 'admin@campuspulse.edu';
     const adminPasswordHash = await bcrypt.hash('Admin@123', 10);
     await User.findOneAndUpdate(

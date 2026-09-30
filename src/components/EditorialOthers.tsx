@@ -169,10 +169,9 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
     <section id="sec-others" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
-        {/* Section Header Breadcrumb */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <span>SECTION 08 // CAMPUS UTILITIES & RESOURCES</span>
-          <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] bg-white dark:bg-[#1A1C24] px-3 py-1 border border-[#111111]/15 dark:border-white/15 text-[11px] self-start sm:self-auto">
+        {/* Header telemetry badge */}
+        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center justify-end">
+          <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] bg-white dark:bg-[#1A1C24] px-3 py-1 border border-[#111111]/15 dark:border-white/15 text-[11px]">
             <Info className="w-3.5 h-3.5 text-[#DC2626]" />
             <span>LIVE MSRIT DATA DISPATCH</span>
           </div>

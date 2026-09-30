@@ -7,7 +7,6 @@ import { EditorialFaculty } from './components/EditorialFaculty';
 import { EditorialIssues } from './components/EditorialIssues';
 import { EditorialLostFound } from './components/EditorialLostFound';
 import { EditorialOthers } from './components/EditorialOthers';
-import { EditorialFooter } from './components/EditorialFooter';
 import { HomePage } from './pages/HomePage';
 
 import { ThemeProvider } from './context/ThemeContext';
@@ -182,9 +181,6 @@ export function App() {
               <Route path="*" element={<NotFoundRoute />} />
             </Routes>
           </main>
-
-          {/* Persistent Footer on Every Route */}
-          <EditorialFooter />
 
         </div>
       </TimeProvider>

@@ -13,6 +13,7 @@ import {
   Tag
 } from 'lucide-react';
 import { EditorialHero } from '../components/EditorialHero';
+import { EditorialFooter } from '../components/EditorialFooter';
 import { isCampusOpen } from '../data/statusEngine';
 import { useTimeContext } from '../context/TimeContext';
 
@@ -161,6 +162,9 @@ export const HomePage: React.FC = () => {
         </div>
 
       </section>
+
+      {/* Persistent Footer on HomePage */}
+      <EditorialFooter />
     </div>
   );
 };

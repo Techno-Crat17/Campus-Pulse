@@ -70,9 +70,8 @@ export const MapboxCampusExplorer: React.FC<MapboxCampusExplorerProps> = ({ init
     <section id="sec-map-explore" className="py-32 px-6 sm:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-12">
         
-        {/* Section Label */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center justify-between">
-          <span>SECTION 04 // NODE-BASED CAMPUS EXPLORATION MAP</span>
+        {/* Header telemetry badge */}
+        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center justify-end">
           <span className="text-[#111111] bg-[#111111]/5 px-3 py-1 border border-[#111111]/15">
             MSRIT BENGALURU • DATA SOURCE: FACULTY_MSRIT.JSON
           </span>

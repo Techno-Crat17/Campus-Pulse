@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   Send,
   PlusCircle,
-  User
+  User,
+  Upload
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
@@ -32,18 +33,38 @@ export const EditorialLostFound: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<LostFoundItem | null>(null);
 
-  // Form State: 6 Mandatory Fields
+  // Form State: 7 Mandatory Fields
   const [category, setCategory] = useState<LostFoundItem['category']>('Electronics');
   const [itemTitle, setItemTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [foundAt, setFoundAt] = useState<string>('');
   const [foundOn, setFoundOn] = useState<string>('');
   const [usn, setUsn] = useState<string>('');
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   // Form feedback state
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>('');
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Image size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        setImagePreview(reader.result);
+        setErrorMsg('');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Synchronize items from backend or storage on mount
   useEffect(() => {
@@ -147,6 +168,10 @@ export const EditorialLostFound: React.FC = () => {
       setErrorMsg('Please enter your USN.');
       return;
     }
+    if (!imagePreview) {
+      setErrorMsg('Please upload at least one image of the found item.');
+      return;
+    }
 
     const cleanUsn = usn.trim().toUpperCase();
 
@@ -171,7 +196,9 @@ export const EditorialLostFound: React.FC = () => {
       foundAt: foundAt.trim(),
       foundOn: foundOn.trim(),
       usn: cleanUsn,
-      status: 'found'
+      status: 'found',
+      image: imagePreview,
+      images: [imagePreview]
     };
 
     try {
@@ -192,7 +219,7 @@ export const EditorialLostFound: React.FC = () => {
         contactLocation: 'Security Enquiry Desk',
         statusLabel: 'FOUND & SECURED',
         type: 'found',
-        image: '',
+        image: imagePreview,
         isDemo: false
       };
 
@@ -212,6 +239,7 @@ export const EditorialLostFound: React.FC = () => {
       setFoundAt('');
       setFoundOn('');
       setUsn('');
+      setImagePreview('');
       setCategory('Electronics');
 
       setTimeout(() => {
@@ -235,7 +263,7 @@ export const EditorialLostFound: React.FC = () => {
         contactLocation: 'Security Enquiry Desk',
         statusLabel: 'FOUND & SECURED',
         type: 'found',
-        image: '',
+        image: imagePreview,
         isDemo: false
       };
 
@@ -248,6 +276,7 @@ export const EditorialLostFound: React.FC = () => {
       setFoundAt('');
       setFoundOn('');
       setUsn('');
+      setImagePreview('');
       setCategory('Electronics');
 
       setTimeout(() => {
@@ -268,14 +297,10 @@ export const EditorialLostFound: React.FC = () => {
           {/* Left Column (5 Cols): Section Title & Overview */}
           <div className="lg:col-span-5 space-y-6">
             <div>
-              <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold mb-3 flex items-center gap-2 flex-wrap">
-                <Tag className="w-4 h-4 text-[#DC2626]" />
-                <span>SECTION 07 // COMMUNITY LOST &amp; FOUND DISPATCH</span>
-              </div>
-              <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-black text-[#111111] uppercase tracking-tighter leading-none">
                 LOST &amp;
               </h2>
-              <h2 className="text-subgiant font-syne text-[#DC2626] uppercase tracking-tighter leading-none">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-syne font-black text-[#DC2626] uppercase tracking-tighter leading-none">
                 FOUND
               </h2>
             </div>
@@ -306,9 +331,6 @@ export const EditorialLostFound: React.FC = () => {
                 <PlusCircle className="w-4 h-4 text-[#DC2626]" />
                 <span>REPORT FOUND ITEM</span>
               </div>
-              <span className="text-[10px] text-[#DC2626] font-bold uppercase tracking-wider">
-                ALL 6 FIELDS MANDATORY
-              </span>
             </div>
 
             {/* Success Notification */}
@@ -450,6 +472,46 @@ export const EditorialLostFound: React.FC = () => {
                     FORMAT: 1MS[YEAR][BRANCH][001-300] (OPTIONAL -T)
                   </div>
                 </div>
+              </div>
+
+              {/* Field 7: Image Upload (Mandatory) */}
+              <div className="space-y-1.5">
+                <label className="text-[#666660] uppercase tracking-widest font-bold block">
+                  7. ITEM PHOTO *
+                </label>
+                {imagePreview ? (
+                  <div className="relative border-2 border-[#111111]/25 p-2 bg-white flex items-center gap-4">
+                    <img
+                      src={imagePreview}
+                      alt="Uploaded preview"
+                      className="w-20 h-20 object-cover border border-[#111111]/20"
+                    />
+                    <div className="flex-1 text-xs space-y-1">
+                      <div className="font-bold text-[#111111] uppercase">PHOTO ATTACHED</div>
+                      <div className="text-[10px] text-[#666660]">Ready for dispatch submission</div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setImagePreview('')}
+                      className="px-2.5 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-100 text-[11px] font-bold uppercase transition-colors cursor-pointer"
+                    >
+                      REMOVE
+                    </button>
+                  </div>
+                ) : (
+                  <label className="border-2 border-dashed border-[#111111]/25 hover:border-[#DC2626] p-4 bg-white/60 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors group">
+                    <Upload className="w-5 h-5 text-[#888880] group-hover:text-[#DC2626] transition-colors" />
+                    <span className="text-[11px] text-[#666660] group-hover:text-[#111111] font-bold uppercase">
+                      CLICK TO UPLOAD PHOTO (PNG, JPG, WEBP)
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
 
               {/* Submit Button */}

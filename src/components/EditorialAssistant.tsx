@@ -208,14 +208,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     <section id="sec-ask" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       <div className="max-w-[1700px] mx-auto space-y-10 sm:space-y-14">
         
-        {/* Section Header */}
-        <div className="border-b border-[#111111]/10 dark:border-white/10 pb-4">
-          <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-[#DC2626] animate-pulse" />
-            <span>SECTION 02 // ASK CAMPUS AI &amp; QUERY ASSISTANT</span>
-          </div>
-        </div>
-
         {/* Section Title */}
         <div>
           <h2 className="text-subgiant font-syne text-[#111111] dark:text-[#F3F3EE] uppercase tracking-tighter leading-none">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  BookOpen,
   Zap,
   Wind,
   GraduationCap,
@@ -131,10 +130,6 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-[#111111]/10 pb-8 gap-6">
           <div className="space-y-3">
-            <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-[#DC2626]" />
-              <span>SECTION 04 // CAMPUS LIBRARIES & STUDY SPACES</span>
-            </div>
             <div>
               <h2 className="text-4xl sm:text-6xl font-syne text-[#111111] font-extrabold uppercase tracking-tighter leading-none">
                 FIND

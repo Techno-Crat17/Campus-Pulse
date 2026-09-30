@@ -941,12 +941,6 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     <section id="sec-map" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       <div id="sec-map-explore" className="max-w-[1700px] mx-auto space-y-10">
 
-        {/* Section Header Breadcrumb */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
-          <Compass className="w-4 h-4 text-[#DC2626]" />
-          <span>SECTION 03 // REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER</span>
-        </div>
-
         {/* Section Title & Map Controls */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
           <div className="lg:col-span-7">
