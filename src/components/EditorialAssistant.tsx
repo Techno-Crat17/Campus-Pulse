@@ -22,8 +22,8 @@ import {
 } from 'lucide-react';
 import { useTimeContext } from '../context/TimeContext';
 import { getLibraryOccupancyDetails } from '../data/libraryData';
-import { processCampusAiQuery } from '../data/campusAiEngine';
-import type { CampusAiContext, CampusAiResult } from '../data/campusAiEngine';
+import { queryCampusAi } from '../services/api';
+import type { CampusAiResult } from '../data/campusAiEngine';
 
 interface EditorialAssistantProps {
   onSelectBuildingForMap: (id: string) => void;
@@ -103,10 +103,12 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const recognitionRef = useRef<any>(null);
 
-  const aiContextRef = useRef<CampusAiContext>({ history: [] });
+  const sessionIdRef = useRef<string>('session-' + Math.random().toString(36).substring(2, 9));
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const [activeResult, setActiveResult] = useState<CampusAiResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
 
   const handleCopyEmail = (email: string) => {
     navigator.clipboard.writeText(email);
@@ -157,8 +159,20 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   useEffect(() => {
     async function loadInitial() {
       try {
-        const initialRes = await processCampusAiQuery("What is Dr. Yogish H K's email?", simulatedTime, aiContextRef.current);
-        setActiveResult(initialRes);
+        const initialRes = await queryCampusAi("What is Dr. Yogish H K's email?", sessionIdRef.current);
+        if (initialRes && initialRes.answer) {
+          if (initialRes.resultObject && initialRes.resultObject.queryText) {
+            setActiveResult(initialRes.resultObject);
+          } else {
+            setActiveResult({
+              queryText: "What is Dr. Yogish H K's email?",
+              normalizedQuery: "what is dr. yogish h k's email?",
+              intents: [initialRes.intent as any],
+              responseText: initialRes.answer,
+              matchedFaculty: initialRes.data?.faculty || (initialRes.data?.name && initialRes.data?.email ? initialRes.data : undefined)
+            });
+          }
+        }
       } catch {
         // Fallback
       }
@@ -185,24 +199,49 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     const text = textToProcess.trim();
     if (!text) return;
 
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setIsProcessing(true);
     setActiveResult(null);
     setQuery(text);
     setErrorMessage(null);
 
     try {
-      const res = await processCampusAiQuery(text, simulatedTime, aiContextRef.current);
-      if (res.contextUpdated) {
-        aiContextRef.current = res.contextUpdated;
+      const res = await queryCampusAi(text, sessionIdRef.current, controller.signal);
+      if (controller.signal.aborted) return;
+
+      if (res && res.answer) {
+        if (res.resultObject && res.resultObject.queryText) {
+          setActiveResult(res.resultObject);
+        } else {
+          setActiveResult({
+            queryText: text,
+            normalizedQuery: text.toLowerCase(),
+            intents: [res.intent as any],
+            responseText: res.answer,
+            matchedFaculty: res.data?.faculty || (res.data?.name && res.data?.email ? res.data : undefined),
+            matchedLibrary: res.data?.library || undefined,
+            matchedRoom: res.data?.room || undefined,
+            matchedBlock: res.data?.building || undefined,
+            actionTargetId: res.data?.nodeId || res.data?.buildingId || (res.actions?.find((a: any) => a.type === 'VIEW_ON_MAP')?.value || res.actions?.find((a: any) => a.type === 'VIEW_ON_MAP')?.targetId)
+          });
+        }
       }
-      setActiveResult(res);
     } catch (err: any) {
+      if (err.name === 'AbortError') return;
       console.error('[EditorialAssistant] Query execution error:', err);
       setErrorMessage('Campus data is temporarily unavailable. Please try again.');
     } finally {
-      setIsProcessing(false);
+      if (!controller.signal.aborted) {
+        setIsProcessing(false);
+      }
     }
   };
+
 
   return (
     <section id="sec-ask" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">

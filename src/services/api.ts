@@ -530,14 +530,19 @@ export async function fetchClubById(idOrName: string): Promise<{ success: boolea
 // 7. ASK CAMPUS AI API
 // ----------------------------------------------------
 
-export async function queryCampusAi(query: string, sessionId?: string): Promise<{ intent: string; answer: string; data?: any; actions?: any[] }> {
+export async function queryCampusAi(
+  query: string,
+  sessionId?: string,
+  signal?: AbortSignal
+): Promise<{ intent: string; answer: string; data?: any; actions?: any[]; resultObject?: any }> {
   try {
     const isOnline = await checkBackendHealth();
     if (isOnline) {
       const res = await fetch(`${API_BASE_URL}/ai/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, sessionId })
+        body: JSON.stringify({ query, sessionId }),
+        signal: signal || AbortSignal.timeout(8000)
       });
       if (res.ok) {
         const json = await res.json();
@@ -546,15 +551,19 @@ export async function queryCampusAi(query: string, sessionId?: string): Promise<
             intent: json.intent,
             answer: json.answer,
             data: json.data,
-            actions: json.actions
+            actions: json.actions,
+            resultObject: json
           };
         }
       }
     }
-  } catch (err) {
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw err;
+    }
     console.warn('[API Client] queryCampusAi failed. Falling back to local AI engine.', err);
   }
-  return fallbackQueryCampusAi(query);
+  return fallbackQueryCampusAi(query, sessionId);
 }
 
 // ----------------------------------------------------
@@ -733,12 +742,15 @@ function fallbackGlobalSearch(query: string) {
   return { query, faculty, libraries, buildings, rooms, issues };
 }
 
-async function fallbackQueryCampusAi(query: string) {
+async function fallbackQueryCampusAi(query: string, _sessionId?: string) {
   const result = await processCampusAiQuery(query);
   const textAnswer = (typeof result === 'object' && result?.responseText) ? result.responseText : "I don't have that information in the current Campus Pulse data.";
   return {
     intent: (typeof result === 'object' && result?.intents?.[0]) ? result.intents[0] : 'GENERAL_CAMPUS_QUERY',
-    answer: textAnswer
+    answer: textAnswer,
+    data: (result as any)?.data || null,
+    actions: (result as any)?.actions || [],
+    resultObject: result
   };
 }
 
