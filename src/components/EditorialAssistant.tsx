@@ -323,7 +323,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
 
                 <div className="flex justify-between items-center font-mono text-[11px] text-[#666660] dark:text-gray-400">
                   <span>PRESS ENTER TO RUN SEARCH</span>
-                  <span>TRY NATURAL LANGUAGE QUERIES</span>
                 </div>
               </form>
             </div>
