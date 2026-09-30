@@ -213,11 +213,13 @@ export function detectIntents(normQuery, rawQuery = '') {
   const hasCabin = /\b(cabin|office|sitting)\b/.test(q);
   const hasAvailability = /\b(available|availability|free|khali|vacant|busy|in use|occupied|booked)\b/.test(q);
   const hasSchedule = /\b(schedule|timetable|class|lecture)\b/.test(q);
-  const hasLocation = /\b(where|kaha|kidhar|location|located|floor|block|building|map|show on map|dikhao)\b/.test(q);
+  const hasLocation = /\b(where|kaha|kidhar|location|located|floor|block|building|map|show on map|dikhao|dikha|batao|bta)\b/.test(q);
   const hasNavigation = /\b(kaise jana|waha kaise|directions|route|how to go|navigate)\b/.test(q);
   const hasDesignation = /\b(designation|title|post|role)\b/.test(q);
-  const hasDepartment = /\b(department|dept|branch)\b/.test(q);
-  const hasFacultyList = /\b(teachers|faculty|professors|teacher log|faculty list|teachers list|teachers dikha)\b/.test(q);
+  const hasDepartmentWord = /\b(department|dept|branch)\b/.test(q);
+
+  const isFacultyQuery = /\b(faculty|faculties|facuty|faculity|teacher|teachers|teahcer|teahcers|professor|professors|staff|member|members)\b/i.test(q);
+  const deptMatch = /\b(cse|ise|ece|eee|ee|et|ei|me|cv|aiml|cy|biotech|ind|computer science|information science|electronics|electrical|medical electronics)\b/i.test(q);
 
   const hasOccupancy = /\b(occupancy|crowded|least crowded|busy|empty|how many people|kitne log|jagah hai)\b/.test(q);
   const hasLibraryHours = /\b(hours|open|close|band|timing|timings|kab khulti|kitne baje)\b/.test(q);
@@ -229,10 +231,10 @@ export function detectIntents(normQuery, rawQuery = '') {
   const hasEmergency = /\b(emergency|ambulance|fire|anti ragging|helpline|police|contact number)\b/.test(q);
 
   const hasIssues = /\b(issue|issues|problem|complaint|complain|wifi|water|electricity|broken|repair|status|resolve)\b/.test(q);
-  const hasRoom = /\b(room|classroom|lab|lecture hall|lh|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/.test(q);
+  const hasExplicitRoomKeyword = /\b(room|rooms|classroom|classrooms|lab|labs|lecture hall|lh|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/.test(q);
   const mentionsBuilding = /\b(lhc|esb|crd|apex|building|block)\b/.test(q);
 
-  // Strict HOD Intents Priority
+  // 1. Strict HOD Intents Priority
   if (isHod) {
     if (hasEmail) {
       intents.push('DEPARTMENT_HOD_EMAIL');
@@ -246,7 +248,23 @@ export function detectIntents(normQuery, rawQuery = '') {
     } else {
       intents.push('DEPARTMENT_HOD');
     }
-    return intents; // HOD intents strictly override lower-level search
+    return intents;
+  }
+
+  // 2. Strict Faculty Query Priority (Must NOT route to room search unless explicit room keyword present)
+  if (isFacultyQuery && !hasExplicitRoomKeyword) {
+    if (hasCabin) {
+      intents.push('FACULTY_CABIN');
+    } else if (hasEmail) {
+      intents.push('FACULTY_EMAIL');
+    } else if (deptMatch || hasDepartmentWord) {
+      intents.push('FACULTY_DEPARTMENT');
+    } else if (hasLocation && !mentionsBuilding && !mentionsLibrary) {
+      intents.push('FACULTY_LOCATION');
+    } else {
+      intents.push('FACULTY_SEARCH');
+    }
+    return intents;
   }
 
   if (hasEvents) intents.push('EVENT_SEARCH');
@@ -259,10 +277,14 @@ export function detectIntents(normQuery, rawQuery = '') {
 
   if (hasNavigation) intents.push('CAMPUS_NAVIGATION');
 
-  if (hasRoom || /\b\d{3}\b/.test(q)) {
-    if (hasAvailability) intents.push('ROOM_AVAILABILITY');
-    else if (hasLocation) intents.push('ROOM_LOCATION');
-    else intents.push('ROOM_SEARCH');
+  if (hasExplicitRoomKeyword || /\b\d{3}\b/.test(q)) {
+    if (hasLocation || /\b(where|kaha|kidhar|location)\b/i.test(q)) {
+      intents.push('ROOM_LOCATION');
+    } else if (hasAvailability) {
+      intents.push('ROOM_AVAILABILITY');
+    } else {
+      intents.push('ROOM_SEARCH');
+    }
   }
 
   if (hasIssues) {
@@ -277,18 +299,18 @@ export function detectIntents(normQuery, rawQuery = '') {
     if (intents.length === 0) intents.push('LIBRARY_SEARCH');
   }
 
-  if (mentionsBuilding && (hasLocation || q.includes('dikhao')) && !mentionsLibrary && !hasRoom && intents.length === 0) {
+  if (mentionsBuilding && (hasLocation || q.includes('dikhao')) && !mentionsLibrary && !hasExplicitRoomKeyword && intents.length === 0) {
     intents.push('BUILDING_LOCATION');
   }
 
   if (hasEmail) intents.push('FACULTY_EMAIL');
   if (hasCabin) intents.push('FACULTY_CABIN');
   if (hasDesignation) intents.push('FACULTY_DESIGNATION');
-  if (hasDepartment) intents.push('FACULTY_DEPARTMENT');
-  if (hasLocation && !mentionsLibrary && !mentionsBuilding && !hasRoom) intents.push('FACULTY_LOCATION');
-  if (hasAvailability && !hasRoom && intents.length === 0) intents.push('FACULTY_AVAILABILITY');
-  if (hasSchedule && !hasRoom) intents.push('FACULTY_SCHEDULE');
-  if (hasFacultyList && intents.length === 0) intents.push('FACULTY_SEARCH');
+  if (hasDepartmentWord) intents.push('FACULTY_DEPARTMENT');
+  if (hasLocation && !mentionsLibrary && !mentionsBuilding && !hasExplicitRoomKeyword) intents.push('FACULTY_LOCATION');
+  if (hasAvailability && !hasExplicitRoomKeyword && intents.length === 0) intents.push('FACULTY_AVAILABILITY');
+  if (hasSchedule && !hasExplicitRoomKeyword) intents.push('FACULTY_SCHEDULE');
+  if (isFacultyQuery && intents.length === 0) intents.push('FACULTY_SEARCH');
 
   if (intents.length === 0) {
     if (hasLocation) intents.push('CAMPUS_LOCATION');
@@ -678,9 +700,10 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     if (wantsLocation) {
       const locText = dynStatus.currentEvent ? `${dynStatus.currentLocation} (${dynStatus.currentEvent})` : dynStatus.currentLocation;
       const ans = `${fac.name}\n📍 ${locText}\nStatus: ${dynStatus.status}\nNext Available: ${dynStatus.nextAvailableTime}`;
+      const facLocIntent = (intents.includes('FACULTY_CABIN') || /\bcabin\b/i.test(rawQuery + ' ' + normQuery)) ? 'FACULTY_CABIN' : 'FACULTY_LOCATION';
       const resObj = {
         success: true,
-        intent: 'FACULTY_LOCATION',
+        intent: facLocIntent,
         answer: ans,
         data: { facultyId: fac.id, name: fac.name, cabinLocation: fac.cabinLocation, status: dynStatus.status, currentLocation: dynStatus.currentLocation },
         actions: [{ type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }]
@@ -726,7 +749,7 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
         : `${deptQuery} Department Faculty Members (Showing top 5):\n${listStr}`;
       const resObj = {
         success: true,
-        intent: 'FACULTY_SEARCH',
+        intent: intents.includes('FACULTY_DEPARTMENT') ? 'FACULTY_DEPARTMENT' : 'FACULTY_SEARCH',
         answer: ans,
         data: { faculty: facultyList, total: facultyList.length },
         actions: [{ type: 'VIEW_ALL_FACULTY' }]
@@ -854,9 +877,15 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
       ? `Room ${roomNum} (Classroom)\n📍 ${bldg} Block\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`
       : `Room ${roomNum} (Classroom)\n📍 ${bldg} Block\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`;
 
+    const primaryRoomIntent = intents.includes('ROOM_LOCATION')
+      ? 'ROOM_LOCATION'
+      : intents.includes('ROOM_SEARCH')
+      ? 'ROOM_SEARCH'
+      : 'ROOM_AVAILABILITY';
+
     const resObj = {
       success: true,
-      intent: 'ROOM_AVAILABILITY',
+      intent: primaryRoomIntent,
       answer: ans,
       data: { roomNumber: roomNum, building: bldg, status: 'AVAILABLE' },
       actions: [{ type: 'VIEW_ON_MAP', targetId: `block-${bldg.toLowerCase()}` }]

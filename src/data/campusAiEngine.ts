@@ -658,8 +658,20 @@ export function detectIntents(normalizedQuery: string, context?: CampusAiContext
     }
   }
 
-  // 1. Room & Classroom Intents (High Priority)
-  if (hasRoom || (hasRoomAvailability && (mentionsBuilding || /\broom\b/i.test(q)))) {
+  const isFacultyQuery = /\b(faculty|faculties|facuty|faculity|teacher|teachers|teahcer|teahcers|professor|professors|staff|member|members)\b/i.test(q);
+  const deptMatch = /\b(cse|ise|ece|eee|ee|et|ei|me|cv|aiml|cy|biotech|ind|computer science|information science|electronics|electrical|medical electronics)\b/i.test(q);
+  const hasExplicitRoomKeyword = /\b(room|rooms|classroom|classrooms|lab|labs|lecture hall|lh|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/i.test(q);
+
+  if (isFacultyQuery && !hasExplicitRoomKeyword) {
+    if (deptMatch || /\b(department|dept|branch)\b/.test(q)) {
+      intents.push('FACULTY_DEPARTMENT');
+    } else {
+      intents.push('FACULTY_SEARCH');
+    }
+  }
+
+  // 1. Room & Classroom Intents (High Priority only when explicit room keyword present)
+  if (hasExplicitRoomKeyword || (hasRoomAvailability && (mentionsBuilding || /\broom\b/i.test(q)))) {
     if (hasRoomAvailability) {
       intents.push('ROOM_AVAILABILITY');
     } else if (isLocationQuery) {
@@ -831,7 +843,10 @@ export function extractEntities(
   }
 
   // Handle Facility & Room Name lookups (e.g. "Stardust Lab", "Cloud & Security Lab", "Hardware Lab", "Control Systems Lab", "LHC Seminar Hall – II", "Antenna Fabrication Unit")
-  if (!entities.matchedRoom && !(entities.departmentCode && entities.roomCategory)) {
+  const isFacultyQueryInEntities = _intents.some(i => i.startsWith('FACULTY_') || i.startsWith('DEPARTMENT_HOD')) || /\b(faculty|faculties|facuty|faculity|teacher|teachers|professor|professors|staff|member|members)\b/i.test(normQ + ' ' + rawQuery);
+  const hasExplicitRoomInEntities = /\b(room|rooms|classroom|classrooms|lab|labs|lecture hall|lh|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/i.test(normQ);
+
+  if (!entities.matchedRoom && !(entities.departmentCode && entities.roomCategory) && (!isFacultyQueryInEntities || hasExplicitRoomInEntities)) {
     const qClean = normQ
       .replace(/\b(where is|where are|where can i find|where do i find|where's|find|locate|show me|address of|kaha hai|kahan hai|kidhar hai|kaha hain|kahan hain|kidhar hain|kaha h|kidhar h|kahan h|kaha milega|kaha milenge|location batao|location btao|kaun sa room hai|kya hai|kis floor pe|kis floor par|kis block me|kis building me|batao|btao|hai|hain|h)\b/gi, ' ')
       .replace(/\s+/g, ' ')
@@ -2735,19 +2750,27 @@ export async function processCampusAiQuery(
     return maintainConversationContext(emergencyAns, rawQuery, context);
   }
 
-  // 2. Exact Room / Location Handler (Highest deterministic priority for locations)
+  // 2. Faculty Handler (Prioritize Faculty Handler over Room Handler for faculty queries)
+  if (intents.some(i => i.startsWith('FACULTY_') || i.startsWith('DEPARTMENT_HOD'))) {
+    const facultyAns = getFacultyAnswer(entities, intents, simulatedTime);
+    if (facultyAns) {
+      return maintainConversationContext(facultyAns, rawQuery, context);
+    }
+  }
+
+  // 3. Exact Room / Location Handler
   const roomAns = getRoomAnswer(entities, intents, normQ, rawQuery);
-  if (roomAns) {
+  if (roomAns && !intents.some(i => i === 'FACULTY_DEPARTMENT' || i === 'FACULTY_SEARCH')) {
     return maintainConversationContext(roomAns, rawQuery, context);
   }
 
-  // 3. Library & Occupancy Handler
+  // 4. Library & Occupancy Handler
   const libAns = getLibraryAnswer(entities, intents, normQ, simulatedTime);
   if (libAns) {
     return maintainConversationContext(libAns, rawQuery, context);
   }
 
-  // 4. Faculty Handler (Includes faculty ambiguity guard)
+  // 5. Fallback Faculty Handler (if not matched above)
   const facultyAns = getFacultyAnswer(entities, intents, simulatedTime);
   if (facultyAns) {
     return maintainConversationContext(facultyAns, rawQuery, context);

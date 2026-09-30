@@ -696,12 +696,12 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                   )}
 
                   {/* Structured Room Card Result */}
-                  {activeResult.matchedRoom && (
+                  {activeResult.matchedRoom && !activeResult.matchedFaculty && !activeResult.intents?.some((i: any) => String(i).startsWith('FACULTY_') || String(i).startsWith('DEPARTMENT_HOD')) && (
                     <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
                       <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
                         <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1.5">
                           <Building2 className="w-3.5 h-3.5 text-[#DC2626]" />
-                          <span>OFFICIAL MSRIT ROOM REGISTRY</span>
+                          <span>VERIFIED CLASSROOM / ROOM DETAILS</span>
                         </span>
                         <span className="text-[#DC2626] font-bold">{activeResult.matchedRoom.floor ? activeResult.matchedRoom.floor.toUpperCase() : 'VERIFIED'}</span>
                       </div>
