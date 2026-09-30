@@ -82,7 +82,7 @@ export const EditorialLostFound: React.FC = () => {
               LOST &amp;
             </h2>
             <h2 className="text-subgiant font-syne text-[#DC2626] uppercase tracking-tighter leading-none">
-              FOUND.
+              FOUND
             </h2>
           </div>
 
