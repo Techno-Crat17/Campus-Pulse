@@ -857,6 +857,45 @@ export function getFacultyAnswer(
     }
   }
 
+  // Dynamic Faculty Status Queries: "kaun lab me hai", "kaun class me hai", "kaun meeting me hai", "kaun cabin me available hai"
+  const isLabQuery = /\b(kaun.*lab|who.*in.*lab|lab me kaun|lab me hai|in lab)\b/i.test(rawQuery + ' ' + normQ);
+  const isClassQuery = /\b(kaun.*class|who.*in.*class|class me kaun|class le raha|in class|teaching)\b/i.test(rawQuery + ' ' + normQ);
+  const isMeetingQuery = /\b(kaun.*meeting|who.*in.*meeting|meeting me kaun|in meeting)\b/i.test(rawQuery + ' ' + normQ);
+  const isCabinQuery = /\b(kaun.*cabin|who.*in.*cabin|cabin me kaun|cabin me available|free hai|kaun available hai|faculty.*free|who is available)\b/i.test(rawQuery + ' ' + normQ);
+
+  if ((isLabQuery || isClassQuery || isMeetingQuery || isCabinQuery) && !matchedFaculty) {
+    const consultationOpen = isFacultyConsultationOpen(simulatedTime);
+    if (!consultationOpen) {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['FACULTY_AVAILABILITY'],
+        responseText: "College is currently closed.\n\nFaculty Working Hours: Monday–Friday 09:00–17:00, Saturday 09:00–13:30 (Sunday closed).",
+        subText: "Faculty consultation strictly follows Campus Operating Hours."
+      };
+    }
+
+    const targetStatus = isLabQuery ? 'IN LAB' : isClassQuery ? 'IN CLASS' : isMeetingQuery ? 'IN MEETING' : 'AVAILABLE IN CABIN';
+    const matching = FACULTY_MSRIT_DATA.filter((f) => {
+      const live = getFacultyLiveStatus(f, simulatedTime);
+      return live.status === targetStatus || (isCabinQuery && live.status.includes('AVAILABLE'));
+    });
+
+    const sample = matching.slice(0, 5);
+    const listText = sample.map((f) => {
+      const live = getFacultyLiveStatus(f, simulatedTime);
+      return `• ${f.name} (${f.department}) — 📍 ${live.currentLocation}${live.activeEvent ? ` (${live.activeEvent})` : ''}`;
+    }).join('\n');
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['FACULTY_AVAILABILITY'],
+      responseText: `Faculty Members currently ${targetStatus} (${matching.length} total):\n\n${listText}${matching.length > 5 ? `\n...and ${matching.length - 5} more.` : ''}`,
+      subText: "Dynamic status calculated from today's active schedule."
+    };
+  }
+
   // 2. Availability General Queries
   if (intents.includes('FACULTY_AVAILABILITY') && !matchedFaculty) {
     const consultationOpen = isFacultyConsultationOpen(simulatedTime);
@@ -872,7 +911,7 @@ export function getFacultyAnswer(
 
     const availableFaculty = FACULTY_MSRIT_DATA.filter((f) => {
       const status = getFacultyLiveStatus(f, simulatedTime);
-      return status.liveStatus === 'Available for Consultation' || status.liveStatus.includes('Available');
+      return status.status === 'AVAILABLE IN CABIN' || status.status.includes('AVAILABLE');
     });
 
     const sample = availableFaculty.slice(0, 5);
@@ -933,15 +972,15 @@ export function getFacultyAnswer(
   // 3. Location / Cabin Only
   if (wantsLocation && !wantsEmail) {
     const locText = liveInfo.activeEvent
-      ? `${liveInfo.liveLocation} (${liveInfo.activeEvent})`
-      : fac.cabinLocation;
+      ? `${liveInfo.currentLocation} (${liveInfo.activeEvent})`
+      : liveInfo.currentLocation;
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_LOCATION'],
-      responseText: `${fac.name}\n📍 ${locText}`,
-      subText: `Building: ${fac.primaryBuilding || 'LHC Block'} • Status: ${liveInfo.liveStatus}`,
-      matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+      responseText: `${fac.name}\n📍 ${locText}\nStatus: ${liveInfo.status}`,
+      subText: `Building: ${fac.primaryBuilding || 'LHC Block'} • Next Available: ${liveInfo.nextAvailableTime}`,
+      matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
@@ -949,29 +988,32 @@ export function getFacultyAnswer(
   // 4. Multi-Intent: Email AND Location
   if (wantsEmail && wantsLocation) {
     const locText = liveInfo.activeEvent
-      ? `${liveInfo.liveLocation} (${liveInfo.activeEvent})`
-      : fac.cabinLocation;
+      ? `${liveInfo.currentLocation} (${liveInfo.activeEvent})`
+      : liveInfo.currentLocation;
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_EMAIL', 'FACULTY_LOCATION'],
-      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📍 ${locText}\n📧 ${fac.email || 'N/A'}`,
+      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📍 ${locText}\nStatus: ${liveInfo.status}\n📧 ${fac.email || 'N/A'}`,
       subText: `Building: ${fac.primaryBuilding || 'LHC Block'}`,
-      matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+      matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // 5. Availability Only
-  if (wantsAvailability) {
-    const statusIcon = liveInfo.liveStatus === 'Available for Consultation' ? '🟢' : '🔴';
+  // 5. Availability Only / Activity Query ("yogish available hai?", "yogish abhi kya kar rahe hain?", "yogish class me hai?")
+  if (wantsAvailability || /\b(kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai)\b/i.test(normQ)) {
+    const statusIcon = liveInfo.status.includes('AVAILABLE') ? '🟢' : liveInfo.status === 'COLLEGE CLOSED' ? '⚪' : '🔴';
+    const locLine = liveInfo.activeEvent
+      ? `📍 Location: ${liveInfo.currentLocation} (${liveInfo.activeEvent})`
+      : `📍 Cabin: ${liveInfo.currentLocation}`;
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_AVAILABILITY'],
-      responseText: `${fac.name}\n${statusIcon} ${liveInfo.liveStatus}\nCabin: ${fac.cabinLocation}`,
+      responseText: `${fac.name}\n${statusIcon} ${liveInfo.status}\n${locLine}\nNext Available: ${liveInfo.nextAvailableTime}`,
       subText: `Department: ${fac.department}`,
-      matchedFaculty: { ...fac, status: liveInfo.liveStatus, currentLocation: liveInfo.liveLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+      matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }

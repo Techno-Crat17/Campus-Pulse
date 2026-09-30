@@ -356,6 +356,16 @@ export function formatOccupancy(value: number): string {
   return `${Math.round(value)}%`;
 }
 
+export function getCurrentCampusTime(): Date {
+  const now = new Date();
+  try {
+    const kolkataStr = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+    return new Date(kolkataStr);
+  } catch {
+    return now;
+  }
+}
+
 /**
  * Helper to extract time values from Date or SimulatedTimeState
  */
@@ -374,7 +384,7 @@ export function parseCurrentTime(currentTime?: Date | SimulatedTimeState | null)
       hours = currentTime.hour;
       minutes = currentTime.minute;
     } else {
-      const now = new Date();
+      const now = getCurrentCampusTime();
       day = now.getDay();
       hours = now.getHours();
       minutes = now.getMinutes();
@@ -384,7 +394,7 @@ export function parseCurrentTime(currentTime?: Date | SimulatedTimeState | null)
     hours = currentTime.getHours();
     minutes = currentTime.getMinutes();
   } else {
-    const now = new Date();
+    const now = getCurrentCampusTime();
     day = now.getDay();
     hours = now.getHours();
     minutes = now.getMinutes();

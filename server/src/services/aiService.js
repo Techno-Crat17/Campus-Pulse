@@ -647,14 +647,16 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     const wantsEmail = intents.includes('FACULTY_EMAIL') || /\b(mail|email|gmail|e-mail)\b/i.test(rawQuery + ' ' + normQuery);
     const wantsLocation = intents.includes('FACULTY_LOCATION') || intents.includes('FACULTY_CABIN') || /\b(kaha|kahan|kidhar|where|location|cabin|sitting|milenge|milega)\b/i.test(rawQuery + ' ' + normQuery);
     const wantsDept = intents.includes('FACULTY_DEPARTMENT') || /\b(dept|department)\b/i.test(rawQuery + ' ' + normQuery);
+    const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai)\b/i.test(rawQuery + ' ' + normQuery);
 
     if (wantsLocation && wantsEmail) {
-      const ans = `${fac.name}\n📍 ${fac.cabinLocation || 'Main Block'}\n✉️ ${fac.email || 'Not available'}`;
+      const locText = dynStatus.currentEvent ? `${dynStatus.currentLocation} (${dynStatus.currentEvent})` : dynStatus.currentLocation;
+      const ans = `${fac.name}\n📍 ${locText}\nStatus: ${dynStatus.status}\n✉️ ${fac.email || 'Not available'}`;
       return {
         success: true,
         intent: 'FACULTY_LOCATION_AND_EMAIL',
         answer: ans,
-        data: { facultyId: fac.id, name: fac.name, email: fac.email, cabinLocation: fac.cabinLocation },
+        data: { facultyId: fac.id, name: fac.name, email: fac.email, cabinLocation: fac.cabinLocation, status: dynStatus.status, currentLocation: dynStatus.currentLocation },
         actions: [
           { type: 'COPY_EMAIL', value: fac.email },
           { type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }
@@ -686,24 +688,85 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
       };
     }
 
-    if (wantsLocation) {
-      const ans = `${fac.name}\n📍 ${fac.cabinLocation || 'LHC Block'}\n🟢 Status: ${dynStatus.status}`;
+    if (wantsAvailability) {
+      const statusIcon = dynStatus.status.includes('AVAILABLE') ? '🟢' : dynStatus.status === 'COLLEGE CLOSED' ? '⚪' : '🔴';
+      const locLine = dynStatus.currentEvent ? `📍 Location: ${dynStatus.currentLocation} (${dynStatus.currentEvent})` : `📍 Cabin: ${dynStatus.currentLocation}`;
+      const ans = `${fac.name}\n${statusIcon} ${dynStatus.status}\n${locLine}\nNext Available: ${dynStatus.nextAvailableTime}`;
       return {
         success: true,
-        intent: 'FACULTY_LOCATION',
+        intent: 'FACULTY_AVAILABILITY',
         answer: ans,
-        data: { facultyId: fac.id, name: fac.name, cabinLocation: fac.cabinLocation, status: dynStatus.status },
+        data: { facultyId: fac.id, name: fac.name, status: dynStatus.status, currentLocation: dynStatus.currentLocation, nextAvailableTime: dynStatus.nextAvailableTime },
         actions: [{ type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }]
       };
     }
 
-    const ans = `${fac.name} (${fac.designation || 'Faculty'}, ${fac.department || 'MSRIT'})\n📍 Cabin: ${fac.cabinLocation || 'N/A'}\n✉️ ${fac.email || 'N/A'}`;
+    if (wantsLocation) {
+      const locText = dynStatus.currentEvent ? `${dynStatus.currentLocation} (${dynStatus.currentEvent})` : dynStatus.currentLocation;
+      const ans = `${fac.name}\n📍 ${locText}\nStatus: ${dynStatus.status}\nNext Available: ${dynStatus.nextAvailableTime}`;
+      return {
+        success: true,
+        intent: 'FACULTY_LOCATION',
+        answer: ans,
+        data: { facultyId: fac.id, name: fac.name, cabinLocation: fac.cabinLocation, status: dynStatus.status, currentLocation: dynStatus.currentLocation },
+        actions: [{ type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }]
+      };
+    }
+
+    const ans = `${fac.name} (${fac.designation || 'Faculty'}, ${fac.department || 'MSRIT'})\n📍 Current: ${dynStatus.currentLocation}\nStatus: ${dynStatus.status}\n✉️ ${fac.email || 'N/A'}`;
     return {
       success: true,
       intent: 'FACULTY_SEARCH',
       answer: ans,
-      data: { faculty: fac },
+      data: { faculty: fac, status: dynStatus.status, currentLocation: dynStatus.currentLocation },
       actions: [{ type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }]
+    };
+  }
+
+  // Dynamic Faculty Status Queries: "kaun lab me hai", "kaun class me hai", "kaun meeting me hai", "kaun cabin me available hai"
+  const isLabQuery = /\b(kaun.*lab|who.*in.*lab|lab me kaun|lab me hai|in lab)\b/i.test(rawQuery + ' ' + normQuery);
+  const isClassQuery = /\b(kaun.*class|who.*in.*class|class me kaun|class le raha|in class|teaching)\b/i.test(rawQuery + ' ' + normQuery);
+  const isMeetingQuery = /\b(kaun.*meeting|who.*in.*meeting|meeting me kaun|in meeting)\b/i.test(rawQuery + ' ' + normQuery);
+  const isCabinQuery = /\b(kaun.*cabin|who.*in.*cabin|cabin me kaun|cabin me available|free hai|kaun available hai|faculty.*free|who is available)\b/i.test(rawQuery + ' ' + normQuery);
+
+  if (isLabQuery || isClassQuery || isMeetingQuery || isCabinQuery) {
+    const targetStatus = isLabQuery ? 'IN LAB' : isClassQuery ? 'IN CLASS' : isMeetingQuery ? 'IN MEETING' : 'AVAILABLE IN CABIN';
+    const statusLabel = isLabQuery ? 'Lab' : isClassQuery ? 'Class' : isMeetingQuery ? 'Meeting' : 'Cabin (Available)';
+
+    const matching = localFacultyData.filter(f => {
+      const dyn = calculateFacultyDynamicStatus(f);
+      return dyn.status === targetStatus || (isCabinQuery && dyn.status.includes('AVAILABLE'));
+    });
+
+    if (matching.length === 0) {
+      const ans = language === 'HINGLISH'
+        ? `Abhi koi bhi faculty ${statusLabel} me scheduled nahi hai.`
+        : `No faculty members are currently in ${statusLabel}.`;
+      return {
+        success: true,
+        intent: 'FACULTY_STATUS_FILTER',
+        answer: ans,
+        data: { count: 0, status: targetStatus },
+        actions: [{ type: 'VIEW_ALL_FACULTY' }]
+      };
+    }
+
+    const sample = matching.slice(0, 5);
+    const listStr = sample.map(f => {
+      const dyn = calculateFacultyDynamicStatus(f);
+      return `• ${f.name} (${f.department}) — 📍 ${dyn.currentLocation}${dyn.currentEvent ? ` (${dyn.currentEvent})` : ''}`;
+    }).join('\n');
+
+    const ans = language === 'HINGLISH'
+      ? `Faculty Members currently ${targetStatus} (${matching.length} total):\n\n${listStr}${matching.length > 5 ? `\n...and ${matching.length - 5} more.` : ''}`
+      : `Faculty Members currently ${targetStatus} (${matching.length} total):\n\n${listStr}${matching.length > 5 ? `\n...and ${matching.length - 5} more.` : ''}`;
+
+    return {
+      success: true,
+      intent: 'FACULTY_STATUS_FILTER',
+      answer: ans,
+      data: { count: matching.length, status: targetStatus, sample },
+      actions: [{ type: 'VIEW_ALL_FACULTY' }]
     };
   }
 

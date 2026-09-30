@@ -8,7 +8,7 @@ import {
   searchFaculty
 } from '../data/facultyData';
 import type { MSRITFacultyRecord } from '../data/facultyData';
-import { getFacultyLiveStatus } from '../data/statusEngine';
+import { getFacultyDynamicStatus, getCurrentCampusTime } from '../data/statusEngine';
 import { useTimeContext } from '../context/TimeContext';
 
 interface EditorialFacultyProps {
@@ -28,6 +28,15 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
   const [expandedFacultyIds, setExpandedFacultyIds] = useState<Set<string>>(new Set());
 
   const { simulatedTime } = useTimeContext();
+
+  // Periodic 30-second interval to refresh dynamic faculty statuses locally without excessive API calls
+  const [clockTick, setClockTick] = useState<Date>(() => getCurrentCampusTime());
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setClockTick(getCurrentCampusTime());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Single authoritative faculty dataset loaded dynamically from faculty_msrit_dynamic.json
   const facultyData = loadFacultyData();
@@ -82,21 +91,33 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
   };
 
   const getStatusBadgeStyle = (status: string) => {
-    const s = status.toLowerCase();
-    if (s.includes('lecture') || s.includes('lab') || s.includes('meeting') || s.includes('review') || s.includes('seminar') || s.includes('workshop') || s.includes('busy')) {
-      return 'border-amber-600 bg-amber-500/10 text-amber-800 font-bold';
+    const s = (status || '').toUpperCase();
+    if (s.includes('CLASS') || s.includes('LECTURE')) {
+      return 'border-red-600 bg-red-500/10 text-red-700 font-bold';
     }
-    if (s.includes('available') || s.includes('consultation')) {
-      return 'border-emerald-600 bg-emerald-500/10 text-emerald-800 font-bold';
+    if (s.includes('LAB')) {
+      return 'border-orange-500 bg-orange-500/10 text-orange-700 font-bold';
     }
-    if (s.includes('closed')) {
-      return 'border-rose-600 bg-rose-500/10 text-rose-800 font-bold';
+    if (s.includes('MEETING')) {
+      return 'border-purple-600 bg-purple-500/10 text-purple-700 font-bold';
+    }
+    if (s.includes('PROJECT REVIEW') || s.includes('PROJECT')) {
+      return 'border-blue-600 bg-blue-500/10 text-blue-700 font-bold';
+    }
+    if (s.includes('CONSULTATION') || s.includes('CABIN') || s.includes('AVAILABLE')) {
+      return 'border-emerald-600 bg-emerald-500/10 text-emerald-700 font-bold';
+    }
+    if (s.includes('CLOSED')) {
+      return 'border-gray-400 bg-gray-500/10 text-gray-600 font-bold';
+    }
+    if (s.includes('SEMINAR') || s.includes('WORKSHOP') || s.includes('BUSY')) {
+      return 'border-amber-600 bg-amber-500/10 text-amber-700 font-bold';
     }
     return 'border-[#111111]/20 bg-[#111111]/5 text-[#666660]';
   };
 
   const renderFacultyCard = (fac: MSRITFacultyRecord, idx: number) => {
-    const dynamicState = getFacultyLiveStatus(fac, simulatedTime);
+    const dynamicState = getFacultyDynamicStatus(fac, simulatedTime || clockTick);
     const isExpanded = expandedFacultyIds.has(fac.id);
 
     return (
@@ -140,9 +161,14 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                 <h3 className="text-lg sm:text-2xl font-syne font-bold text-[#111111] uppercase tracking-tight hover:text-[#DC2626] transition-colors truncate">
                   {fac.name}
                 </h3>
-                <span className={`inline-block px-2 py-0.5 border text-[10px] font-mono uppercase ${getStatusBadgeStyle(dynamicState.liveStatus)}`}>
-                  ● {dynamicState.liveStatus}
+                <span className={`inline-block px-2 py-0.5 border text-[10px] font-mono uppercase ${getStatusBadgeStyle(dynamicState.status)}`}>
+                  ● {dynamicState.status}
                 </span>
+                {dynamicState.currentLocation && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#111111]/20 bg-white text-[10px] font-mono uppercase text-[#111111] font-semibold">
+                    📍 {dynamicState.currentLocation}
+                  </span>
+                )}
               </div>
               
               <div className="font-mono text-xs text-[#DC2626] uppercase font-bold truncate">
@@ -211,17 +237,17 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   </div>
                   <div>
                     <span className="text-[#666660] text-[10px] uppercase block font-bold">CURRENT LIVE LOCATION</span>
-                    <strong className="text-[#111111] text-xs sm:text-sm font-bold mt-0.5 block">{dynamicState.liveLocation}</strong>
+                    <strong className="text-[#111111] text-xs sm:text-sm font-bold mt-0.5 block">{dynamicState.currentLocation}</strong>
                   </div>
                   <div>
                     <span className="text-[#666660] text-[10px] uppercase block font-bold">AVAILABILITY / STATUS</span>
-                    <span className={`inline-block px-2.5 py-0.5 border text-xs uppercase mt-0.5 ${getStatusBadgeStyle(dynamicState.liveStatus)}`}>
-                      ● {dynamicState.liveStatus}
+                    <span className={`inline-block px-2.5 py-0.5 border text-xs uppercase mt-0.5 ${getStatusBadgeStyle(dynamicState.status)}`}>
+                      ● {dynamicState.status}
                     </span>
                   </div>
                   <div>
                     <span className="text-[#666660] text-[10px] uppercase block font-bold">NEXT AVAILABLE TIME</span>
-                    <strong className="text-[#DC2626] text-xs sm:text-sm font-bold mt-0.5 block">{dynamicState.liveNextAvailableTime}</strong>
+                    <strong className="text-[#DC2626] text-xs sm:text-sm font-bold mt-0.5 block">{dynamicState.nextAvailableTime}</strong>
                   </div>
                 </div>
 
