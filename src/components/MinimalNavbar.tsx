@@ -185,7 +185,7 @@ export const MinimalNavbar: React.FC = () => {
               NAVIGATION // SYSTEM INDEX
             </div>
             <div className="space-y-2 sm:space-y-3">
-              {navItems.map((item) => {
+              {navItems.filter((item) => item.path !== '/ask-ai').map((item) => {
                 const active = isNavItemActive(item.path);
 
                 return (

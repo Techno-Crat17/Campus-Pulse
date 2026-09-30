@@ -15,6 +15,7 @@ import { TimeSimulationBar } from './components/TimeSimulationBar';
 import { FloatingScrollArrow } from './components/FloatingScrollArrow';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
+import { MobileAskChatbot } from './components/MobileAskChatbot';
 import { ScrollToTop } from './components/ScrollToTop';
 
 /**
@@ -80,6 +81,9 @@ export function App() {
 
           {/* Floating Scroll Arrow */}
           <FloatingScrollArrow />
+
+          {/* Floating Mobile/PWA Ask Campus Chatbot */}
+          <MobileAskChatbot />
 
           {/* Route-Aware Minimal Navbar */}
           <MinimalNavbar />
