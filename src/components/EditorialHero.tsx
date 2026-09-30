@@ -1,15 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 
 interface EditorialHeroProps {
-  onAskClick: () => void;
-  onExploreClick: () => void;
+  onAskClick?: () => void;
+  onExploreClick?: () => void;
 }
 
-export const EditorialHero: React.FC<EditorialHeroProps> = ({ onAskClick, onExploreClick }) => {
+export const EditorialHero: React.FC<EditorialHeroProps> = () => {
   return (
-    <section id="sec-hero" className="min-h-screen pt-24 sm:pt-32 pb-10 sm:pb-16 px-4 sm:px-8 lg:px-12 flex flex-col justify-between border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
+    <section id="sec-hero" className="min-h-screen pt-24 sm:pt-32 pb-16 sm:pb-24 px-4 sm:px-8 lg:px-12 flex flex-col justify-center border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       
 
       {/* Massive Typography Hero Title */}
@@ -46,37 +45,15 @@ export const EditorialHero: React.FC<EditorialHeroProps> = ({ onAskClick, onExpl
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="lg:col-span-5 space-y-2 sm:space-y-4 lg:text-right font-mono text-[11px] sm:text-xs text-[#666660] dark:text-[#9CA3AF] uppercase tracking-widest"
+            className="lg:col-span-5 lg:text-right font-mono text-[11px] sm:text-xs text-[#DC2626] font-bold uppercase tracking-widest"
           >
-            <div>ASK YOUR CAMPUS.</div>
-            <div>SEE YOUR CAMPUS.</div>
-            <div className="text-[#DC2626] font-bold">NAVIGATE YOUR CAMPUS.</div>
+            <div>IMPROVE YOUR CAMPUS.</div>
           </motion.div>
 
         </div>
       </div>
 
-      {/* Bottom Action Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between border-t border-[#111111]/10 dark:border-white/10 pt-6 font-mono text-xs gap-4">
-        
-        <button
-          onClick={onAskClick}
-          className="w-full sm:w-auto px-6 py-3.5 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300"
-        >
-          <span>ASK CAMPUS</span>
-          <ArrowUpRight className="w-4 h-4" />
-        </button>
-
-        <button
-          onClick={onExploreClick}
-          className="group flex items-center justify-center sm:justify-start gap-2 text-[#666660] dark:text-[#9CA3AF] hover:text-[#111111] dark:hover:text-[#F3F3EE] transition-colors py-1"
-        >
-          <ArrowDownRight className="w-4 h-4 text-[#DC2626] group-hover:translate-x-1 group-hover:translate-y-1 transition-transform" />
-          <span>SCROLL TO EXPLORE ↓</span>
-        </button>
-
-      </div>
-
     </section>
   );
 };
+
