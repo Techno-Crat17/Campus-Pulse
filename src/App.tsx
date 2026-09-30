@@ -88,13 +88,57 @@ export function App() {
           {/* Main Application Routes Container */}
           <main className="w-full pt-20 sm:pt-24">
             <Routes>
-              {/* / -> Home Dashboard */}
+              {/* 01. / -> Home Dashboard */}
               <Route path="/" element={<HomePage />} />
 
-              {/* /map -> Geographic Campus Map Explorer */}
+              {/* 02. /ask-ai -> Ask Campus AI Chat Engine */}
+              <Route
+                path="/ask-ai"
+                element={
+                  <EditorialAssistant
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
+              <Route
+                path="/ask"
+                element={
+                  <EditorialAssistant
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
+              <Route
+                path="/query"
+                element={
+                  <EditorialAssistant
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
+
+              {/* 03. /map -> Geographic Campus Map Explorer */}
               <Route path="/map" element={<MapRouteWrapper />} />
 
-              {/* /faculty -> Faculty Directory & Dynamic Status */}
+              {/* 04. /libraries -> Campus Libraries & Study Spaces */}
+              <Route
+                path="/libraries"
+                element={
+                  <EditorialRecommender
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
+              <Route
+                path="/spaces"
+                element={
+                  <EditorialRecommender
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
+
+              {/* 05. /faculty -> Faculty Directory & Dynamic Status */}
               <Route
                 path="/faculty"
                 element={
@@ -104,50 +148,33 @@ export function App() {
                 }
               />
 
-              {/* /libraries -> Campus Libraries & Study Spaces */}
-              <Route
-                path="/libraries"
-                element={
-                  <EditorialRecommender
-                    onSelectBuildingForMap={handleSelectBuildingForMap}
-                  />
-                }
-              />
-
-              {/* /ask-ai -> Ask Campus AI Chat Engine */}
-              <Route
-                path="/ask-ai"
-                element={
-                  <EditorialAssistant
-                    onSelectBuildingForMap={handleSelectBuildingForMap}
-                  />
-                }
-              />
-
-              {/* /issues -> Anonymous Issue Dispatch Queue */}
+              {/* 06. /issues -> Anonymous Issue Dispatch Queue */}
               <Route path="/issues" element={<EditorialIssues />} />
+              <Route path="/report" element={<EditorialIssues />} />
 
-              {/* /others -> Announcements, Events, Clubs, Emergency Contacts & Lost & Found */}
+              {/* 07. /lost-found -> Community Lost & Found Recovery */}
+              <Route path="/lost-found" element={<EditorialLostFound />} />
+              <Route path="/lostfound" element={<EditorialLostFound />} />
+
+              {/* 08. /others -> Announcements, Events, Clubs & Emergency Contacts */}
               <Route
                 path="/others"
                 element={
-                  <div className="space-y-12">
-                    <EditorialOthers
-                      onNavigateSection={(sectionId) => {
-                        const routeMap: Record<string, string> = {
-                          'sec-faculty': '/faculty',
-                          'sec-find': '/libraries',
-                          'sec-map': '/map',
-                          'sec-report': '/issues',
-                          'sec-ask': '/ask-ai',
-                          'sec-others': '/others',
-                          'sec-hero': '/'
-                        };
-                        navigate(routeMap[sectionId] || '/others');
-                      }}
-                    />
-                    <EditorialLostFound />
-                  </div>
+                  <EditorialOthers
+                    onNavigateSection={(sectionId) => {
+                      const routeMap: Record<string, string> = {
+                        'sec-faculty': '/faculty',
+                        'sec-find': '/libraries',
+                        'sec-map': '/map',
+                        'sec-report': '/issues',
+                        'sec-lostfound': '/lost-found',
+                        'sec-ask': '/ask-ai',
+                        'sec-others': '/others',
+                        'sec-hero': '/'
+                      };
+                      navigate(routeMap[sectionId] || '/others');
+                    }}
+                  />
                 }
               />
 

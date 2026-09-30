@@ -28,18 +28,31 @@ export const MinimalNavbar: React.FC = () => {
   }, [toastMessage]);
 
   const navItems = [
-    { path: '/', label: '01 / HOME' },
-    { path: '/ask-ai', label: '02 / ASK' },
-    { path: '/map', label: '03 / MAP' },
-    { path: '/libraries', label: '04 / LIBRARIES' },
-    { path: '/faculty', label: '05 / FACULTY' },
-    { path: '/issues', label: '06 / ISSUES' },
-    { path: '/others', label: '07 / OTHERS' },
+    { path: '/', label: 'HOME' },
+    { path: '/ask-ai', label: 'ASK' },
+    { path: '/map', label: 'MAP' },
+    { path: '/libraries', label: 'LIBRARIES' },
+    { path: '/faculty', label: 'FACULTY' },
+    { path: '/issues', label: 'ISSUES' },
+    { path: '/lost-found', label: 'LOST & FOUND' },
+    { path: '/others', label: 'OTHERS' },
   ];
 
   const isNavItemActive = (itemPath: string) => {
     if (itemPath === '/') {
       return location.pathname === '/';
+    }
+    if (itemPath === '/ask-ai') {
+      return location.pathname === '/ask-ai' || location.pathname === '/ask' || location.pathname === '/query';
+    }
+    if (itemPath === '/libraries') {
+      return location.pathname === '/libraries' || location.pathname === '/spaces';
+    }
+    if (itemPath === '/issues') {
+      return location.pathname === '/issues' || location.pathname === '/report';
+    }
+    if (itemPath === '/lost-found') {
+      return location.pathname === '/lost-found' || location.pathname === '/lostfound';
     }
     return location.pathname.startsWith(itemPath);
   };
@@ -99,8 +112,8 @@ export const MinimalNavbar: React.FC = () => {
           </span>
         </Link>
 
-        {/* Minimal Desktop Route Navigation */}
-        <nav className="hidden lg:flex items-center space-x-7 text-[11px] tracking-wider text-[#666660] dark:text-[#9CA3AF]">
+        {/* Minimal Desktop Route Navigation (Desktop Only) */}
+        <nav className="hidden xl:flex items-center space-x-4 2xl:space-x-6 text-[11px] tracking-wider text-[#666660] dark:text-[#9CA3AF]">
           {navItems.map((item) => {
             const active = isNavItemActive(item.path);
 
@@ -125,10 +138,10 @@ export const MinimalNavbar: React.FC = () => {
           {/* Light / Dark Mode Toggle */}
           <ThemeToggle variant="compact" />
 
-          {/* Menu Drawer Button */}
+          {/* Menu Drawer Button (Mobile & Tablet Only) */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="px-3 sm:px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[10px] sm:text-[11px] tracking-widest uppercase transition-all flex items-center gap-1.5 sm:gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
+            className="flex xl:hidden px-3 sm:px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[10px] sm:text-[11px] tracking-widest uppercase transition-all items-center gap-1.5 sm:gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
           >
             {menuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
             <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>

@@ -11,13 +11,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenA
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { id: 'home', label: '01 // HOME', icon: Activity },
-    { id: 'assistant', label: '02 // AI ASSISTANT', icon: Sparkles },
-    { id: 'map', label: '03 // LIVE MAP', icon: MapPin },
-    { id: 'occupancy', label: '04 // OCCUPANCY', icon: Activity },
-    { id: 'recommend', label: '05 // AI FINDER', icon: Compass },
-    { id: 'faculty', label: '06 // FACULTY', icon: UserCheck },
-    { id: 'issues', label: '07 // REPORT ISSUE', icon: AlertTriangle },
+    { id: 'home', label: 'HOME', icon: Activity },
+    { id: 'assistant', label: 'AI ASSISTANT', icon: Sparkles },
+    { id: 'map', label: 'LIVE MAP', icon: MapPin },
+    { id: 'occupancy', label: 'OCCUPANCY', icon: Activity },
+    { id: 'recommend', label: 'AI FINDER', icon: Compass },
+    { id: 'faculty', label: 'FACULTY', icon: UserCheck },
+    { id: 'issues', label: 'REPORT ISSUE', icon: AlertTriangle },
   ];
 
   return (

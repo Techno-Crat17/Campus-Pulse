@@ -474,6 +474,7 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                 { label: 'ROOMS', icon: Search, id: 'sec-find' },
                 { label: 'CAMPUS MAP', icon: MapPin, id: 'sec-map' },
                 { label: 'REPORT ISSUE', icon: AlertTriangle, id: 'sec-report' },
+                { label: 'LOST & FOUND', icon: Target, id: 'sec-lostfound' },
                 { label: 'ASK CAMPUS AI', icon: Info, id: 'sec-ask' }
               ].map((item, idx) => {
                 const IconComponent = item.icon;

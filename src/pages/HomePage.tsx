@@ -9,7 +9,8 @@ import {
   Grid,
   ShieldCheck,
   ArrowRight,
-  Building2
+  Building2,
+  Tag
 } from 'lucide-react';
 import { EditorialHero } from '../components/EditorialHero';
 import { isCampusOpen } from '../data/statusEngine';
@@ -62,10 +63,18 @@ export const HomePage: React.FC = () => {
       color: 'border-rose-600 text-rose-600'
     },
     {
+      title: 'LOST & FOUND',
+      subtitle: 'Community recovery telemetry & campus lost and found item records.',
+      path: '/lost-found',
+      badge: '07 / COMMUNITY RECOVERY',
+      icon: Tag,
+      color: 'border-teal-600 text-teal-600'
+    },
+    {
       title: 'OTHERS & FEEDS',
       subtitle: 'Official MSRIT announcements, live events, emergency contacts & clubs.',
       path: '/others',
-      badge: '07 / CAMPUS UTILITIES',
+      badge: '08 / CAMPUS UTILITIES',
       icon: Grid,
       color: 'border-purple-600 text-purple-600'
     }
