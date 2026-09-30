@@ -124,6 +124,7 @@ export type CampusAiIntent =
   | 'CAMPUS_LOCATION'
   | 'CAMPUS_NAVIGATION'
   | 'DEPARTMENT_LOCATION'
+  | 'DEPARTMENT_SEARCH'
   | 'EVENT_SEARCH'
   | 'ANNOUNCEMENT_SEARCH'
   | 'CLUB_SEARCH'
@@ -805,6 +806,22 @@ export function extractEntities(
     }
   }
 
+  // Handle bare room number lookup (e.g. "room 212", "find 212", "212")
+  if (!entities.matchedRoom) {
+    const bareDigitsMatch = normQ.match(/\b(?:room\s+)?([1-9]\d{2}[A-Z]?(?:\/[0-9A-Z]+)?)\b/i);
+    if (bareDigitsMatch && !/\b(101|108|902|445|2026)\b/.test(bareDigitsMatch[1])) {
+      const num = bareDigitsMatch[1].toUpperCase();
+      const candidates = [`LHC-${num}`, `AB-${num}`, `DES-${num}`, `CRD-${num}`, `ESB-${num}`, num];
+      for (const cand of candidates) {
+        const found = findRoomByNumber(cand);
+        if (found) {
+          entities.matchedRoom = found;
+          break;
+        }
+      }
+    }
+  }
+
   // Handle Room Name lookups (e.g. "LHC Seminar Hall – II", "Antenna Fabrication Unit", "Ramaiah Evolute", "Schneider Centre")
   if (!entities.matchedRoom && !entities.departmentCode) {
     const qClean = normQ
@@ -835,12 +852,24 @@ export function extractEntities(
     }
   }
 
-  // Handle room follow-up context (e.g. "iska floor?", "floor kya hai?", "kis floor pe hai", "iska department?")
-  if (!entities.matchedRoom && context?.lastRoom) {
-    const isFloorFollowup = /\b(iska\s*floor|floor\s*kya|kis\s*floor|floor)\b/i.test(normQ) && !normQ.includes('lhc') && !normQ.includes('crd') && !normQ.includes('esb') && !normQ.includes('apex') && !/\d{3}/.test(normQ);
-    const isDeptFollowup = /\b(iska\s*dept|iska\s*department|department\s*kya)\b/i.test(normQ);
+  // Handle room and library follow-up context (e.g. "iska floor?", "floor kya hai?", "kis floor pe hai", "iska department?", "ye room kis department ka hai?")
+  if (!entities.matchedRoom) {
+    const isFloorFollowup = /\b(iska\s*floor|floor\s*kya|kis\s*floor|floor|pe\s*hai|kis\s*level)\b/i.test(normQ) && !normQ.includes('lhc') && !normQ.includes('crd') && !normQ.includes('esb') && !normQ.includes('apex') && !/\d{3}/.test(normQ);
+    const isDeptFollowup = /\b(iska\s*dept|iska\s*department|department\s*kya|room\s*department|kis\s*department|kiska\s*room)\b/i.test(normQ);
+
     if (isFloorFollowup || isDeptFollowup) {
-      entities.matchedRoom = context.lastRoom;
+      if (context?.lastRoom) {
+        entities.matchedRoom = context.lastRoom;
+      } else if (context?.lastLibrary) {
+        entities.matchedLibrary = context.lastLibrary;
+        if (context.lastLibrary.id.includes('apex') || context.lastLibrary.name.toLowerCase().includes('apex')) {
+          entities.matchedRoom = findRoomByNumber('AB-714') || undefined;
+        } else if (context.lastLibrary.id.includes('mca') || context.lastLibrary.name.toLowerCase().includes('mca')) {
+          entities.matchedRoom = findRoomByNumber('AB-401') || undefined;
+        } else if (context.lastLibrary.id.includes('lhc') || context.lastLibrary.name.toLowerCase().includes('lhc')) {
+          entities.matchedRoom = findRoomByNumber('LHC-306') || undefined;
+        }
+      }
     }
   }
 
@@ -2176,6 +2205,21 @@ export function getBuildingAnswer(
     };
   }
 
+  // Department Information lookup (e.g. "department of ise", "ise department", "cse department")
+  if (entities.departmentCode && !entities.roomCategory && !entities.matchedRoom) {
+    const deptInfo = resolveDepartment(entities.departmentCode);
+    if (deptInfo) {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['DEPARTMENT_SEARCH'],
+        responseText: `**${deptInfo.name}**\n📍 Primary Building: ${deptInfo.building} Block\nDepartment Code: ${deptInfo.code}`,
+        subText: "Grounded in official MSRIT academic department registry.",
+        actionTargetId: deptInfo.buildingId
+      };
+    }
+  }
+
   return null;
 }
 
@@ -2667,9 +2711,27 @@ export function maintainConversationContext(
 
 export async function processCampusAiQuery(
   rawQuery: string,
-  simulatedTime?: SimulatedTimeState | null,
-  context?: CampusAiContext
+  simulatedTimeOrContext?: SimulatedTimeState | CampusAiContext | null,
+  contextParam?: CampusAiContext
 ): Promise<CampusAiResult> {
+  let simulatedTime: SimulatedTimeState | null = null;
+  let context: CampusAiContext | undefined = contextParam;
+
+  if (simulatedTimeOrContext) {
+    if (
+      'lastFaculty' in simulatedTimeOrContext ||
+      'lastRoom' in simulatedTimeOrContext ||
+      'lastLibrary' in simulatedTimeOrContext ||
+      'lastBlock' in simulatedTimeOrContext ||
+      'lastDepartment' in simulatedTimeOrContext ||
+      'history' in simulatedTimeOrContext
+    ) {
+      context = simulatedTimeOrContext as CampusAiContext;
+    } else {
+      simulatedTime = simulatedTimeOrContext as SimulatedTimeState;
+    }
+  }
+
   if (!rawQuery || !rawQuery.trim()) {
     return {
       queryText: rawQuery,
