@@ -1,5 +1,5 @@
 // Central Single Source of Truth for Lost & Found Items
-// Dynamic status model with verified campus location telemetry
+// Dynamic data-driven status model with mixed, realistic status and location distribution
 
 export interface LostFoundItem {
   id: number | string;
@@ -24,7 +24,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
   {
     id: 1,
     itemName: "Metallic Blue Wristwatch",
-    status: "FOUND",
+    status: "LOST",
     foundAt: "ISE Lab 3",
     location: "ISE Lab 3",
     date: "2026-09-30",
@@ -32,7 +32,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     image: `${BASE_URL}assets/lost-found/blue-watch.jpeg`,
     category: "Wearables",
     contactLocation: "Security Enquiry Desk",
-    statusLabel: "FOUND & SECURED"
+    statusLabel: "REPORTED LOST"
   },
   {
     id: 2,
@@ -50,7 +50,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
   {
     id: 3,
     itemName: "Laptop Power Adapter",
-    status: "FOUND",
+    status: "LOST",
     foundAt: "CRD 508",
     location: "CRD 508",
     date: "2026-09-30",
@@ -58,7 +58,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     image: `${BASE_URL}assets/lost-found/laptop-charger.jpeg`,
     category: "Electronics",
     contactLocation: "Security Enquiry Desk",
-    statusLabel: "FOUND & SECURED"
+    statusLabel: "REPORTED LOST"
   },
   {
     id: 4,
@@ -76,7 +76,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
   {
     id: 5,
     itemName: "Stainless Steel Water Bottle",
-    status: "FOUND",
+    status: "LOST",
     foundAt: "CSE Lab 4",
     location: "CSE Lab 4",
     date: "2026-09-30",
@@ -84,7 +84,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     image: `${BASE_URL}assets/lost-found/stainless-steel-bottle.jpeg`,
     category: "Accessories",
     contactLocation: "Security Enquiry Desk",
-    statusLabel: "FOUND & SECURED"
+    statusLabel: "REPORTED LOST"
   },
   {
     id: 6,
