@@ -4,7 +4,6 @@ import {
   MapPin,
   Users,
   BookOpen,
-  Sparkles,
   AlertTriangle,
   Grid,
   ArrowRight,
@@ -16,18 +15,10 @@ import { EditorialFooter } from '../components/EditorialFooter';
 export const HomePage: React.FC = () => {
   const moduleCards = [
     {
-      title: 'ASK CAMPUS AI',
-      subtitle: 'Natural language & Hinglish query engine for faculty, libraries & rooms.',
-      path: '/ask-ai',
-      badge: '02 / AI TELEMETRY',
-      icon: Sparkles,
-      color: 'border-[#DC2626] text-[#DC2626]'
-    },
-    {
       title: 'CAMPUS MAP',
       subtitle: 'Interactive 3D satellite polygon explorer with building label telemetry.',
       path: '/map',
-      badge: '03 / GEOGRAPHIC EXPLORER',
+      badge: '02 / GEOGRAPHIC EXPLORER',
       icon: MapPin,
       color: 'border-blue-600 text-blue-600'
     },
@@ -35,7 +26,7 @@ export const HomePage: React.FC = () => {
       title: 'LIBRARIES & SPACES',
       subtitle: 'Real-time occupancy, operating hours & study hall availability across 6 units.',
       path: '/libraries',
-      badge: '04 / LIVE OCCUPANCY',
+      badge: '03 / LIVE OCCUPANCY',
       icon: BookOpen,
       color: 'border-emerald-600 text-emerald-600'
     },
@@ -43,7 +34,7 @@ export const HomePage: React.FC = () => {
       title: 'FACULTY DIRECTORY',
       subtitle: 'Dynamic schedule-driven faculty availability, active rooms & cabin locations.',
       path: '/faculty',
-      badge: '05 / 409 VERIFIED ROSTER',
+      badge: '04 / 409 VERIFIED ROSTER',
       icon: Users,
       color: 'border-amber-600 text-amber-600'
     },
@@ -51,7 +42,7 @@ export const HomePage: React.FC = () => {
       title: 'REPORT AN ISSUE',
       subtitle: 'Anonymous infrastructure, cleanliness & utility issue dispatch queue.',
       path: '/issues',
-      badge: '06 / DISPATCH QUEUE',
+      badge: '05 / DISPATCH QUEUE',
       icon: AlertTriangle,
       color: 'border-rose-600 text-rose-600'
     },
@@ -59,7 +50,7 @@ export const HomePage: React.FC = () => {
       title: 'LOST & FOUND',
       subtitle: 'Community recovery telemetry & campus lost and found item records.',
       path: '/lost-found',
-      badge: '07 / COMMUNITY RECOVERY',
+      badge: '06 / COMMUNITY RECOVERY',
       icon: Tag,
       color: 'border-teal-600 text-teal-600'
     },
@@ -67,7 +58,7 @@ export const HomePage: React.FC = () => {
       title: 'OTHERS & FEEDS',
       subtitle: 'Official MSRIT announcements, live events, emergency contacts & clubs.',
       path: '/others',
-      badge: '08 / CAMPUS UTILITIES',
+      badge: '07 / CAMPUS UTILITIES',
       icon: Grid,
       color: 'border-purple-600 text-purple-600'
     }
