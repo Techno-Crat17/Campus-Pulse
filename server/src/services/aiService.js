@@ -406,9 +406,15 @@ export async function extractEntities(normQuery, rawQuery, context) {
   }
 
   // Room Extraction
-  const roomMatch = fullText.match(/\b(lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3}|\d{3})\b/i);
+  const roomMatch = fullText.match(/\b(lhc|esb|ab|crd|des|arch)[- ]?([0-9]{3}[a-z/]*)\b/i) || fullText.match(/\b([0-9]{3}[a-z]?)\b/i);
   if (roomMatch) {
-    entities.roomNumber = normalizeRoomNumber(roomMatch[1]);
+    if (roomMatch[2]) {
+      const prefix = roomMatch[1].toUpperCase();
+      const numPart = roomMatch[2].toUpperCase();
+      entities.roomNumber = `${prefix}-${numPart}`;
+    } else {
+      entities.roomNumber = normalizeRoomNumber(roomMatch[1]);
+    }
   }
 
   // HOD Resolution
@@ -1012,12 +1018,30 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
   // INTENT HANDLER: ROOM AVAILABILITY & SEARCH
   // --------------------------------------------------------------------------
   if (intents.includes('ROOM_AVAILABILITY') || intents.includes('ROOM_LOCATION') || intents.includes('ROOM_SEARCH') || entities.roomNumber) {
-    let roomNum = entities.roomNumber || 'LHC204';
-    let bldg = entities.building || 'LHC';
+    let matchedRoom = null;
+    const searchNum = entities.roomNumber || (normQuery.match(/\b\d{3}\b/) ? normQuery.match(/\b\d{3}\b/)[0] : null);
 
-    const ans = language === 'HINGLISH'
-      ? `Room ${roomNum} (Classroom)\n📍 ${bldg} Block\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`
-      : `Room ${roomNum} (Classroom)\n📍 ${bldg} Block\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`;
+    if (searchNum) {
+      const normKey = (searchNum || '').toUpperCase().replace(/[\s\-_/]+/g, '');
+      if (isDbConnected()) {
+        try {
+          matchedRoom = await Room.findOne({
+            $or: [
+              { roomNumber: { $regex: normKey, $options: 'i' } },
+              { roomNumberNormalized: { $regex: normKey, $options: 'i' } }
+            ]
+          }).lean();
+        } catch (e) {}
+      }
+
+      if (!matchedRoom && localRoomsData.length > 0) {
+        matchedRoom = localRoomsData.find((r) => {
+          const rNum = (r.roomNumber || '').toUpperCase().replace(/[\s\-_/]+/g, '');
+          const rNorm = (r.roomNumberNormalized || '').toUpperCase().replace(/[\s\-_/]+/g, '');
+          return rNum === normKey || rNorm === normKey || r.roomNumber?.toLowerCase() === searchNum.toLowerCase();
+        }) || null;
+      }
+    }
 
     const primaryRoomIntent = intents.includes('ROOM_LOCATION')
       ? 'ROOM_LOCATION'
@@ -1025,11 +1049,64 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
       ? 'ROOM_SEARCH'
       : 'ROOM_AVAILABILITY';
 
+    if (matchedRoom) {
+      const bldgName = matchedRoom.building || (matchedRoom.buildingCode ? `${matchedRoom.buildingCode} Block` : 'Campus Facilities');
+      const bldgCode = (matchedRoom.buildingCode || matchedRoom.building || 'LHC').toLowerCase();
+      const targetMapId = bldgCode.includes('crd') ? 'crd' : (bldgCode.includes('apex') ? 'block-apex' : (bldgCode.includes('esb') ? 'block-esb' : (bldgCode.includes('des') ? 'block-des' : 'block-lhc')));
+
+      let ans = '';
+      if (primaryRoomIntent === 'ROOM_AVAILABILITY') {
+        ans = `${matchedRoom.roomNumber}${matchedRoom.name ? ` — ${matchedRoom.name}` : ''}\n📍 ${bldgName}\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`;
+      } else if (primaryRoomIntent === 'ROOM_LOCATION') {
+        ans = `${matchedRoom.roomNumber}${matchedRoom.name ? ` — ${matchedRoom.name}` : ''}\n📍 ${bldgName}${matchedRoom.floor ? ` (${matchedRoom.floor})` : ''}${matchedRoom.department ? `\nDepartment: ${matchedRoom.department}` : ''}`;
+      } else {
+        ans = `${matchedRoom.roomNumber}${matchedRoom.name ? ` — ${matchedRoom.name}` : ''}\n📍 ${bldgName}${matchedRoom.floor ? ` (${matchedRoom.floor})` : ''}${matchedRoom.department ? `\nDepartment: ${matchedRoom.department}` : ''}`;
+      }
+
+      const resObj = {
+        success: true,
+        intent: primaryRoomIntent,
+        answer: ans,
+        data: {
+          room: matchedRoom,
+          roomNumber: matchedRoom.roomNumber,
+          name: matchedRoom.name,
+          building: matchedRoom.building,
+          floor: matchedRoom.floor,
+          department: matchedRoom.department,
+          departments: matchedRoom.departments || (matchedRoom.department ? [matchedRoom.department] : []),
+          status: 'AVAILABLE'
+        },
+        actions: [{ type: 'VIEW_ON_MAP', targetId: targetMapId }]
+      };
+      logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);
+      return resObj;
+    }
+
+    if (searchNum) {
+      const cleanNum = searchNum.toUpperCase();
+      const ans = `No verified room found for ${cleanNum}.`;
+      const resObj = {
+        success: true,
+        intent: primaryRoomIntent,
+        answer: ans,
+        data: { room: null, roomNumber: cleanNum, found: false },
+        actions: []
+      };
+      logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);
+      return resObj;
+    }
+
+    let bldg = entities.building || 'LHC';
+    const ans = language === 'HINGLISH'
+      ? `Room LHC-204 (Classroom)\n📍 ${bldg} Block\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`
+      : `Room LHC-204 (Classroom)\n📍 ${bldg} Block\n🟢 SCHEDULED CLASSROOM AVAILABILITY: Available`;
+
     const resObj = {
       success: true,
       intent: primaryRoomIntent,
       answer: ans,
-      data: { roomNumber: roomNum, building: bldg, status: 'AVAILABLE' },
+      data: { roomNumber: 'LHC-204', building: bldg, status: 'AVAILABLE' },
       actions: [{ type: 'VIEW_ON_MAP', targetId: `block-${bldg.toLowerCase()}` }]
     };
     logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);

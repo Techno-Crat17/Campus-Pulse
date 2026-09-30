@@ -547,12 +547,34 @@ export async function queryCampusAi(
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
+          const roomObj = json.data?.room || (json.data?.roomNumber ? {
+            roomNumber: json.data.roomNumber,
+            name: json.data.name,
+            building: json.data.building,
+            floor: json.data.floor,
+            department: json.data.department,
+            departments: Array.isArray(json.data.departments) ? json.data.departments : (json.data.department ? [json.data.department] : [])
+          } : undefined);
+
+          const resultObj = {
+            queryText: query,
+            normalizedQuery: query.toLowerCase(),
+            intents: [json.intent],
+            responseText: json.answer,
+            matchedFaculty: json.data?.faculty || (json.data?.name && json.data?.email ? json.data : undefined),
+            matchedLibrary: json.data?.library || undefined,
+            matchedRoom: roomObj,
+            matchedBlock: json.data?.buildingObject || (typeof json.data?.building === 'object' ? json.data.building : undefined),
+            matchedIssues: Array.isArray(json.data?.issues) ? json.data.issues : undefined,
+            actionTargetId: json.data?.nodeId || json.data?.buildingId || (json.actions?.find((a: any) => a.type === 'VIEW_ON_MAP')?.value || json.actions?.find((a: any) => a.type === 'VIEW_ON_MAP')?.targetId)
+          };
+
           return {
             intent: json.intent,
             answer: json.answer,
             data: json.data,
             actions: json.actions,
-            resultObject: json
+            resultObject: resultObj
           };
         }
       }
