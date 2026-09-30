@@ -17,7 +17,6 @@ import {
   Calendar,
   Newspaper,
   Loader2,
-  ShieldCheck,
   Copy,
   Check
 } from 'lucide-react';
@@ -209,14 +208,10 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
       <div className="max-w-[1700px] mx-auto space-y-10 sm:space-y-14">
         
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#111111]/10 dark:border-white/10 pb-4">
+        <div className="border-b border-[#111111]/10 dark:border-white/10 pb-4">
           <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-[#DC2626] animate-pulse" />
             <span>SECTION 02 // ASK CAMPUS AI &amp; QUERY ASSISTANT</span>
-          </div>
-          <div className="font-mono text-[11px] text-[#666660] dark:text-gray-400 flex items-center gap-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span>GROUNDED IN OFFICIAL MSRIT DATASET • ZERO HALLUCINATION</span>
           </div>
         </div>
 

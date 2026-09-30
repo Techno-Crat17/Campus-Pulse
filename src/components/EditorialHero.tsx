@@ -45,9 +45,12 @@ export const EditorialHero: React.FC<EditorialHeroProps> = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="lg:col-span-5 lg:text-right font-mono text-[11px] sm:text-xs text-[#DC2626] font-bold uppercase tracking-widest"
+            className="lg:col-span-5 space-y-2 sm:space-y-4 lg:text-right font-mono text-[11px] sm:text-xs text-[#666660] dark:text-[#9CA3AF] uppercase tracking-widest"
           >
-            <div>IMPROVE YOUR CAMPUS.</div>
+            <div>ASK YOUR CAMPUS.</div>
+            <div>SEE YOUR CAMPUS.</div>
+            <div>NAVIGATE YOUR CAMPUS.</div>
+            <div className="text-[#DC2626] font-bold">IMPROVE YOUR CAMPUS.</div>
           </motion.div>
 
         </div>
