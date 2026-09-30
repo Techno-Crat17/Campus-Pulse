@@ -133,22 +133,6 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     const dynamicState = getFacultyDynamicStatus(fac, simulatedTime || clockTick);
     const isExpanded = expandedFacultyIds.has(fac.id);
 
-    // Dynamic location display logic per Section 9:
-    // - AVAILABLE: show cabin location if exists
-    // - BUSY: show active event room if present
-    // - OFF_CAMPUS: do not show fake campus room
-    const displayLocation = (() => {
-      if (dynamicState.status === 'BUSY') {
-        return dynamicState.currentLocation && !dynamicState.currentLocation.toUpperCase().includes('OFF')
-          ? dynamicState.currentLocation
-          : null;
-      }
-      if (dynamicState.status === 'AVAILABLE') {
-        return fac.cabinLocation ? fac.cabinLocation : null;
-      }
-      return null;
-    })();
-
     return (
       <div
         key={fac.id}
@@ -193,11 +177,6 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                 <span className={`inline-block px-2 py-0.5 border text-[10px] font-mono uppercase ${getStatusBadgeStyle(dynamicState.status)}`}>
                   ● {formatStatusText(dynamicState.status)}
                 </span>
-                {displayLocation && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#111111]/20 bg-white text-[10px] font-mono uppercase text-[#111111] font-semibold">
-                    📍 {displayLocation}
-                  </span>
-                )}
               </div>
               
               <div className="font-mono text-xs text-[#DC2626] uppercase font-bold truncate">
