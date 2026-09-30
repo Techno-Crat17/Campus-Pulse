@@ -76,7 +76,6 @@ export const MapboxCampusExplorer: React.FC<MapboxCampusExplorerProps> = ({ init
             MSRIT BENGALURU • DATA SOURCE: FACULTY_MSRIT.JSON
           </span>
         </div>
-
         {/* Section Header Title */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
           <div className="lg:col-span-8">

@@ -176,7 +176,6 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
             <span>LIVE MSRIT DATA DISPATCH</span>
           </div>
         </div>
-
         {/* Section Title & Subtitle */}
         <div className="space-y-4">
           <div>

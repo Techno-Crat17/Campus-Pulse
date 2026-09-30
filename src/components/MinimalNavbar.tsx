@@ -57,6 +57,21 @@ export const MinimalNavbar: React.FC = () => {
     return location.pathname.startsWith(itemPath);
   };
 
+  // Close menu on route change or when screen resizes to desktop
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
@@ -83,7 +98,7 @@ export const MinimalNavbar: React.FC = () => {
           </div>
           <button
             onClick={() => setToastMessage(null)}
-            className="text-[#888880] hover:text-white transition-colors p-1"
+            className="text-[#888880] hover:text-white transition-colors p-1 cursor-pointer"
             aria-label="Dismiss notice"
           >
             <X className="w-3.5 h-3.5" />
@@ -91,7 +106,7 @@ export const MinimalNavbar: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-[1700px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between font-mono text-xs text-[#111111] dark:text-[#F3F3EE]">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between font-mono text-[#111111] dark:text-[#F3F3EE] gap-3 sm:gap-4 lg:gap-6">
         
         {/* Campus Pulse Brand Logo */}
         <Link
@@ -99,21 +114,29 @@ export const MinimalNavbar: React.FC = () => {
           onClick={() => setMenuOpen(false)}
           aria-label="Campus Pulse Home"
           title="Campus Pulse • UVERMA"
-          className="cursor-pointer font-bold text-sm uppercase flex items-center gap-2.5 sm:gap-3 group focus:outline-none transition-transform hover:opacity-95"
+          className="cursor-pointer font-bold uppercase flex items-center gap-2 sm:gap-2.5 lg:gap-3 group focus:outline-none transition-transform hover:opacity-95 shrink-0"
         >
-          <img 
-            src={`${import.meta.env.BASE_URL}assets/campus-pulse-icon.png`} 
-            alt="Campus Pulse" 
+          <img
+            src={`${import.meta.env.BASE_URL}assets/campus-pulse-icon.png`}
+            alt="Campus Pulse"
             title="Campus Pulse • UVERMA"
-            className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-lg object-contain bg-[#0A0A0A] border border-black/15 dark:border-white/15 shadow-xs transition-transform duration-300 group-hover:scale-105" 
+            style={{ width: 'clamp(32px, 2.2vw, 38px)', height: 'clamp(32px, 2.2vw, 38px)' }}
+            className="rounded-lg object-contain bg-[#0A0A0A] border border-black/15 dark:border-white/15 shadow-xs transition-transform duration-300 group-hover:scale-105"
           />
-          <span className="hidden min-[380px]:inline-block font-syne font-extrabold tracking-tight text-sm sm:text-base text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors">
+          <span
+            style={{ fontSize: 'clamp(14px, 0.85vw + 4px, 17px)' }}
+            className="hidden min-[380px]:inline-block font-syne font-extrabold tracking-tight text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors whitespace-nowrap"
+          >
             CAMPUS PULSE
           </span>
         </Link>
 
-        {/* Minimal Desktop Route Navigation (Desktop Only) */}
-        <nav className="hidden xl:flex items-center space-x-4 2xl:space-x-6 text-[11px] tracking-wider text-[#666660] dark:text-[#9CA3AF]">
+        {/* Complete Desktop Route Navigation (Laptop & Desktop, Fluid Responsive Sizing) */}
+        <nav
+          aria-label="Main Navigation"
+          style={{ gap: 'clamp(10px, 1.2vw, 26px)' }}
+          className="hidden lg:flex items-center tracking-wider whitespace-nowrap text-[#666660] dark:text-[#9CA3AF]"
+        >
           {navItems.map((item) => {
             const active = isNavItemActive(item.path);
 
@@ -121,27 +144,29 @@ export const MinimalNavbar: React.FC = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={`transition-all duration-300 uppercase font-mono flex items-center gap-1.5 py-1 ${
+                style={{ fontSize: 'clamp(13.5px, 0.32vw + 10.5px, 16.5px)' }}
+                className={`transition-all duration-200 uppercase font-mono whitespace-nowrap flex items-center py-1.5 px-0.5 sm:px-1 border-b-2 font-medium shrink-0 leading-none ${
                   active
-                    ? 'text-[#DC2626] font-extrabold drop-shadow-[0_0_8px_rgba(220,38,38,0.55)] border-b-2 border-[#DC2626]'
-                    : 'text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626]'
+                    ? 'text-[#DC2626] font-bold drop-shadow-[0_0_8px_rgba(220,38,38,0.55)] border-[#DC2626]'
+                    : 'text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626] dark:hover:text-[#DC2626] border-transparent'
                 }`}
               >
-                <span>{item.label}</span>
+                <span className="whitespace-nowrap">{item.label}</span>
               </NavLink>
             );
           })}
         </nav>
 
         {/* Action / Theme Toggle & Menu Trigger */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Light / Dark Mode Toggle */}
           <ThemeToggle variant="compact" />
 
-          {/* Menu Drawer Button (Mobile & Tablet Only) */}
+          {/* Menu Drawer Button (Mobile & Tablet Only, Hidden on Laptop/Desktop) */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="flex xl:hidden px-3 sm:px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[10px] sm:text-[11px] tracking-widest uppercase transition-all items-center gap-1.5 sm:gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
+            aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            className="flex lg:hidden px-3 sm:px-3.5 py-1.5 border border-[#111111]/20 dark:border-white/20 hover:border-[#DC2626] dark:hover:border-[#DC2626] hover:text-[#DC2626] dark:hover:text-[#DC2626] text-[10px] sm:text-[11px] tracking-widest uppercase transition-all items-center gap-1.5 sm:gap-2 cursor-pointer bg-white/70 dark:bg-white/5 text-[#111111] dark:text-[#F3F3EE]"
           >
             {menuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
             <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
@@ -149,9 +174,9 @@ export const MinimalNavbar: React.FC = () => {
         </div>
       </div>
 
-      {/* Editorial Menu Drawer */}
+      {/* Editorial Menu Drawer (Mobile & Tablet Only) */}
       {menuOpen && (
-        <div className="fixed inset-0 top-[54px] sm:top-16 bg-[#F5F4EF] dark:bg-[#0E0F12] z-40 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col justify-between border-t border-[#111111]/10 dark:border-white/10 overflow-y-auto">
+        <div className="lg:hidden fixed inset-0 top-[54px] sm:top-16 bg-[#F5F4EF] dark:bg-[#0E0F12] z-40 px-4 sm:px-8 lg:px-12 py-6 sm:py-8 flex flex-col justify-between border-t border-[#111111]/10 dark:border-white/10 overflow-y-auto">
           <div className="max-w-4xl space-y-6 my-auto w-full mx-auto">
             {/* Theme Toggle Drawer Row */}
             <ThemeToggle variant="drawer" />
@@ -168,7 +193,7 @@ export const MinimalNavbar: React.FC = () => {
                     key={item.path}
                     to={item.path}
                     onClick={() => setMenuOpen(false)}
-                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 sm:pb-4 text-2xl sm:text-4xl md:text-6xl font-syne font-black transition-colors uppercase ${
+                    className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 sm:pb-4 text-2xl sm:text-4xl md:text-6xl font-syne font-black transition-colors uppercase whitespace-nowrap ${
                       active ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] dark:text-[#F3F3EE] hover:text-[#DC2626]'
                     }`}
                   >

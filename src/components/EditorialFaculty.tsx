@@ -312,7 +312,6 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
   return (
     <section id="sec-faculty" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
-
         {/* Section Heading & Search / Department / Status Filters */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
           <div className="lg:col-span-6">

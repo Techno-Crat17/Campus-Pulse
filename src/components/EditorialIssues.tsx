@@ -206,7 +206,6 @@ export const EditorialIssues: React.FC = () => {
             <span>ANONYMOUS DISPATCH PROTOCOL</span>
           </div>
         </div>
-
         {/* Section Title & Subtitle */}
         <div className="space-y-4">
           <div>
