@@ -10,14 +10,37 @@ export const EditorialLostFound: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<LostFoundItem | null>(null);
 
+  const getItemStatus = (item: LostFoundItem): 'LOST' | 'FOUND' => {
+    if (item.status) {
+      return item.status.toUpperCase() === 'LOST' ? 'LOST' : 'FOUND';
+    }
+    if (item.type) {
+      return item.type.toLowerCase() === 'lost' ? 'LOST' : 'FOUND';
+    }
+    return 'FOUND';
+  };
+
+  const getItemLocation = (item: LostFoundItem): string => {
+    return item.foundAt || item.location || 'Campus Facilities';
+  };
+
   const filteredItems = items.filter((item) => {
-    const matchesType = filterType === 'all' || item.type === filterType;
+    const itemStatus = getItemStatus(item);
+    const matchesType =
+      filterType === 'all' ||
+      (filterType === 'lost' && itemStatus === 'LOST') ||
+      (filterType === 'found' && itemStatus === 'FOUND');
+
+    const locationStr = getItemLocation(item);
     const q = searchQuery.trim().toLowerCase();
-    const matchesSearch = !q ||
+    const matchesSearch =
+      !q ||
       item.itemName.toLowerCase().includes(q) ||
-      item.location.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q) ||
-      item.category.toLowerCase().includes(q);
+      locationStr.toLowerCase().includes(q) ||
+      (item.description && item.description.toLowerCase().includes(q)) ||
+      (item.category && item.category.toLowerCase().includes(q)) ||
+      itemStatus.toLowerCase().includes(q);
+
     return matchesType && matchesSearch;
   });
 
@@ -96,7 +119,9 @@ export const EditorialLostFound: React.FC = () => {
           {/* Items Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => {
-              const isLost = item.type === 'lost';
+              const status = getItemStatus(item);
+              const isLost = status === 'LOST';
+              const location = getItemLocation(item);
 
               return (
                 <motion.div
@@ -116,7 +141,7 @@ export const EditorialLostFound: React.FC = () => {
                         loading="lazy"
                       />
 
-                      {/* Status Pill Badge */}
+                      {/* Dynamic Status Pill Badge */}
                       <div className="absolute top-3 left-3 flex items-center gap-1.5">
                         <span
                           className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border shadow-xs ${isLost
@@ -124,10 +149,10 @@ export const EditorialLostFound: React.FC = () => {
                             : 'bg-emerald-600 text-white border-emerald-700'
                             }`}
                         >
-                          ● {isLost ? 'LOST' : 'FOUND'}
+                          ● {status}
                         </span>
                         <span className="px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111]/80 backdrop-blur-sm text-white">
-                          {item.location}
+                          {location}
                         </span>
                       </div>
 
@@ -151,7 +176,7 @@ export const EditorialLostFound: React.FC = () => {
                       <div className="pt-2 border-t border-[#111111]/10 font-mono text-[11px] text-[#888880] space-y-1">
                         <div className="flex items-center gap-1.5 text-[#111111]">
                           <MapPin className="w-3.5 h-3.5 text-[#DC2626] shrink-0" />
-                          <span className="truncate"><strong>FOUND AT:</strong> {item.location}</span>
+                          <span className="truncate"><strong>FOUND AT:</strong> {location}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3 h-3 text-[#888880] shrink-0" />
@@ -165,7 +190,7 @@ export const EditorialLostFound: React.FC = () => {
                   <div className="p-5 pt-0">
                     <button
                       onClick={() => setSelectedItem(item)}
-                      className="w-full py-2.5 bg-transparent border border-[#111111]/20 hover:border-[#DC2626] hover:bg-[#DC2626] hover:text-white font-mono text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+                      className="w-full py-2.5 bg-transparent border border-[#111111]/20 hover:border-[#DC2626] hover:bg-[#DC2626] hover:text-white font-mono text-[11px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>VIEW DETAILS</span>
@@ -178,84 +203,91 @@ export const EditorialLostFound: React.FC = () => {
 
           {/* Modal: View Details with Large Item Photo */}
           <AnimatePresence>
-            {selectedItem && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
-                onClick={() => setSelectedItem(null)}
-              >
+            {selectedItem && (() => {
+              const modalStatus = getItemStatus(selectedItem);
+              const modalIsLost = modalStatus === 'LOST';
+              const modalLocation = getItemLocation(selectedItem);
+
+              return (
                 <motion.div
-                  initial={{ scale: 0.95, y: 20 }}
-                  animate={{ scale: 1, y: 0 }}
-                  exit={{ scale: 0.95, y: 20 }}
-                  className="bg-[#F5F4EF] border-2 border-[#111111] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
-                  onClick={(e) => e.stopPropagation()}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
+                  onClick={() => setSelectedItem(null)}
                 >
-                  {/* Close Button */}
-                  <button
-                    onClick={() => setSelectedItem(null)}
-                    className="absolute top-4 right-4 z-10 p-2 bg-[#111111] text-white hover:bg-[#DC2626] transition-colors"
-                    aria-label="Close modal"
+                  <motion.div
+                    initial={{ scale: 0.95, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.95, y: 20 }}
+                    className="bg-[#F5F4EF] border-2 border-[#111111] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <X className="w-4 h-4" />
-                  </button>
+                    {/* Close Button */}
+                    <button
+                      onClick={() => setSelectedItem(null)}
+                      className="absolute top-4 right-4 z-10 p-2 bg-[#111111] text-white hover:bg-[#DC2626] transition-colors cursor-pointer"
+                      aria-label="Close modal"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
 
-                  {/* Modal Large Photo Display */}
-                  <div className="relative aspect-video w-full bg-black/10 overflow-hidden border-b border-[#111111]/15">
-                    <img
-                      src={selectedItem.image}
-                      alt={selectedItem.itemName}
-                      className="w-full h-full object-contain bg-black/5"
-                    />
-                    <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span
-                        className={`px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-md ${selectedItem.type === 'lost' ? 'bg-rose-600' : 'bg-emerald-600'
-                          }`}
-                      >
-                        ● {selectedItem.type === 'lost' ? 'REPORTED LOST' : 'FOUND &amp; SECURED'}
-                      </span>
-                      <span className="px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider bg-[#111111] text-white">
-                        {selectedItem.location}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Modal Content Details */}
-                  <div className="p-6 sm:p-8 space-y-6 font-mono">
-                    <div>
-                      <span className="text-xs text-[#DC2626] font-bold uppercase tracking-widest block mb-1">
-                        ITEM REFERENCE #{selectedItem.id} // {selectedItem.category.toUpperCase()}
-                      </span>
-                      <h3 className="font-syne text-3xl font-extrabold text-[#111111] uppercase tracking-tight">
-                        {selectedItem.itemName}
-                      </h3>
-                    </div>
-
-                    <div className="space-y-2 text-xs text-[#666660] bg-white/60 p-4 border border-[#111111]/15">
-                      <div>FOUND AT: <strong className="text-[#111111]">{selectedItem.location}</strong></div>
-                      <div>DATE REPORTED: <strong className="text-[#111111]">{selectedItem.date}</strong></div>
-                      <div>SECURED AT: <strong className="text-[#DC2626]">{selectedItem.contactLocation}</strong></div>
-                    </div>
-
-                    <div className="space-y-2 text-xs">
-                      <div className="font-bold text-[#111111] uppercase tracking-wider">
-                        ITEM DESCRIPTION &amp; MARKS:
+                    {/* Modal Large Photo Display */}
+                    <div className="relative aspect-video w-full bg-black/10 overflow-hidden border-b border-[#111111]/15">
+                      <img
+                        src={selectedItem.image}
+                        alt={selectedItem.itemName}
+                        className="w-full h-full object-contain bg-black/5"
+                      />
+                      <div className="absolute top-4 left-4 flex items-center gap-2">
+                        <span
+                          className={`px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-md ${modalIsLost ? 'bg-rose-600' : 'bg-emerald-600'
+                            }`}
+                        >
+                          ● {modalIsLost ? 'REPORTED LOST' : 'FOUND &amp; SECURED'}
+                        </span>
+                        <span className="px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider bg-[#111111] text-white">
+                          {modalLocation}
+                        </span>
                       </div>
-                      <p className="text-[#666660] leading-relaxed">
-                        {selectedItem.description}
-                      </p>
                     </div>
 
-                    <div className="pt-4 border-t border-[#111111]/15 flex items-center gap-2 text-[11px] text-[#888880]">
-                      <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>To claim or verify ownership of this item, please visit {selectedItem.contactLocation} with your Student ID card.</span>
+                    {/* Modal Content Details */}
+                    <div className="p-6 sm:p-8 space-y-6 font-mono">
+                      <div>
+                        <span className="text-xs text-[#DC2626] font-bold uppercase tracking-widest block mb-1">
+                          ITEM REFERENCE #{selectedItem.id} // {selectedItem.category.toUpperCase()}
+                        </span>
+                        <h3 className="font-syne text-3xl font-extrabold text-[#111111] uppercase tracking-tight">
+                          {selectedItem.itemName}
+                        </h3>
+                      </div>
+
+                      <div className="space-y-2 text-xs text-[#666660] bg-white/60 p-4 border border-[#111111]/15">
+                        <div>STATUS: <strong className={modalIsLost ? 'text-[#DC2626]' : 'text-emerald-700'}>{modalStatus}</strong></div>
+                        <div>FOUND AT: <strong className="text-[#111111]">{modalLocation}</strong></div>
+                        <div>DATE REPORTED: <strong className="text-[#111111]">{selectedItem.date}</strong></div>
+                        <div>SECURED AT: <strong className="text-[#DC2626]">{selectedItem.contactLocation}</strong></div>
+                      </div>
+
+                      <div className="space-y-2 text-xs">
+                        <div className="font-bold text-[#111111] uppercase tracking-wider">
+                          ITEM DESCRIPTION &amp; MARKS:
+                        </div>
+                        <p className="text-[#666660] leading-relaxed">
+                          {selectedItem.description}
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-[#111111]/15 flex items-center gap-2 text-[11px] text-[#888880]">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>To claim or verify ownership of this item, please visit {selectedItem.contactLocation} with your Student ID card.</span>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            )}
+              );
+            })()}
           </AnimatePresence>
         </div>
       </div>
