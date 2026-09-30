@@ -20,6 +20,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import announcementRoutes from './routes/announcementRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import clubRoutes from './routes/clubRoutes.js';
+import lostFoundRoutes from './routes/lostFoundRoutes.js';
 
 import { connectDB } from './config/db.js';
 
@@ -97,6 +98,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/clubs', clubRoutes);
+app.use('/api/lost-found', lostFoundRoutes);
+app.use('/api/lostfound', lostFoundRoutes);
 
 // 404 Route Handler
 app.use((req, res) => {

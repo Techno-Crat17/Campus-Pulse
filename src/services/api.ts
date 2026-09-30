@@ -334,7 +334,77 @@ export async function updateIssueStatus(id: string, status: string): Promise<any
 }
 
 // ----------------------------------------------------
-// 6. GLOBAL SEARCH API
+// 6. LOST & FOUND API
+// ----------------------------------------------------
+
+export async function fetchLostFound(filters: Record<string, string> = {}): Promise<any[]> {
+  try {
+    const isOnline = await checkBackendHealth();
+    if (isOnline) {
+      const params = new URLSearchParams(filters);
+      const res = await fetch(`${API_BASE_URL}/lost-found?${params}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn('[API Client] fetchLostFound failed. Falling back.', err);
+  }
+  return fallbackGetLostFound(filters);
+}
+
+export async function createLostFound(itemData: any): Promise<any> {
+  const targetUrl = `${API_BASE_URL}/lost-found`;
+
+  const usnToCheck = itemData?.usn;
+  if (isBlockedUser(usnToCheck)) {
+    throw new Error(BLOCKED_USER_ERROR_MESSAGE);
+  }
+
+  try {
+    const res = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(itemData)
+    });
+
+    const json = await res.json().catch(() => ({}));
+
+    if (!res.ok || json.success === false) {
+      throw new Error(json.message || `Failed to report found item to backend (HTTP ${res.status})`);
+    }
+
+    isBackendAvailable = true;
+    return json.data || json;
+  } catch (err: any) {
+    console.error(`[API Client] POST ${targetUrl} failed:`, err);
+    throw err;
+  }
+}
+
+export async function updateLostFoundStatus(id: string, status: string): Promise<any> {
+  try {
+    const isOnline = await checkBackendHealth();
+    if (isOnline) {
+      const res = await fetch(`${API_BASE_URL}/lost-found/${encodeURIComponent(id)}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) return json.data;
+      }
+    }
+  } catch (err) {
+    console.warn('[API Client] updateLostFoundStatus failed. Falling back.', err);
+  }
+  return fallbackUpdateLostFoundStatus(id, status);
+}
+
+// ----------------------------------------------------
+// 7. GLOBAL SEARCH API
 // ----------------------------------------------------
 
 export async function globalSearch(query: string): Promise<any> {
@@ -477,6 +547,8 @@ import { VERIFIED_CAMPUS_BLOCKS } from '../data/verifiedCampusBlocks';
 import roomDataJson from '../data/msrit_rooms.json';
 import { INITIAL_ISSUE_REPORTS } from '../data/issueReportsData';
 import { processCampusAiQuery } from '../data/campusAiEngine';
+import { getStoredLostFoundItems, saveLostFoundItem } from '../data/lostFoundData';
+import type { LostFoundItem } from '../data/lostFoundData';
 
 function fallbackFetchFaculty(page: number, limit: number, search: string, department: string): FacultyPaginationResult {
   let list = facultyDataDynamic as any[];
@@ -617,4 +689,65 @@ async function fallbackQueryCampusAi(query: string) {
     intent: (typeof result === 'object' && result?.intents?.[0]) ? result.intents[0] : 'GENERAL_CAMPUS_QUERY',
     answer: textAnswer
   };
+}
+
+function fallbackGetLostFound(filters: Record<string, string>): LostFoundItem[] {
+  let list = getStoredLostFoundItems();
+  if (filters.status) {
+    const s = filters.status.toUpperCase();
+    if (s === 'FOUND' || s === 'RECOVERED') {
+      list = list.filter((i) => (i.status || '').toUpperCase() === s);
+    }
+  }
+  if (filters.category && filters.category !== 'all' && filters.category !== 'ALL') {
+    list = list.filter((i) => (i.category || '').toLowerCase() === filters.category.toLowerCase());
+  }
+  if (filters.q || filters.search) {
+    const q = (filters.q || filters.search).toLowerCase();
+    list = list.filter((i) =>
+      i.itemName.toLowerCase().includes(q) ||
+      (i.description && i.description.toLowerCase().includes(q)) ||
+      (i.foundAt && i.foundAt.toLowerCase().includes(q)) ||
+      (i.location && i.location.toLowerCase().includes(q)) ||
+      (i.usn && i.usn.toLowerCase().includes(q))
+    );
+  }
+  return list;
+}
+
+export function fallbackCreateLostFound(data: any): LostFoundItem {
+  const newItem: LostFoundItem = {
+    id: `lf-local-${Date.now()}`,
+    itemName: data.itemTitle || data.itemName || data.title,
+    itemTitle: data.itemTitle || data.itemName || data.title,
+    category: data.category || 'Other',
+    description: data.description,
+    foundAt: data.foundAt || data.location,
+    location: data.foundAt || data.location,
+    foundOn: data.foundOn || data.date || new Date().toISOString().split('T')[0],
+    date: data.foundOn || data.date || new Date().toISOString().split('T')[0],
+    usn: data.usn,
+    status: 'FOUND',
+    contactLocation: 'Security Enquiry Desk',
+    statusLabel: 'FOUND & SECURED',
+    type: 'found',
+    image: data.image || '',
+    isDemo: false
+  };
+  saveLostFoundItem(newItem);
+  return newItem;
+}
+
+function fallbackUpdateLostFoundStatus(id: string, status: string): any {
+  const normalizedStatus = status.toLowerCase() === 'recovered' ? 'RECOVERED' : 'FOUND';
+  const list = getStoredLostFoundItems();
+  const item = list.find((i) => String(i.id) === String(id));
+  if (item) {
+    item.status = normalizedStatus;
+    item.statusLabel = normalizedStatus === 'FOUND' ? 'FOUND & SECURED' : 'RECOVERED & CLAIMED';
+    item.type = normalizedStatus === 'FOUND' ? 'found' : 'recovered';
+    saveLostFoundItem(item);
+    return item;
+  }
+  return { id, status: normalizedStatus };
 }

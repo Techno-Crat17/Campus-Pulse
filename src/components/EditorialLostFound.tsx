@@ -1,22 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Calendar, Tag, ShieldCheck, X, Eye, HelpCircle } from 'lucide-react';
-import { SAMPLE_LOST_FOUND_ITEMS } from '../data/lostFoundData';
+import {
+  Search,
+  MapPin,
+  Calendar,
+  Tag,
+  ShieldCheck,
+  X,
+  Eye,
+  HelpCircle,
+  CheckCircle2,
+  AlertTriangle,
+  Send,
+  PlusCircle,
+  User
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+import {
+  LOST_FOUND_CATEGORIES,
+  getStoredLostFoundItems,
+  saveLostFoundItem,
+  isValidUSN
+} from '../data/lostFoundData';
 import type { LostFoundItem } from '../data/lostFoundData';
+import { fetchLostFound, createLostFound } from '../services/api';
+import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUsers';
 
 export const EditorialLostFound: React.FC = () => {
-  const [items] = useState<LostFoundItem[]>(SAMPLE_LOST_FOUND_ITEMS);
-  const [filterType, setFilterType] = useState<'all' | 'lost' | 'found'>('all');
+  const [items, setItems] = useState<LostFoundItem[]>(() => getStoredLostFoundItems());
+  const [filterType, setFilterType] = useState<'all' | 'found' | 'recovered'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedItem, setSelectedItem] = useState<LostFoundItem | null>(null);
 
-  const getItemStatus = (item: LostFoundItem): 'LOST' | 'FOUND' => {
-    if (item.status) {
-      return item.status.toUpperCase() === 'LOST' ? 'LOST' : 'FOUND';
+  // Form State: 6 Mandatory Fields
+  const [category, setCategory] = useState<LostFoundItem['category']>('Electronics');
+  const [itemTitle, setItemTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [foundAt, setFoundAt] = useState<string>('');
+  const [foundOn, setFoundOn] = useState<string>('');
+  const [usn, setUsn] = useState<string>('');
+
+  // Form feedback state
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string>('');
+
+  // Synchronize items from backend or storage on mount
+  useEffect(() => {
+    async function loadRemoteItems() {
+      try {
+        const remote = await fetchLostFound();
+        if (Array.isArray(remote) && remote.length > 0) {
+          const mapped: LostFoundItem[] = remote.map((item: any) => ({
+            id: item.id || item._id,
+            itemName: item.itemName || item.title || item.itemTitle || 'Item',
+            itemTitle: item.itemTitle || item.itemName || item.title,
+            category: item.category || 'Other',
+            description: item.description || '',
+            foundAt: item.foundAt || item.location || 'Campus Facilities',
+            location: item.foundAt || item.location || 'Campus Facilities',
+            foundOn: item.foundOn || item.date || '2026-09-30',
+            date: item.foundOn || item.date || '2026-09-30',
+            usn: item.usn || '',
+            status: (item.status === 'RECOVERED' || item.status === 'recovered') ? 'RECOVERED' : 'FOUND',
+            contactLocation: item.contactLocation || 'Security Enquiry Desk',
+            statusLabel: (item.status === 'RECOVERED' || item.status === 'recovered') ? 'RECOVERED & CLAIMED' : 'FOUND & SECURED',
+            type: (item.status === 'RECOVERED' || item.status === 'recovered') ? 'recovered' : 'found',
+            image: item.image || '',
+            isDemo: item.isDemo || false
+          }));
+          setItems(mapped);
+          return;
+        }
+      } catch (err) {
+        console.warn('[EditorialLostFound] Failed to fetch remote items:', err);
+      }
+      setItems(getStoredLostFoundItems());
     }
-    if (item.type) {
-      return item.type.toLowerCase() === 'lost' ? 'LOST' : 'FOUND';
-    }
+
+    loadRemoteItems();
+
+    const handleUpdate = () => {
+      setItems(getStoredLostFoundItems());
+    };
+    window.addEventListener('campus_pulse_lost_found_updated', handleUpdate);
+    return () => window.removeEventListener('campus_pulse_lost_found_updated', handleUpdate);
+  }, []);
+
+  const getItemStatus = (item: LostFoundItem): 'FOUND' | 'RECOVERED' => {
+    const s = (item.status || item.type || '').toUpperCase();
+    if (s === 'RECOVERED' || s === 'CLAIMED' || s === 'RESOLVED') return 'RECOVERED';
     return 'FOUND';
   };
 
@@ -28,8 +101,8 @@ export const EditorialLostFound: React.FC = () => {
     const itemStatus = getItemStatus(item);
     const matchesType =
       filterType === 'all' ||
-      (filterType === 'lost' && itemStatus === 'LOST') ||
-      (filterType === 'found' && itemStatus === 'FOUND');
+      (filterType === 'found' && itemStatus === 'FOUND') ||
+      (filterType === 'recovered' && itemStatus === 'RECOVERED');
 
     const locationStr = getItemLocation(item);
     const q = searchQuery.trim().toLowerCase();
@@ -39,63 +112,383 @@ export const EditorialLostFound: React.FC = () => {
       locationStr.toLowerCase().includes(q) ||
       (item.description && item.description.toLowerCase().includes(q)) ||
       (item.category && item.category.toLowerCase().includes(q)) ||
+      (item.usn && item.usn.toLowerCase().includes(q)) ||
       itemStatus.toLowerCase().includes(q);
 
     return matchesType && matchesSearch;
   });
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg('');
+
+    // 1. Mandatory Field Validation
+    if (!category) {
+      setErrorMsg('Please select a category.');
+      return;
+    }
+    if (!itemTitle.trim()) {
+      setErrorMsg('Please enter the item title.');
+      return;
+    }
+    if (!description.trim()) {
+      setErrorMsg('Please provide a description of the item.');
+      return;
+    }
+    if (!foundAt.trim()) {
+      setErrorMsg('Please specify where the item was found.');
+      return;
+    }
+    if (!foundOn.trim()) {
+      setErrorMsg('Please select the date the item was found.');
+      return;
+    }
+    if (!usn.trim()) {
+      setErrorMsg('Please enter your USN.');
+      return;
+    }
+
+    const cleanUsn = usn.trim().toUpperCase();
+
+    // 2. Strict USN Format Validation
+    if (!isValidUSN(cleanUsn)) {
+      setErrorMsg('Enter a valid USN. Example: 1MS24IS094');
+      return;
+    }
+
+    // 3. Centralized blocked user check
+    if (isBlockedUser(cleanUsn)) {
+      setErrorMsg(BLOCKED_USER_ERROR_MESSAGE);
+      return;
+    }
+
+    setSubmitting(true);
+
+    const payload = {
+      category,
+      itemTitle: itemTitle.trim(),
+      description: description.trim(),
+      foundAt: foundAt.trim(),
+      foundOn: foundOn.trim(),
+      usn: cleanUsn,
+      status: 'found'
+    };
+
+    try {
+      const saved = await createLostFound(payload);
+
+      const newItem: LostFoundItem = {
+        id: saved?.id || saved?._id || (`lf-local-${Date.now()}`),
+        itemName: itemTitle.trim(),
+        itemTitle: itemTitle.trim(),
+        category,
+        description: description.trim(),
+        foundAt: foundAt.trim(),
+        location: foundAt.trim(),
+        foundOn: foundOn.trim(),
+        date: foundOn.trim(),
+        usn: cleanUsn,
+        status: 'FOUND',
+        contactLocation: 'Security Enquiry Desk',
+        statusLabel: 'FOUND & SECURED',
+        type: 'found',
+        image: '',
+        isDemo: false
+      };
+
+      const updated = saveLostFoundItem(newItem);
+      setItems(updated);
+      setSubmitted(true);
+
+      try {
+        confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
+      } catch {
+        // Fallback if confetti unavailable
+      }
+
+      // Reset Form Fields
+      setItemTitle('');
+      setDescription('');
+      setFoundAt('');
+      setFoundOn('');
+      setUsn('');
+      setCategory('Electronics');
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+    } catch (err: any) {
+      console.error('[EditorialLostFound] Submit error:', err);
+      // Fallback local persistence
+      const newItem: LostFoundItem = {
+        id: `lf-local-${Date.now()}`,
+        itemName: itemTitle.trim(),
+        itemTitle: itemTitle.trim(),
+        category,
+        description: description.trim(),
+        foundAt: foundAt.trim(),
+        location: foundAt.trim(),
+        foundOn: foundOn.trim(),
+        date: foundOn.trim(),
+        usn: cleanUsn,
+        status: 'FOUND',
+        contactLocation: 'Security Enquiry Desk',
+        statusLabel: 'FOUND & SECURED',
+        type: 'found',
+        image: '',
+        isDemo: false
+      };
+
+      const updated = saveLostFoundItem(newItem);
+      setItems(updated);
+      setSubmitted(true);
+
+      setItemTitle('');
+      setDescription('');
+      setFoundAt('');
+      setFoundOn('');
+      setUsn('');
+      setCategory('Electronics');
+
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section id="sec-lostfound" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
 
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-[#111111]/10 pb-8 gap-6">
-          <div>
-            <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold mb-3 flex items-center gap-2 flex-wrap">
-              <Tag className="w-4 h-4 text-[#DC2626]" />
-              <span>SECTION 07 // COMMUNITY LOST &amp; FOUND DISPATCH</span>
+        {/* Section Header & Report Found Item Entry Form Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 border-b border-[#111111]/10 pb-12 items-start">
+
+          {/* Left Column (5 Cols): Section Title & Overview */}
+          <div className="lg:col-span-5 space-y-6">
+            <div>
+              <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold mb-3 flex items-center gap-2 flex-wrap">
+                <Tag className="w-4 h-4 text-[#DC2626]" />
+                <span>SECTION 07 // COMMUNITY LOST &amp; FOUND DISPATCH</span>
+              </div>
+              <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
+                LOST &amp;
+              </h2>
+              <h2 className="text-subgiant font-syne text-[#DC2626] uppercase tracking-tighter leading-none">
+                FOUND
+              </h2>
             </div>
-            <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
-              LOST &amp;
-            </h2>
-            <h2 className="text-subgiant font-syne text-[#DC2626] uppercase tracking-tighter leading-none">
-              FOUND
-            </h2>
+
+            <p className="font-mono text-xs sm:text-sm text-[#666660] leading-relaxed">
+              Report items found across the campus or search for misplaced belongings. All turned-in items are verified and deposited at the campus Security Enquiry Desk for owner claim and recovery.
+            </p>
+
+            <div className="font-mono text-xs text-[#666660] space-y-2 pt-2 border-t border-[#111111]/10">
+              <div className="inline-flex items-center gap-2 text-[#DC2626] font-bold uppercase tracking-wider bg-[#DC2626]/10 px-3 py-1 border border-[#DC2626]/20">
+                <HelpCircle className="w-3.5 h-3.5 text-[#DC2626]" />
+                <span>STATUS SYSTEM // FOUND → RECOVERED</span>
+              </div>
+              <div className="text-[11px] text-[#111111]">
+                MODEL: PEER RECOVERY &amp; CAMPUS SECURITY DESK DEPOSITS
+              </div>
+              <div className="text-[10px] text-[#888880]">
+                NOTICE: REPORTED ITEMS ENTER THE DISPATCH REGISTRY IMMEDIATELY
+              </div>
+            </div>
           </div>
 
-          <div className="font-mono text-xs text-[#666660] md:text-right space-y-1">
-            <div className="inline-flex items-center gap-2 text-[#DC2626] font-bold uppercase tracking-wider bg-[#DC2626]/10 px-3 py-1 border border-[#DC2626]/20">
-              <HelpCircle className="w-3.5 h-3.5 text-[#DC2626]" />
-              <span>DEMO / SAMPLE RECORDS</span>
+          {/* Right Column (7 Cols): Report Found Item Entry Form (Yellow Marked Target Area) */}
+          <div className="lg:col-span-7 bg-white/70 border-2 border-[#111111]/15 p-6 sm:p-8 space-y-6 font-mono text-xs shadow-xs">
+
+            <div className="border-b border-[#111111]/10 pb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-[#111111] font-bold uppercase text-xs sm:text-sm font-syne">
+                <PlusCircle className="w-4 h-4 text-[#DC2626]" />
+                <span>REPORT FOUND ITEM</span>
+              </div>
+              <span className="text-[10px] text-[#DC2626] font-bold uppercase tracking-wider">
+                ALL 6 FIELDS MANDATORY
+              </span>
             </div>
-            <div className="text-[11px] text-[#111111] pt-1">
-              MODEL: PEER RECOVERY &amp; CAMPUS SECURITY DESK DEPOSITS
-            </div>
-            <div className="text-[10px] text-[#888880]">
-              NOTICE: SAMPLE DEMO RECORDS FOR INTERACTIVE TESTING
-            </div>
+
+            {/* Success Notification */}
+            {submitted && (
+              <div
+                role="alert"
+                className="p-4 border-2 border-[#16A34A] bg-emerald-50 text-emerald-900 font-mono text-xs flex items-center gap-3 shadow-xs animate-in fade-in"
+              >
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <div>
+                  <div className="font-bold text-emerald-800 text-sm">Found item reported successfully.</div>
+                  <div className="text-[11px] text-emerald-700 mt-0.5">
+                    Your entry has been logged and published to the active Found registry.
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error Message */}
+            {errorMsg && (
+              <div
+                role="alert"
+                className="p-3 border border-rose-300 bg-rose-50 text-rose-800 font-mono text-xs flex items-center gap-2"
+              >
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+
+              {/* Field 1: Category */}
+              <div className="space-y-1.5">
+                <label htmlFor="found-category-select" className="text-[#666660] uppercase tracking-widest font-bold block">
+                  1. CATEGORY *
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  {LOST_FOUND_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setCategory(cat)}
+                      className={`p-2 border text-left transition-all cursor-pointer text-[11px] ${
+                        category === cat
+                          ? 'bg-[#111111] border-[#DC2626] text-white font-bold shadow-2xs'
+                          : 'bg-white border-[#111111]/15 text-[#666660] hover:text-[#111111] hover:border-[#111111]'
+                      }`}
+                    >
+                      <span className="block truncate">{cat.toUpperCase()}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Field 2: Item Title & Field 4: Found At in 2 cols */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Field 2: Item Title */}
+                <div className="space-y-1.5">
+                  <label htmlFor="found-item-title" className="text-[#666660] uppercase tracking-widest font-bold block">
+                    2. ITEM TITLE *
+                  </label>
+                  <input
+                    id="found-item-title"
+                    type="text"
+                    value={itemTitle}
+                    onChange={(e) => setItemTitle(e.target.value)}
+                    placeholder="E.G. WIRELESS BLUETOOTH MOUSE"
+                    className="w-full bg-white border border-[#111111]/25 px-3 py-2 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-bold"
+                    required
+                  />
+                </div>
+
+                {/* Field 4: Found At */}
+                <div className="space-y-1.5">
+                  <label htmlFor="found-location-input" className="text-[#666660] uppercase tracking-widest font-bold block">
+                    4. FOUND AT *
+                  </label>
+                  <input
+                    id="found-location-input"
+                    type="text"
+                    value={foundAt}
+                    onChange={(e) => setFoundAt(e.target.value)}
+                    placeholder="E.G. ISE LAB 3, LHC ROOM 306"
+                    className="w-full bg-white border border-[#111111]/25 px-3 py-2 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-bold"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Field 3: Description */}
+              <div className="space-y-1.5">
+                <label htmlFor="found-description-input" className="text-[#666660] uppercase tracking-widest font-bold block">
+                  3. DESCRIPTION *
+                </label>
+                <textarea
+                  id="found-description-input"
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="DESCRIBE THE ITEM, COLOR, DISTINCT MARKS, CASING, BRAND, ETC."
+                  className="w-full bg-white border border-[#111111]/25 p-3 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-medium resize-y"
+                  required
+                />
+              </div>
+
+              {/* Field 5: Found On & Field 6: Your USN in 2 cols */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Field 5: Found On Date */}
+                <div className="space-y-1.5">
+                  <label htmlFor="found-date-input" className="text-[#666660] uppercase tracking-widest font-bold block">
+                    5. FOUND ON *
+                  </label>
+                  <input
+                    id="found-date-input"
+                    type="date"
+                    value={foundOn}
+                    onChange={(e) => setFoundOn(e.target.value)}
+                    className="w-full bg-white border border-[#111111]/25 px-3 py-2 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] shadow-2xs font-bold cursor-pointer"
+                    required
+                  />
+                </div>
+
+                {/* Field 6: Your USN */}
+                <div className="space-y-1.5">
+                  <label htmlFor="found-usn-input" className="text-[#666660] uppercase tracking-widest font-bold block">
+                    6. YOUR USN *
+                  </label>
+                  <input
+                    id="found-usn-input"
+                    type="text"
+                    value={usn}
+                    onChange={(e) => setUsn(e.target.value.toUpperCase())}
+                    placeholder="E.G. 1MS24IS094"
+                    maxLength={14}
+                    className="w-full bg-white border border-[#111111]/25 px-3 py-2 text-xs text-[#111111] focus:outline-none focus:border-[#DC2626] uppercase shadow-2xs font-bold tracking-wider"
+                    required
+                  />
+                  <div className="text-[10px] text-[#888880]">
+                    FORMAT: 1MS[YEAR][BRANCH][001-300] (OPTIONAL -T)
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full py-3 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{submitting ? 'LOGGING DISPATCH...' : 'SUBMIT FOUND ITEM REPORT →'}</span>
+                </button>
+              </div>
+
+            </form>
           </div>
+
         </div>
 
-        {/* Active Interactive Lost & Found UI */}
+        {/* Active Interactive Lost & Found Registry UI */}
         <div className="space-y-8">
           {/* Controls: Search & Filter Tabs */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 font-mono text-xs">
 
-            {/* Filter Pills */}
+            {/* Filter Pills (3 Options: ALL ITEMS, FOUND, RECOVERED) */}
             <div className="flex items-center gap-2">
               {[
                 { id: 'all', label: 'ALL ITEMS' },
-                { id: 'lost', label: 'LOST ONLY' },
-                { id: 'found', label: 'FOUND ONLY' }
+                { id: 'found', label: 'FOUND' },
+                { id: 'recovered', label: 'RECOVERED' }
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setFilterType(tab.id as 'all' | 'lost' | 'found')}
-                  className={`px-4 py-2 uppercase font-bold border transition-all ${filterType === tab.id
-                    ? 'bg-[#111111] border-[#DC2626] text-white shadow-xs'
-                    : 'bg-white/40 border-[#111111]/15 text-[#666660] hover:text-[#111111] hover:border-[#111111]/40'
-                    }`}
+                  onClick={() => setFilterType(tab.id as 'all' | 'found' | 'recovered')}
+                  className={`px-4 py-2 uppercase font-bold border transition-all cursor-pointer ${
+                    filterType === tab.id
+                      ? 'bg-[#111111] border-[#DC2626] text-white shadow-xs'
+                      : 'bg-white/40 border-[#111111]/15 text-[#666660] hover:text-[#111111] hover:border-[#111111]/40'
+                  }`}
                 >
                   {tab.label}
                 </button>
@@ -120,7 +513,7 @@ export const EditorialLostFound: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredItems.map((item) => {
               const status = getItemStatus(item);
-              const isLost = status === 'LOST';
+              const isFound = status === 'FOUND';
               const location = getItemLocation(item);
 
               return (
@@ -134,24 +527,32 @@ export const EditorialLostFound: React.FC = () => {
                   <div>
                     {/* Photo Container */}
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#111111]/5 border-b border-[#111111]/10">
-                      <img
-                        src={item.image}
-                        alt={item.itemName}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
-                      />
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.itemName}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-[#111111]/5 font-mono text-xs text-[#888880] p-4 text-center space-y-1">
+                          <Tag className="w-8 h-8 text-[#DC2626]/40" />
+                          <span className="text-[10px] font-bold uppercase">{item.category}</span>
+                        </div>
+                      )}
 
                       {/* Dynamic Status Pill Badge */}
                       <div className="absolute top-3 left-3 flex items-center gap-1.5">
                         <span
-                          className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border shadow-xs ${isLost
-                            ? 'bg-rose-600 text-white border-rose-700'
-                            : 'bg-emerald-600 text-white border-emerald-700'
-                            }`}
+                          className={`px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border shadow-xs ${
+                            isFound
+                              ? 'bg-emerald-600 text-white border-emerald-700'
+                              : 'bg-[#111111] text-white border-black/30'
+                          }`}
                         >
                           ● {status}
                         </span>
-                        <span className="px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111]/80 backdrop-blur-sm text-white">
+                        <span className="px-2 py-1 text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111111]/80 backdrop-blur-sm text-white truncate max-w-[140px]">
                           {location}
                         </span>
                       </div>
@@ -176,11 +577,23 @@ export const EditorialLostFound: React.FC = () => {
                       <div className="pt-2 border-t border-[#111111]/10 font-mono text-[11px] text-[#888880] space-y-1">
                         <div className="flex items-center gap-1.5 text-[#111111]">
                           <MapPin className="w-3.5 h-3.5 text-[#DC2626] shrink-0" />
-                          <span className="truncate font-semibold">{isLost ? 'DROPPED IN AT LOST & FOUND DEPARTMENT' : 'COLLECTED FROM LOST & FOUND DEPARTMENT'}</span>
+                          <span className="truncate font-semibold">
+                            {isFound
+                              ? 'DROPPED IN AT LOST & FOUND DEPARTMENT'
+                              : 'COLLECTED & RECOVERED BY OWNER'}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3 h-3 text-[#888880] shrink-0" />
-                          <span>LOGGED: {item.date}</span>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-3 h-3 text-[#888880] shrink-0" />
+                            <span>LOGGED: {item.foundOn || item.date}</span>
+                          </div>
+                          {item.usn && (
+                            <div className="flex items-center gap-1 text-[10px] text-[#111111] font-bold">
+                              <User className="w-3 h-3 text-[#DC2626]" />
+                              <span>{item.usn}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -205,7 +618,7 @@ export const EditorialLostFound: React.FC = () => {
           <AnimatePresence>
             {selectedItem && (() => {
               const modalStatus = getItemStatus(selectedItem);
-              const modalIsLost = modalStatus === 'LOST';
+              const modalIsFound = modalStatus === 'FOUND';
               const modalLocation = getItemLocation(selectedItem);
 
               return (
@@ -234,17 +647,25 @@ export const EditorialLostFound: React.FC = () => {
 
                     {/* Modal Large Photo Display */}
                     <div className="relative aspect-video w-full bg-black/10 overflow-hidden border-b border-[#111111]/15">
-                      <img
-                        src={selectedItem.image}
-                        alt={selectedItem.itemName}
-                        className="w-full h-full object-contain bg-black/5"
-                      />
+                      {selectedItem.image ? (
+                        <img
+                          src={selectedItem.image}
+                          alt={selectedItem.itemName}
+                          className="w-full h-full object-contain bg-black/5"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-[#111111]/10 font-mono text-xs text-[#888880] p-4 text-center space-y-2">
+                          <Tag className="w-12 h-12 text-[#DC2626]/40" />
+                          <span className="text-xs font-bold uppercase">{selectedItem.category}</span>
+                        </div>
+                      )}
                       <div className="absolute top-4 left-4 flex items-center gap-2">
                         <span
-                          className={`px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-md ${modalIsLost ? 'bg-rose-600' : 'bg-emerald-600'
-                            }`}
+                          className={`px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-md ${
+                            modalIsFound ? 'bg-emerald-600' : 'bg-[#111111]'
+                          }`}
                         >
-                          ● {modalIsLost ? 'REPORTED LOST' : 'FOUND &amp; SECURED'}
+                          ● {modalIsFound ? 'FOUND & SECURED' : 'RECOVERED & CLAIMED'}
                         </span>
                         <span className="px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider bg-[#111111] text-white">
                           {modalLocation}
@@ -256,7 +677,7 @@ export const EditorialLostFound: React.FC = () => {
                     <div className="p-6 sm:p-8 space-y-6 font-mono">
                       <div>
                         <span className="text-xs text-[#DC2626] font-bold uppercase tracking-widest block mb-1">
-                          ITEM REFERENCE #{selectedItem.id} // {selectedItem.category.toUpperCase()}
+                          ITEM REFERENCE #{selectedItem.id} // {selectedItem.category?.toUpperCase()}
                         </span>
                         <h3 className="font-syne text-3xl font-extrabold text-[#111111] uppercase tracking-tight">
                           {selectedItem.itemName}
@@ -264,11 +685,14 @@ export const EditorialLostFound: React.FC = () => {
                       </div>
 
                       <div className="space-y-2 text-xs text-[#666660] bg-white/60 p-4 border border-[#111111]/15">
-                        <div>STATUS: <strong className={modalIsLost ? 'text-[#DC2626]' : 'text-emerald-700'}>{modalStatus}</strong></div>
+                        <div>STATUS: <strong className={modalIsFound ? 'text-emerald-700' : 'text-[#111111]'}>{modalStatus}</strong></div>
                         <div>ORIGINAL FOUND LOCATION: <strong className="text-[#111111]">{modalLocation}</strong></div>
-                        <div>DEPARTMENT STATUS: <strong className="text-[#111111]">{modalIsLost ? 'DROPPED IN AT LOST & FOUND DEPARTMENT' : 'COLLECTED FROM LOST & FOUND DEPARTMENT'}</strong></div>
-                        <div>DATE REPORTED: <strong className="text-[#111111]">{selectedItem.date}</strong></div>
-                        <div>SECURED AT: <strong className="text-[#DC2626]">{selectedItem.contactLocation}</strong></div>
+                        <div>DEPARTMENT STATUS: <strong className="text-[#111111]">{modalIsFound ? 'DROPPED IN AT LOST & FOUND DEPARTMENT' : 'COLLECTED & RECOVERED BY OWNER'}</strong></div>
+                        <div>DATE FOUND / LOGGED: <strong className="text-[#111111]">{selectedItem.foundOn || selectedItem.date}</strong></div>
+                        {selectedItem.usn && (
+                          <div>REPORTED BY USN: <strong className="text-[#DC2626]">{selectedItem.usn}</strong></div>
+                        )}
+                        <div>SECURED AT: <strong className="text-[#DC2626]">{selectedItem.contactLocation || 'Security Enquiry Desk'}</strong></div>
                       </div>
 
                       <div className="space-y-2 text-xs">
@@ -282,7 +706,7 @@ export const EditorialLostFound: React.FC = () => {
 
                       <div className="pt-4 border-t border-[#111111]/15 flex items-center gap-2 text-[11px] text-[#888880]">
                         <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                        <span>To claim or verify ownership of this item, please visit {selectedItem.contactLocation} with your Student ID card.</span>
+                        <span>To claim or verify ownership of this item, please visit {selectedItem.contactLocation || 'Security Enquiry Desk'} with your Student ID card.</span>
                       </div>
                     </div>
                   </motion.div>
