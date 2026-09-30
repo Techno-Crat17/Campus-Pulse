@@ -64,42 +64,58 @@ export function getRoomStats(): RoomStatistics {
  * - "ESB 419A", "ESB419A", "ESB-419A" -> "ESB-419A"
  * - "ARCH 307", "ARCH-307", "ARCH307" -> "ARCH-307"
  */
+/**
+ * Normalizes query string to match uniform room formats:
+ * - "LHC 101", "LHC-101", "LHC101" -> "LHC-101"
+ * - "CRD 508", "CRD-508", "CRD508" -> "CRD-508"
+ * - "AB 401", "AB401", "AB-401" -> "AB-401"
+ * - "AB 804/A", "AB-804/A" -> "AB-804/A"
+ * - "DES 101/102", "DES-101/102", "DES-402" -> "DES-101/102", "DES-402"
+ * - "ESB 419A", "ESB419A", "ESB-419A" -> "ESB-419A"
+ * - "ARCH 307", "ARCH-307", "ARCH307" -> "ARCH-307"
+ */
 export function normalizeRoomNumber(raw: string): string {
   if (!raw || typeof raw !== 'string') return '';
   const s = raw.toUpperCase().trim();
 
+  // Pattern: DES-XXX (including combinations like DES-101/102, DES-501/502B, DES-413/405/411/511, etc.)
+  const desMatch = s.match(/\bDES[- ]?([0-9A-Z/]+)\b/i);
+  if (desMatch) {
+    return `DES-${desMatch[1].toUpperCase()}`;
+  }
+
   // Pattern: LHC-XXX
-  const lhcMatch = s.match(/\bLHC[- ]?(\d{3}[A-Z]?)\b/i);
+  const lhcMatch = s.match(/\bLHC[- ]?([0-9A-Z/]+)\b/i);
   if (lhcMatch) {
     return `LHC-${lhcMatch[1].toUpperCase()}`;
   }
 
   // Pattern: CRD-XXX
-  const crdMatch = s.match(/\bCRD[- ]?(\d{3}[A-Z]?)\b/i);
+  const crdMatch = s.match(/\bCRD[- ]?([0-9A-Z/]+)\b/i);
   if (crdMatch) {
     return `CRD-${crdMatch[1].toUpperCase()}`;
   }
 
-  // Pattern: AB-XXX
-  const abMatch = s.match(/\bAB[- ]?(\d{3}[A-Z]?)\b/i);
+  // Pattern: AB-XXX (including AB-804/A, AB-210, etc.)
+  const abMatch = s.match(/\bAB[- ]?([0-9A-Z/]+)\b/i);
   if (abMatch) {
     return `AB-${abMatch[1].toUpperCase()}`;
   }
 
   // Pattern: ESB-XXX
-  const esbMatch = s.match(/\bESB[- ]?(\d{3}[A-Z]?)\b/i);
+  const esbMatch = s.match(/\bESB[- ]?([0-9A-Z/]+)\b/i);
   if (esbMatch) {
     return `ESB-${esbMatch[1].toUpperCase()}`;
   }
 
   // Pattern: ARCH-XXX
-  const archMatch = s.match(/\bARCH[- ]?(\d{3}[A-Z]?)\b/i);
+  const archMatch = s.match(/\bARCH[- ]?([0-9A-Z/]+)\b/i);
   if (archMatch) {
     return `ARCH-${archMatch[1].toUpperCase()}`;
   }
 
   // Pattern: Room-XXX
-  const roomMatch = s.match(/\bROOM[- ]?(\d{3}[A-Z]?)\b/i);
+  const roomMatch = s.match(/\bROOM[- ]?([0-9A-Z/]+)\b/i);
   if (roomMatch) {
     return `Room-${roomMatch[1].toUpperCase()}`;
   }
@@ -115,21 +131,23 @@ export function normalizeRoomNumber(raw: string): string {
 
 /**
  * Compact clean representation of room number:
- * strips hyphens, spaces, and special characters.
+ * strips hyphens, spaces, slashes, and special characters.
  */
 export function stripRoomNumber(raw: string): string {
-  return (raw || '').toUpperCase().replace(/[\s\-_]+/g, '');
+  return (raw || '').toUpperCase().replace(/[\s\-_/]+/g, '');
 }
 
 /**
- * Looks up room by exact or normalized room number
+ * Looks up room by exact, normalized, or sub-part room number
  */
 export function findRoomByNumber(query: string): MSRITRoomRecord | undefined {
   if (!query) return undefined;
+  const qClean = query.toUpperCase().trim();
   const normKey = normalizeRoomNumber(query);
   const strippedKey = stripRoomNumber(query);
 
-  return MSRIT_ROOMS.find((r) => {
+  // 1. Direct match
+  const directMatch = MSRIT_ROOMS.find((r) => {
     const rNum = r.roomNumber;
     const rStripped = stripRoomNumber(rNum);
     const rNorm = stripRoomNumber(r.roomNumberNormalized || rNum);
@@ -139,6 +157,29 @@ export function findRoomByNumber(query: string): MSRITRoomRecord | undefined {
       rStripped === strippedKey ||
       rNorm === strippedKey
     );
+  });
+  if (directMatch) return directMatch;
+
+  // 2. Sub-number match for combined rooms (e.g. "DES-101" or "101" matches "DES-101/102", "AB-804" matches "AB-804/A")
+  return MSRIT_ROOMS.find((r) => {
+    const rNum = r.roomNumber;
+    if (rNum.includes('/')) {
+      const parts = rNum.split('/');
+      const prefix = rNum.split('-')[0]; // "DES" or "AB"
+      for (let i = 0; i < parts.length; i++) {
+        const part = parts[i].trim();
+        const fullPart = part.includes('-') ? part : `${prefix}-${part}`;
+        if (
+          part.toLowerCase() === qClean.toLowerCase() ||
+          fullPart.toLowerCase() === qClean.toLowerCase() ||
+          stripRoomNumber(part) === strippedKey ||
+          stripRoomNumber(fullPart) === strippedKey
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
   });
 }
 
@@ -292,8 +333,20 @@ export function normalizeDepartmentCode(input: string): string | null {
   if (!input || typeof input !== 'string') return null;
   const s = input.trim().toLowerCase();
 
-  if (/\b(cse[- ]?aiml|aiml|ai\s*&\s*ml|ai[- ]ml|artificial\s*intelligence)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(ai|aiml)\b/i.test(s))) {
-    return 'CSE-AIML';
+  if (/\b(cse[- ]?aiml|aiml|ai\s*&\s*ml|ai[- ]ml|ai\s*ml|artificial\s*intelligence\s*&\s*machine\s*learning)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(ai|aiml)\b/i.test(s))) {
+    return 'AI & ML';
+  }
+  if (/\b(ai\s*&\s*ds|ai[- ]ds|aids|ai\s*ds|artificial\s*intelligence\s*&\s*data\s*science)\b/i.test(s)) {
+    return 'AI & DS';
+  }
+  if (/\b(physics|phy)\b/i.test(s)) {
+    return 'Physics';
+  }
+  if (/\b(math|mathematics|maths)\b/i.test(s)) {
+    return 'Mathematics';
+  }
+  if (/\b(humanities|hum)\b/i.test(s)) {
+    return 'Humanities';
   }
   if (/\b(cse[- ]?cy|cyber\s*security|cybersecurity|cyber|cy)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(cy|cyber)\b/i.test(s))) {
     return 'CSE-CY';
@@ -308,13 +361,13 @@ export function normalizeDepartmentCode(input: string): string | null {
     return 'E&IE';
   }
   if (/\b(e&te|ete|telecom|telecommunication|electronics\s*&\s*telecommunication)\b/i.test(s)) {
-    return 'E&TE';
+    return 'ETE';
   }
   if (/\b(ise|information\s*science)\b/i.test(s)) {
     return 'ISE';
   }
-  if (/\b(ece|electronics\s*&\s*communication)\b/i.test(s)) {
-    return 'ECE';
+  if (/\b(e&ce|ece|electronics\s*&\s*communication)\b/i.test(s)) {
+    return 'E&CE';
   }
   if (/\b(cv|civil|civil\s*engineering)\b/i.test(s)) {
     return 'CV';
@@ -325,7 +378,7 @@ export function normalizeDepartmentCode(input: string): string | null {
   if (/\b(ind|industrial|iem|industrial\s*engineering)\b/i.test(s)) {
     return 'IND';
   }
-  if (/\b(mca)\b/i.test(s)) {
+  if (/\b(mca|master\s*of\s*computer\s*applications)\b/i.test(s)) {
     return 'MCA';
   }
   if (/\b(cse|computer\s*science)\b/i.test(s)) {
@@ -342,24 +395,38 @@ export function getDepartmentDisplayName(code: string): string {
   switch (code) {
     case 'CSE-AIML':
     case 'AIML':
-      return 'CSE (AIML)';
+    case 'AI & ML':
+      return 'AI & ML';
+    case 'AI & DS':
+    case 'AIDS':
+      return 'AI & DS';
+    case 'Physics':
+      return 'Physics';
+    case 'Mathematics':
+      return 'Mathematics';
+    case 'Humanities':
+      return 'Humanities';
     case 'CSE-CY':
     case 'CY':
       return 'CSE (Cyber Security)';
     case 'MLE':
       return 'Medical Electronics (MLE)';
     case 'E&EE':
+    case 'EEE':
       return 'Electrical & Electronics (E&EE)';
     case 'E&IE':
+    case 'EIE':
       return 'Electronics & Instrumentation (E&IE)';
     case 'E&TE':
-      return 'Electronics & Telecommunication (E&TE)';
+    case 'ETE':
+      return 'Electronics & Telecommunication (ETE)';
     case 'CSE':
       return 'Computer Science & Engineering (CSE)';
     case 'ISE':
       return 'Information Science & Engineering (ISE)';
     case 'ECE':
-      return 'Electronics & Communication (ECE)';
+    case 'E&CE':
+      return 'Electronics & Communication (E&CE)';
     case 'CV':
       return 'Civil Engineering (CV)';
     case 'BIOTECH':
@@ -460,8 +527,20 @@ export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[]
       const depts = (r.departments || []).map((x) => x.toUpperCase());
       const dStr = (r.department || '').toUpperCase();
 
-      if (normDept === 'CSE-AIML' || normDept === 'AIML') {
-        return depts.includes('CSE-AIML') || depts.includes('AIML') || dStr.includes('AIML') || dStr.includes('AI & ML') || dStr.includes('ARTIFICIAL INTELLIGENCE');
+      if (normDept === 'CSE-AIML' || normDept === 'AIML' || normDept === 'AI & ML') {
+        return depts.includes('CSE-AIML') || depts.includes('AIML') || depts.includes('AI & ML') || dStr.includes('AIML') || dStr.includes('AI & ML') || dStr.includes('ARTIFICIAL INTELLIGENCE & MACHINE LEARNING') || dStr.includes('ARTIFICIAL INTELLIGENCE');
+      }
+      if (normDept === 'AI & DS' || normDept === 'AIDS') {
+        return depts.includes('AI & DS') || depts.includes('AIDS') || dStr.includes('AI & DS') || dStr.includes('AIDS') || dStr.includes('ARTIFICIAL INTELLIGENCE & DATA SCIENCE');
+      }
+      if (normDept === 'Physics') {
+        return depts.includes('PHYSICS') || dStr.includes('PHYSICS');
+      }
+      if (normDept === 'Mathematics') {
+        return depts.includes('MATHEMATICS') || dStr.includes('MATHEMATICS') || dStr.includes('MATH');
+      }
+      if (normDept === 'Humanities') {
+        return depts.includes('HUMANITIES') || dStr.includes('HUMANITIES');
       }
       if (normDept === 'CSE-CY' || normDept === 'CY' || normDept === 'CYBER SECURITY') {
         return depts.includes('CSE-CY') || depts.includes('CY') || dStr.includes('CYBER');
@@ -484,8 +563,8 @@ export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[]
       if (normDept === 'ISE') {
         return depts.includes('ISE') || dStr.includes('ISE') || dStr.includes('INFORMATION SCIENCE');
       }
-      if (normDept === 'ECE') {
-        return depts.includes('ECE') || dStr.includes('ECE') || dStr.includes('ELECTRONICS & COMM');
+      if (normDept === 'ECE' || normDept === 'E&CE') {
+        return depts.includes('ECE') || depts.includes('E&CE') || dStr.includes('ECE') || dStr.includes('E&CE') || dStr.includes('ELECTRONICS & COMM');
       }
       if (normDept === 'CV') {
         return depts.includes('CV') || dStr.includes('CIVIL');

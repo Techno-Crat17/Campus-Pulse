@@ -181,15 +181,25 @@ export async function getRoomsByDepartment(req, res, next) {
 
 export async function getRoomByNumber(req, res, next) {
   try {
-    const rawNumber = req.params.roomNumber;
+    const rawNumber = decodeURIComponent(req.params.roomNumber);
     const norm = normalizeRoomNumber(rawNumber);
+    const escaped = rawNumber.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-    const room = await Room.findOne({
+    let room = await Room.findOne({
       $or: [
-        { roomNumber: { $regex: new RegExp(`^${rawNumber}$`, 'i') } },
+        { roomNumber: { $regex: new RegExp(`^${escaped}$`, 'i') } },
         { roomNumberNormalized: norm }
       ]
     }).lean();
+
+    if (!room) {
+      room = await Room.findOne({
+        $or: [
+          { roomNumber: { $regex: escaped, $options: 'i' } },
+          { roomNumberNormalized: { $regex: norm, $options: 'i' } }
+        ]
+      }).lean();
+    }
 
     if (!room) {
       return errorResponse(res, `Room ${rawNumber} not found`, 'ROOM_NOT_FOUND', 404);

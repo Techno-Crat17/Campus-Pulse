@@ -8,7 +8,7 @@ export function normalizeRoomNumber(roomStr) {
   return roomStr
     .trim()
     .toUpperCase()
-    .replace(/[\s\-_]+/g, '');
+    .replace(/[\s\-_/]+/g, '');
 }
 
 export function normalizeRoomNameForSearch(name) {

@@ -330,7 +330,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
   const { currentTime, simulatedTime } = useTimeContext();
 
-  const FLOOR_ORDER = ['Basement', 'Ground Floor', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor', '5th Floor', '6th Floor'];
+  const FLOOR_ORDER = ['Basement', 'Ground Floor', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor', '5th Floor', '6th Floor', '7th Floor', '8th Floor'];
 
   const groupedRooms = useMemo(() => {
     const groups: { [floor: string]: MSRITRoomRecord[] } = {};

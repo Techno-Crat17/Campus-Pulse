@@ -1,363 +1,725 @@
 {
   "lastVerified": "2026-09-30",
-  "source": "Official MSRIT website and verified survey telemetry",
+  "source": "Official MSRIT website and verified directory boards",
   "rooms": [
     {
-      "roomNumber": "AB-401",
+      "roomNumber": "AB-201",
+      "name": "Principal Office",
       "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB201",
+      "normalizedName": "principal office"
+    },
+    {
+      "roomNumber": "AB-202",
+      "name": "CFO Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB202",
+      "normalizedName": "cfo office"
+    },
+    {
+      "roomNumber": "AB-203",
+      "name": "Registrar (Academic)",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB203",
+      "normalizedName": "registrar (academic)"
+    },
+    {
+      "roomNumber": "AB-204",
+      "name": "Registrar (Admin)",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB204",
+      "normalizedName": "registrar (admin)"
+    },
+    {
+      "roomNumber": "AB-209",
+      "name": "Vice Principal Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB209",
+      "normalizedName": "vice principal office"
+    },
+    {
+      "roomNumber": "AB-210",
+      "name": "CE Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB210",
+      "normalizedName": "ce office"
+    },
+    {
+      "roomNumber": "AB-213",
+      "name": "Admission Section",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB213",
+      "normalizedName": "admission section"
+    },
+    {
+      "roomNumber": "AB-214",
+      "name": "Accounts & Purchase",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "Ground Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB214",
+      "normalizedName": "accounts & purchase"
+    },
+    {
+      "roomNumber": "AB-302",
+      "name": "Internal Quality Assurance Cell",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB302",
+      "normalizedName": "internal quality assurance cell"
+    },
+    {
+      "roomNumber": "AB-303",
+      "name": "Student Counselling and First Aid Room",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Student Affairs",
+      "departments": [
+        "Student Affairs"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB303",
+      "normalizedName": "student counselling and first aid room"
+    },
+    {
+      "roomNumber": "AB-304",
+      "name": "P F Section / EFWF",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB304",
+      "normalizedName": "p f section / efwf"
+    },
+    {
+      "roomNumber": "AB-305",
+      "name": "NSS Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "NSS",
+      "departments": [
+        "NSS"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB305",
+      "normalizedName": "nss office"
+    },
+    {
+      "roomNumber": "AB-306",
+      "name": "Admission Section",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB306",
+      "normalizedName": "admission section"
+    },
+    {
+      "roomNumber": "AB-308",
+      "name": "Examination Section",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Examination",
+      "departments": [
+        "Examination"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB308",
+      "normalizedName": "examination section"
+    },
+    {
+      "roomNumber": "AB-309",
+      "name": "Controller of Examination",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Examination",
+      "departments": [
+        "Examination"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB309",
+      "normalizedName": "controller of examination"
+    },
+    {
+      "roomNumber": "AB-312",
+      "name": "Valuation Center",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Examination",
+      "departments": [
+        "Examination"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB312",
+      "normalizedName": "valuation center"
+    },
+    {
+      "roomNumber": "AB-315",
+      "name": "IT Services",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "IT Services",
+      "departments": [
+        "IT Services"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB315",
+      "normalizedName": "it services"
+    },
+    {
+      "roomNumber": "AB-317",
+      "name": "Chief Proctor Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "1st Floor",
+      "department": "Administration",
+      "departments": [
+        "Administration"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB317",
+      "normalizedName": "chief proctor office"
+    },
+    {
+      "roomNumber": "AB-401",
+      "name": "Dept of MCA Library",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "2nd Floor",
       "department": "MCA",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
+      "departments": [
+        "MCA"
+      ],
+      "type": "Library",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
       "roomNumberNormalized": "AB401",
-      "floor": "2nd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
+      "normalizedName": "dept of mca library"
     },
     {
-      "roomNumber": "AB-404",
+      "roomNumber": "AB-403",
+      "name": "Dept of MCA HOD & Staff",
       "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "2nd Floor",
       "department": "MCA",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
+      "departments": [
+        "MCA"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "AB404",
-      "floor": "2nd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
+      "roomNumberNormalized": "AB403",
+      "normalizedName": "dept of mca hod & staff"
     },
     {
       "roomNumber": "AB-405",
+      "name": "Dept of MCA Lab - 1&2",
       "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "2nd Floor",
       "department": "MCA",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
+      "departments": [
+        "MCA"
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
       "roomNumberNormalized": "AB405",
-      "floor": "2nd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
+      "normalizedName": "dept of mca lab - 1&2"
     },
     {
-      "roomNumber": "AB-407",
+      "roomNumber": "AB-409",
+      "name": "Dept of MCA Lab - 3 / R&D Lab / Consultancy Lab / Board Room",
       "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "2nd Floor",
       "department": "MCA",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB407",
-      "floor": "2nd Floor",
-      "buildingCode": "APEX",
       "departments": [
         "MCA"
-      ]
-    },
-    {
-      "roomNumber": "AB-501",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC131: Building Science and Mechanics)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "AB501",
-      "floor": "3rd Floor",
+      "roomNumberNormalized": "AB409",
+      "normalizedName": "dept of mca lab - 3 / r&d lab / consultancy lab / board room"
+    },
+    {
+      "roomNumber": "AB-412",
+      "name": "Skill Development Program Center (SPDC) Lab / Syndicate Room",
+      "building": "Apex Block",
       "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC131: Building Science and Mechanics)"
-      ]
-    },
-    {
-      "roomNumber": "AB-502",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC131: Building Science and Mechanics)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "floor": "2nd Floor",
+      "department": null,
+      "departments": [],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "AB502",
-      "floor": "3rd Floor",
+      "roomNumberNormalized": "AB412",
+      "normalizedName": "skill development program center (spdc) lab / syndicate room"
+    },
+    {
+      "roomNumber": "AB-513",
+      "name": "Dept of E&CE - S.T.A.R.D.U.S.T Lab",
+      "building": "Apex Block",
       "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC131: Building Science and Mechanics)"
-      ]
-    },
-    {
-      "roomNumber": "AB-503",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC131: Building Science and Mechanics)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB503",
       "floor": "3rd Floor",
-      "buildingCode": "APEX",
+      "department": "E&CE",
       "departments": [
-        "First Year Engineering (ESC131: Building Science and Mechanics)"
-      ]
-    },
-    {
-      "roomNumber": "AB-504",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC131: Building Science and Mechanics)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+        "E&CE",
+        "ECE"
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "AB504",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC131: Building Science and Mechanics)"
-      ]
+      "roomNumberNormalized": "AB513",
+      "normalizedName": "dept of e&ce - s.t.a.r.d.u.s.t lab"
     },
     {
-      "roomNumber": "AB-505",
+      "roomNumber": "AB-605",
+      "name": "Physics Lab - II",
       "building": "Apex Block",
-      "department": "First Year Engineering (ESC131: Building Science and Mechanics)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB505",
-      "floor": "3rd Floor",
       "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC131: Building Science and Mechanics)"
-      ]
-    },
-    {
-      "roomNumber": "AB-507",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC132: Introduction to Electrical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB507",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC132: Introduction to Electrical Engineering)"
-      ]
-    },
-    {
-      "roomNumber": "AB-508",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC132: Introduction to Electrical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB508",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC132: Introduction to Electrical Engineering)"
-      ]
-    },
-    {
-      "roomNumber": "AB-512",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC132: Introduction to Electrical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB512",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC132: Introduction to Electrical Engineering)"
-      ]
-    },
-    {
-      "roomNumber": "AB-514",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB514",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
-      ]
-    },
-    {
-      "roomNumber": "AB-516",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB516",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
-      ]
-    },
-    {
-      "roomNumber": "AB-517",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB517",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
-      ]
-    },
-    {
-      "roomNumber": "AB-518",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB518",
-      "floor": "3rd Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
-      ]
-    },
-    {
-      "roomNumber": "AB-602",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "AB602",
       "floor": "4th Floor",
-      "buildingCode": "APEX",
+      "department": "Physics",
       "departments": [
-        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
-      ]
-    },
-    {
-      "roomNumber": "AB-701",
-      "building": "Apex Block",
-      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+        "Physics"
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "AB701",
-      "floor": "5th Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
-      ]
+      "roomNumberNormalized": "AB605",
+      "normalizedName": "physics lab - ii"
     },
     {
-      "roomNumber": "AB-702",
+      "roomNumber": "AB-606",
+      "name": "Physics Lab - I",
       "building": "Apex Block",
-      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "buildingCode": "APEX",
+      "floor": "4th Floor",
+      "department": "Physics",
+      "departments": [
+        "Physics"
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "AB702",
-      "floor": "5th Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
-      ]
+      "roomNumberNormalized": "AB606",
+      "normalizedName": "physics lab - i"
     },
     {
-      "roomNumber": "Apex Block Auditorium",
+      "roomNumber": "AB-609",
+      "name": "Dept of Physics HOD & Staff Room",
       "building": "Apex Block",
-      "department": "Central Campus Facilities",
-      "type": "Auditorium",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
+      "buildingCode": "APEX",
+      "floor": "4th Floor",
+      "department": "Physics",
+      "departments": [
+        "Physics"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "APEXBLOCKAUDITORIUM",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "Central Campus Facilities"
-      ]
+      "roomNumberNormalized": "AB609",
+      "normalizedName": "dept of physics hod & staff room"
     },
     {
-      "roomNumber": "Apex Board Room",
+      "roomNumber": "AB-613",
+      "name": "Board Room - Apex block",
       "building": "Apex Block",
-      "department": "Central Administration",
+      "buildingCode": "APEX",
+      "floor": "4th Floor",
+      "department": null,
+      "departments": [],
       "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceTitle": "Apex Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "APEXBOARDROOM",
-      "floor": "Ground Floor",
+      "roomNumberNormalized": "AB613",
+      "normalizedName": "board room - apex block"
+    },
+    {
+      "roomNumber": "AB-703",
+      "name": "Computer Lab - Dept of AI & ML",
+      "building": "Apex Block",
       "buildingCode": "APEX",
+      "floor": "5th Floor",
+      "department": "AI & ML",
       "departments": [
-        "Central Administration"
-      ]
+        "AI & ML",
+        "AIML"
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB703",
+      "normalizedName": "computer lab - dept of ai & ml"
+    },
+    {
+      "roomNumber": "AB-705",
+      "name": "Computer Lab - Dept of AI & DS",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "5th Floor",
+      "department": "AI & DS",
+      "departments": [
+        "AI & DS",
+        "AIDS"
+      ],
+      "type": "Lab",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB705",
+      "normalizedName": "computer lab - dept of ai & ds"
+    },
+    {
+      "roomNumber": "AB-706",
+      "name": "Dept of Humanities HOD & Staff Room",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "5th Floor",
+      "department": "Humanities",
+      "departments": [
+        "Humanities"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB706",
+      "normalizedName": "dept of humanities hod & staff room"
+    },
+    {
+      "roomNumber": "AB-710",
+      "name": "Dept of Mathematics Library",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "5th Floor",
+      "department": "Mathematics",
+      "departments": [
+        "Mathematics"
+      ],
+      "type": "Library",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB710",
+      "normalizedName": "dept of mathematics library"
+    },
+    {
+      "roomNumber": "AB-713",
+      "name": "Dept of Mathematics HOD & Staff Room",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "5th Floor",
+      "department": "Mathematics",
+      "departments": [
+        "Mathematics"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB713",
+      "normalizedName": "dept of mathematics hod & staff room"
+    },
+    {
+      "roomNumber": "AB-714",
+      "name": "Library & Information Center (First year)",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "5th Floor",
+      "department": null,
+      "departments": [],
+      "type": "Library",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB714",
+      "normalizedName": "library & information center (first year)"
+    },
+    {
+      "roomNumber": "AB-801",
+      "name": "Faculty Lounge (AI & ML)",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "6th Floor",
+      "department": "AI & ML",
+      "departments": [
+        "AI & ML",
+        "AIML"
+      ],
+      "type": "Lounge",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB801",
+      "normalizedName": "faculty lounge (ai & ml)"
+    },
+    {
+      "roomNumber": "AB-802",
+      "name": "Faculty Lounge (AI & DS)",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "6th Floor",
+      "department": "AI & DS",
+      "departments": [
+        "AI & DS",
+        "AIDS"
+      ],
+      "type": "Lounge",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB802",
+      "normalizedName": "faculty lounge (ai & ds)"
+    },
+    {
+      "roomNumber": "AB-804/A",
+      "name": "Auditorium - Apex Block",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "6th Floor",
+      "department": null,
+      "departments": [],
+      "type": "Auditorium",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB804/A",
+      "normalizedName": "auditorium - apex block"
+    },
+    {
+      "roomNumber": "AB-905",
+      "name": "Dept of Artificial Intelligence & Data Science HOD & Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "7th Floor",
+      "department": "Artificial Intelligence & Data Science",
+      "departments": [
+        "Artificial Intelligence & Data Science",
+        "AI & DS",
+        "AIDS"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB905",
+      "normalizedName": "dept of artificial intelligence & data science hod & office"
+    },
+    {
+      "roomNumber": "AB-906",
+      "name": "Dept of Artificial Intelligence & Machine Learning HOD & Office",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "7th Floor",
+      "department": "Artificial Intelligence & Machine Learning",
+      "departments": [
+        "Artificial Intelligence & Machine Learning",
+        "AI & ML",
+        "AIML"
+      ],
+      "type": "Office",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB906",
+      "normalizedName": "dept of artificial intelligence & machine learning hod & office"
+    },
+    {
+      "roomNumber": "AB-909",
+      "name": "Faculty Lounge Ladies",
+      "building": "Apex Block",
+      "buildingCode": "APEX",
+      "floor": "7th Floor",
+      "department": null,
+      "departments": [],
+      "type": "Lounge",
+      "sourceTitle": "Apex Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB909",
+      "normalizedName": "faculty lounge ladies"
     },
     {
       "roomNumber": "ARCH307",
@@ -374,7 +736,26 @@
       "buildingCode": "ARCHITECTURE",
       "departments": [
         "Architecture"
-      ]
+      ],
+      "normalizedName": ""
+    },
+    {
+      "roomNumber": "Engineering Chemistry Lab",
+      "building": "Basic Sciences Block",
+      "department": "Chemistry",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/chemistry.html",
+      "sourceTitle": "Official MSRIT Chemistry Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ENGINEERINGCHEMISTRYLAB",
+      "floor": "Ground Floor",
+      "buildingCode": "BASIC",
+      "departments": [
+        "Chemistry"
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "CRD-405",
@@ -394,7 +775,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "computer lab"
     },
     {
       "roomNumber": "CRD-406",
@@ -411,7 +793,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "office of international relations"
     },
     {
       "roomNumber": "CRD-410",
@@ -431,7 +814,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "schneider centre of excellence"
     },
     {
       "roomNumber": "CRD-411",
@@ -451,7 +835,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty lounge"
     },
     {
       "roomNumber": "CRD-501",
@@ -471,7 +856,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty lounge"
     },
     {
       "roomNumber": "CRD-502",
@@ -491,7 +877,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty lounge"
     },
     {
       "roomNumber": "CRD-505A",
@@ -508,7 +895,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "ramaiah evolute (startup zone)"
     },
     {
       "roomNumber": "CRD-505B",
@@ -525,7 +913,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "office (ramaiah evolute)"
     },
     {
       "roomNumber": "CRD-506",
@@ -545,7 +934,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "office"
     },
     {
       "roomNumber": "CRD-508",
@@ -565,7 +955,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "computer lab"
     },
     {
       "roomNumber": "CRD-509",
@@ -585,109 +976,554 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty lounge"
     },
     {
-      "roomNumber": "DES Board Room 1",
+      "roomNumber": "DES-101/102",
+      "name": "Electrical Machines Lab",
       "building": "DES Block",
-      "department": "Central Administration",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "DESBOARDROOM1",
-      "floor": "Ground Floor",
-      "buildingCode": "DES",
-      "departments": [
-        "Central Administration"
-      ]
+      "roomNumberNormalized": "DES101/102",
+      "normalizedName": "electrical machines lab"
     },
     {
-      "roomNumber": "DES Board Room 2",
+      "roomNumber": "DES-103/104",
+      "name": "Power Electronics Lab",
       "building": "DES Block",
-      "department": "Central Administration",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "DESBOARDROOM2",
-      "floor": "Ground Floor",
-      "buildingCode": "DES",
-      "departments": [
-        "Central Administration"
-      ]
+      "roomNumberNormalized": "DES103/104",
+      "normalizedName": "power electronics lab"
     },
     {
-      "roomNumber": "DES Hi-Tech Seminar Hall",
+      "roomNumber": "DES-105",
+      "name": "Control Systems & Simulation Lab",
       "building": "DES Block",
-      "department": "Central Academic Facilities",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES105",
+      "normalizedName": "control systems & simulation lab"
+    },
+    {
+      "roomNumber": "DES-106",
+      "name": "Power System Simulation Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES106",
+      "normalizedName": "power system simulation lab"
+    },
+    {
+      "roomNumber": "DES-109",
+      "name": "Measurements & Circuits Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES109",
+      "normalizedName": "measurements & circuits lab"
+    },
+    {
+      "roomNumber": "DES-111",
+      "name": "E&EE Department Library",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Library",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES111",
+      "normalizedName": "e&ee department library"
+    },
+    {
+      "roomNumber": "DES-113",
+      "name": "Microcontroller & DSP Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES113",
+      "normalizedName": "microcontroller & dsp lab"
+    },
+    {
+      "roomNumber": "DES-114",
+      "name": "Dept of E&EE HOD & Staff Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Office",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES114",
+      "normalizedName": "dept of e&ee hod & staff room"
+    },
+    {
+      "roomNumber": "DES-115",
+      "name": "E&EE Faculty Room & Research Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Office",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES115",
+      "normalizedName": "e&ee faculty room & research lab"
+    },
+    {
+      "roomNumber": "DES-118",
+      "name": "DES Hi-Tech Seminar Hall",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": null,
+      "departments": [],
       "type": "Seminar Hall",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceTitle": "DES Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "DESHITECHSEMINARHALL",
-      "floor": "Ground Floor",
+      "roomNumberNormalized": "DES118",
+      "normalizedName": "des hi-tech seminar hall"
+    },
+    {
+      "roomNumber": "DES-201/202",
+      "name": "Analog Electronics Lab",
+      "building": "DES Block",
       "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "ECE",
       "departments": [
-        "Central Academic Facilities"
-      ]
-    },
-    {
-      "roomNumber": "Diagnostic & Therapeutic Equipment Laboratory",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
       "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceTitle": "DES Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "DIAGNOSTIC&THERAPEUTICEQUIPMENTLABORATORY",
+      "roomNumberNormalized": "DES201/202",
+      "normalizedName": "analog electronics lab"
+    },
+    {
+      "roomNumber": "DES-204",
+      "name": "Digital Electronics Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
       "floor": "Ground Floor",
-      "buildingCode": "LHC",
+      "department": "ECE",
       "departments": [
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES204",
+      "normalizedName": "digital electronics lab"
+    },
+    {
+      "roomNumber": "DES-207/308",
+      "name": "Advanced Communication Lab / RF & Microwave Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "ECE",
+      "departments": [
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES207/308",
+      "normalizedName": "advanced communication lab / rf & microwave lab"
+    },
+    {
+      "roomNumber": "DES-208/309",
+      "name": "VLSI Design & Embedded Systems Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "ECE",
+      "departments": [
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES208/309",
+      "normalizedName": "vlsi design & embedded systems lab"
+    },
+    {
+      "roomNumber": "DES-301/203/210",
+      "name": "Signal Processing & Communication Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ECE",
+      "departments": [
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES301/203/210",
+      "normalizedName": "signal processing & communication lab"
+    },
+    {
+      "roomNumber": "DES-305/303/304/311",
+      "name": "Microprocessor & IoT Research Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ECE",
+      "departments": [
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES305/303/304/311",
+      "normalizedName": "microprocessor & iot research lab"
+    },
+    {
+      "roomNumber": "DES-402",
+      "name": "Dept of Electronics & Telecommunication Engineering (ETE) HOD & Staff",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "ETE",
+      "departments": [
+        "ETE",
+        "Telecommunication Engineering"
+      ],
+      "type": "Office",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES402",
+      "normalizedName": "dept of electronics & telecommunication engineering (ete) hod & staff"
+    },
+    {
+      "roomNumber": "DES-404",
+      "name": "Digital Signal Processing & Networks Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "ETE",
+      "departments": [
+        "ETE",
+        "Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES404",
+      "normalizedName": "digital signal processing & networks lab"
+    },
+    {
+      "roomNumber": "DES-408",
+      "name": "Wireless Communication & Antenna Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "ETE",
+      "departments": [
+        "ETE",
+        "Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES408",
+      "normalizedName": "wireless communication & antenna lab"
+    },
+    {
+      "roomNumber": "DES-409",
+      "name": "Optical Fiber & Microwave Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "ETE",
+      "departments": [
+        "ETE",
+        "Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES409",
+      "normalizedName": "optical fiber & microwave lab"
+    },
+    {
+      "roomNumber": "DES-413/401/510/511",
+      "name": "Advanced Networking & IoT Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "ETE",
+      "departments": [
+        "ETE",
+        "Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES413/401/510/511",
+      "normalizedName": "advanced networking & iot lab"
+    },
+    {
+      "roomNumber": "DES-413/405/411/511",
+      "name": "Telecommunication System Design & Simulation Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "ETE",
+      "departments": [
+        "ETE",
+        "Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES413/405/411/511",
+      "normalizedName": "telecommunication system design & simulation lab"
+    },
+    {
+      "roomNumber": "DES-501/502B",
+      "name": "Dept of Electronics & Instrumentation Engineering (EIE) HOD & Staff",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "EIE",
+      "departments": [
+        "EIE",
+        "Instrumentation Engineering"
+      ],
+      "type": "Office",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES501/502B",
+      "normalizedName": "dept of electronics & instrumentation engineering (eie) hod & staff"
+    },
+    {
+      "roomNumber": "DES-502A",
+      "name": "Industrial Instrumentation & Process Control Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "EIE",
+      "departments": [
+        "EIE",
+        "Instrumentation Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES502A",
+      "normalizedName": "industrial instrumentation & process control lab"
+    },
+    {
+      "roomNumber": "DES-503",
+      "name": "Biomedical Signal Processing & Medical Instrumentation Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "MLE",
+      "departments": [
+        "MLE",
+        "Medical Electronics Engineering",
+        "EIE"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES503",
+      "normalizedName": "biomedical signal processing & medical instrumentation lab"
+    },
+    {
+      "roomNumber": "DES-506",
+      "name": "Transducers & Virtual Instrumentation Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "EIE",
+      "departments": [
+        "EIE",
+        "Instrumentation Engineering"
+      ],
+      "type": "Lab",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES506",
+      "normalizedName": "transducers & virtual instrumentation lab"
+    },
+    {
+      "roomNumber": "DES-507",
+      "name": "Dept of Medical Electronics (MLE) HOD & Staff",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "MLE",
+      "departments": [
+        "MLE",
         "Medical Electronics Engineering"
-      ]
-    },
-    {
-      "roomNumber": "Engineering Chemistry Lab",
-      "building": "Basic Sciences Block",
-      "department": "Chemistry",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/chemistry.html",
-      "sourceTitle": "Official MSRIT Chemistry Department page",
+      ],
+      "type": "Office",
+      "sourceTitle": "DES Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "ENGINEERINGCHEMISTRYLAB",
-      "floor": "Ground Floor",
-      "buildingCode": "BASIC",
-      "departments": [
-        "Chemistry"
-      ]
+      "roomNumberNormalized": "DES507",
+      "normalizedName": "dept of medical electronics (mle) hod & staff"
     },
     {
-      "roomNumber": "English Language Lab",
-      "building": "LHC",
-      "department": "Humanities",
+      "roomNumber": "DES-508",
+      "name": "Medical Electronics Systems & Bio-Telemetry Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "MLE",
+      "departments": [
+        "MLE",
+        "Medical Electronics Engineering"
+      ],
       "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/humanities.html",
-      "sourceTitle": "Official MSRIT Humanities Department page",
+      "sourceTitle": "DES Block Directory Board",
       "sourceYear": 2026,
       "verified": true,
       "temporalStatus": "current",
-      "roomNumberNormalized": "ENGLISHLANGUAGELAB",
-      "floor": "Ground Floor",
-      "buildingCode": "LHC",
-      "departments": [
-        "Humanities"
-      ]
+      "roomNumberNormalized": "DES508",
+      "normalizedName": "medical electronics systems & bio-telemetry lab"
+    },
+    {
+      "roomNumber": "DES-512",
+      "name": "DES Board Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": null,
+      "departments": [],
+      "type": "Board Room",
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES512",
+      "normalizedName": "des board room"
     },
     {
       "roomNumber": "ESB Board Room",
@@ -704,7 +1540,8 @@
       "buildingCode": "ESB",
       "departments": [
         "Central Administration"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB Seminar Hall 1",
@@ -721,7 +1558,8 @@
       "buildingCode": "ESB",
       "departments": [
         "Central Academic Facilities"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB Seminar Hall 2",
@@ -738,7 +1576,8 @@
       "buildingCode": "ESB",
       "departments": [
         "Central Academic Facilities"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB-322",
@@ -755,7 +1594,8 @@
       "buildingCode": "ESB",
       "departments": [
         "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB-326",
@@ -772,7 +1612,8 @@
       "buildingCode": "ESB",
       "departments": [
         "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB-414",
@@ -789,7 +1630,8 @@
       "buildingCode": "ESB",
       "departments": [
         "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB-419",
@@ -806,7 +1648,8 @@
       "buildingCode": "ESB",
       "departments": [
         "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "ESB-419A",
@@ -823,7 +1666,44 @@
       "buildingCode": "ESB",
       "departments": [
         "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
-      ]
+      ],
+      "normalizedName": ""
+    },
+    {
+      "roomNumber": "Diagnostic & Therapeutic Equipment Laboratory",
+      "building": "LHC",
+      "department": "Medical Electronics Engineering",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
+      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DIAGNOSTIC&THERAPEUTICEQUIPMENTLABORATORY",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Medical Electronics Engineering"
+      ],
+      "normalizedName": ""
+    },
+    {
+      "roomNumber": "English Language Lab",
+      "building": "LHC",
+      "department": "Humanities",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/humanities.html",
+      "sourceTitle": "Official MSRIT Humanities Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ENGLISHLANGUAGELAB",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Humanities"
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "LHC-101",
@@ -842,7 +1722,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "d & t equipment lab"
     },
     {
       "roomNumber": "LHC-103",
@@ -861,7 +1742,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty lounge – ii & department library"
     },
     {
       "roomNumber": "LHC-104",
@@ -880,7 +1762,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "medical electronics lab"
     },
     {
       "roomNumber": "LHC-105",
@@ -899,7 +1782,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "medical software lab"
     },
     {
       "roomNumber": "LHC-106",
@@ -918,7 +1802,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "medical instrumentation lab"
     },
     {
       "roomNumber": "LHC-109",
@@ -937,7 +1822,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "department library"
     },
     {
       "roomNumber": "LHC-110",
@@ -956,7 +1842,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "linear integrated circuits lab / logic design lab"
     },
     {
       "roomNumber": "LHC-111",
@@ -973,7 +1860,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "lhc seminar hall – ii"
     },
     {
       "roomNumber": "LHC-113",
@@ -990,7 +1878,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "lhc seminar hall – i"
     },
     {
       "roomNumber": "LHC-204",
@@ -1007,7 +1896,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "classroom"
     },
     {
       "roomNumber": "LHC-205",
@@ -1026,7 +1916,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "hod & faculty room"
     },
     {
       "roomNumber": "LHC-212",
@@ -1045,7 +1936,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty room"
     },
     {
       "roomNumber": "LHC-306",
@@ -1063,7 +1955,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "library & information center unit – ii"
     },
     {
       "roomNumber": "LHC-314",
@@ -1082,7 +1975,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "faculty room"
     },
     {
       "roomNumber": "LHC-502B",
@@ -1101,7 +1995,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "r&d lab"
     },
     {
       "roomNumber": "LHC-518",
@@ -1120,7 +2015,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "communication lab / simulation lab"
     },
     {
       "roomNumber": "LHC-518A",
@@ -1139,7 +2035,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
+      "sourceYear": 2026,
+      "normalizedName": "antenna fabrication unit"
     },
     {
       "roomNumber": "LHC-519",
@@ -1158,109 +2055,8 @@
       "verified": true,
       "temporalStatus": "current",
       "sourceTitle": "Official MSRIT LHC Building Survey",
-      "sourceYear": 2026
-    },
-    {
-      "roomNumber": "MCA Board Room",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
       "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "MCABOARDROOM",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
-    },
-    {
-      "roomNumber": "MCA Consultancy Lab",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "MCACONSULTANCYLAB",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
-    },
-    {
-      "roomNumber": "MCA Lab 1",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "MCALAB1",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
-    },
-    {
-      "roomNumber": "MCA Lab 2",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "MCALAB2",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
-    },
-    {
-      "roomNumber": "MCA Lab 3",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "MCALAB3",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
-    },
-    {
-      "roomNumber": "MCA R&D Lab",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "MCAR&DLAB",
-      "floor": "Ground Floor",
-      "buildingCode": "APEX",
-      "departments": [
-        "MCA"
-      ]
+      "normalizedName": "department library"
     },
     {
       "roomNumber": "Medical Electronics Laboratory",
@@ -1277,7 +2073,8 @@
       "buildingCode": "LHC",
       "departments": [
         "Medical Electronics Engineering"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "Medical Instrumentation Laboratory",
@@ -1294,7 +2091,8 @@
       "buildingCode": "LHC",
       "departments": [
         "Medical Electronics Engineering"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "Medical Software Laboratory",
@@ -1311,7 +2109,8 @@
       "buildingCode": "LHC",
       "departments": [
         "Medical Electronics Engineering"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "Room-101",
@@ -1328,7 +2127,8 @@
       "buildingCode": "LHC",
       "departments": [
         "Information Science & Engineering"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "Room-102",
@@ -1345,7 +2145,8 @@
       "buildingCode": "LHC",
       "departments": [
         "Information Science & Engineering"
-      ]
+      ],
+      "normalizedName": ""
     },
     {
       "roomNumber": "Texas Instruments Innovation Laboratory",
@@ -1362,7 +2163,8 @@
       "buildingCode": "LHC",
       "departments": [
         "Medical Electronics Engineering"
-      ]
+      ],
+      "normalizedName": ""
     }
   ]
 }

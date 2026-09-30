@@ -636,7 +636,7 @@ export function extractEntities(
   const hasBuildingPronoun = /\b(it|its|that block|that building|this block)\b/.test(normQ);
 
   // --- Room Entity Extraction ---
-  const roomPattern = /\b(LHC[- ]?\d{3}[A-Z]?|CRD[- ]?\d{3}[A-Z]?|AB[- ]?\d{3}[A-Z]?|ESB[- ]?\d{3}[A-Z]?|ARCH[- ]?\d{3}[A-Z]?|ROOM[- ]?\d{3}[A-Z]?)\b/i;
+  const roomPattern = /\b(LHC[- ]?[0-9A-Z/]+|CRD[- ]?[0-9A-Z/]+|AB[- ]?[0-9A-Z/]+|ESB[- ]?[0-9A-Z/]+|DES[- ]?[0-9A-Z/]+|ARCH[- ]?[0-9A-Z/]+|ROOM[- ]?[0-9A-Z/]+)\b/i;
   const roomMatch = normQ.match(roomPattern);
   if (roomMatch) {
     const rawMatched = roomMatch[1];
@@ -649,13 +649,13 @@ export function extractEntities(
     }
   }
 
-  // Handle building context with bare room number (e.g. "LHC 101", "CRD 508", "Multipurpose block 508", "508 kya hai")
+  // Handle building context with bare room number (e.g. "LHC 101", "CRD 508", "Apex 403", "DES 402", "508 kya hai")
   if (!entities.matchedRoom) {
-    const bldgPrefixMatch = normQ.match(/\b(lhc|crd|multipurpose|apex|esb|des|arch)\b.*?(\d{3}[A-Z]?)\b/i);
+    const bldgPrefixMatch = normQ.match(/\b(lhc|crd|multipurpose|apex|esb|des|arch)\b.*?(\d{3}[A-Z]?(?:\/[0-9A-Z]+)*)\b/i);
     if (bldgPrefixMatch) {
       const bK = bldgPrefixMatch[1].toLowerCase();
       const rawNum = bldgPrefixMatch[2];
-      const prefix = (bK.includes('crd') || bK.includes('multipurpose')) ? 'CRD-' : (bK.includes('lhc') ? 'LHC-' : (bK.includes('apex') ? 'AB-' : (bK.includes('esb') ? 'ESB-' : '')));
+      const prefix = (bK.includes('crd') || bK.includes('multipurpose')) ? 'CRD-' : (bK.includes('lhc') ? 'LHC-' : (bK.includes('apex') ? 'AB-' : (bK.includes('esb') ? 'ESB-' : (bK.includes('des') ? 'DES-' : ''))));
       if (prefix) {
         const fullCandidate = `${prefix}${rawNum.toUpperCase()}`;
         const roomRec = findRoomByNumber(fullCandidate);
@@ -1439,7 +1439,9 @@ export function getRoomAnswer(
       const r = matchedRoom;
       const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
         ? 'Multipurpose Block'
-        : (r.building?.toLowerCase().includes('lhc') ? 'LHC Block' : `${r.building || 'Campus Facilities'} Block`);
+        : (r.building?.toLowerCase().includes('lhc')
+          ? 'LHC Block'
+          : (r.building?.toLowerCase().endsWith('block') ? r.building : `${r.building || 'Campus Facilities'} Block`));
       const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
 
       return {
@@ -1491,7 +1493,9 @@ export function getRoomAnswer(
       const isFloorQuery = /\b(kis\s*floor|which\s*floor|kaunsi\s*floor|kaun\s*sa\s*floor|floor\s*kya|iska\s*floor|ka\s*floor|kis\s*floor\s*pe|kis\s*floor\s*par)\b/i.test(normQ);
       const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
         ? 'Multipurpose Block'
-        : (r.building?.toLowerCase().includes('lhc') ? 'LHC Block' : `${r.building || 'Campus Facilities'} Block`);
+        : (r.building?.toLowerCase().includes('lhc')
+          ? 'LHC Block'
+          : (r.building?.toLowerCase().endsWith('block') ? r.building : `${r.building || 'Campus Facilities'} Block`));
 
       const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
       const deptPart = r.department && r.department !== '-' ? `${r.department} · ` : '';
@@ -1659,8 +1663,8 @@ export function getRoomAnswer(
     }
   }
 
-  // 4. Building + Floor Query (e.g. "lhc ke 3rd floor rooms dikhao", "crd ke 3rd floor rooms", "lhc basement rooms")
-  const floorMatch = normQ.match(/\b(basement|ground\s*floor|ground|1st\s*floor|first\s*floor|1st|2nd\s*floor|second\s*floor|2nd|3rd\s*floor|third\s*floor|3rd|4th\s*floor|fourth\s*floor|4th|5th\s*floor|fifth\s*floor|5th)\b/i);
+  // 4. Building + Floor Query (e.g. "lhc ke 3rd floor rooms dikhao", "crd ke 3rd floor rooms", "lhc basement rooms", "apex 7th floor rooms", "des rooms on the 3rd floor")
+  const floorMatch = normQ.match(/\b(basement|ground\s*floor|ground|1st\s*floor|first\s*floor|1st|2nd\s*floor|second\s*floor|2nd|3rd\s*floor|third\s*floor|3rd|4th\s*floor|fourth\s*floor|4th|5th\s*floor|fifth\s*floor|5th|6th\s*floor|sixth\s*floor|6th|7th\s*floor|seventh\s*floor|7th)\b/i);
 
   if (bldgKey && floorMatch) {
     let rawFloor = floorMatch[1].toLowerCase();
@@ -1670,6 +1674,8 @@ export function getRoomAnswer(
     if (rawFloor === 'third' || rawFloor === '3rd') rawFloor = '3rd floor';
     if (rawFloor === 'fourth' || rawFloor === '4th') rawFloor = '4th floor';
     if (rawFloor === 'fifth' || rawFloor === '5th') rawFloor = '5th floor';
+    if (rawFloor === 'sixth' || rawFloor === '6th') rawFloor = '6th floor';
+    if (rawFloor === 'seventh' || rawFloor === '7th') rawFloor = '7th floor';
 
     const fRooms = getRoomsByFloor(bldgKey, rawFloor);
     if (fRooms.length > 0) {
