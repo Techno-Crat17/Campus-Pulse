@@ -82,6 +82,10 @@ export type CampusAiIntent =
   | 'FACULTY_AVAILABILITY'
   | 'FACULTY_SCHEDULE'
   | 'FACULTY_HOD'
+  | 'DEPARTMENT_HOD'
+  | 'DEPARTMENT_HOD_EMAIL'
+  | 'DEPARTMENT_HOD_LOCATION'
+  | 'DEPARTMENT_HOD_DESIGNATION'
   | 'LIBRARY_SEARCH'
   | 'LIBRARY_LOCATION'
   | 'LIBRARY_OCCUPANCY'
@@ -163,6 +167,9 @@ export interface ExtractedEntities {
   matchedFaculty?: MSRITFacultyRecord;
   multipleFaculty?: MSRITFacultyRecord[];
   isPronounFaculty?: boolean;
+  role?: string;
+  requestedField?: string;
+  isHod?: boolean;
   departmentCode?: string;
   departmentName?: string;
   matchedDepartment?: MSRITDepartment;
@@ -191,6 +198,156 @@ export const VERIFIED_EMERGENCY_CONTACTS = [
   { label: 'Fire Emergency Service', phone: '101', category: 'Standard Emergency Service' },
   { label: 'Ambulance Service', phone: '108', category: 'Standard Emergency Medical' }
 ];
+
+// ----------------------------------------------------------------------------
+// Department Canonical Mapping Helper
+// ----------------------------------------------------------------------------
+
+export function resolveDepartment(input: string): {
+  code: string;
+  name: string;
+  building: string;
+  buildingId: string;
+  matchFn: (f: MSRITFacultyRecord) => boolean;
+} | null {
+  if (!input) return null;
+  const s = input.trim().toLowerCase();
+
+  if (/\b(ise|information\s*science)\b/i.test(s)) {
+    return {
+      code: 'ISE',
+      name: 'Information Science & Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('information science') || d.includes('ise');
+      }
+    };
+  }
+  if (/\b(cse\s*aiml|aiml|ai\s*&\s*ml|ai-ml|artificial\s*intelligence)\b/i.test(s)) {
+    return {
+      code: 'AIML',
+      name: 'Artificial Intelligence & Machine Learning',
+      building: 'CRD',
+      buildingId: 'block-crd',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('ai & ml') || d.includes('aiml') || d.includes('artificial intelligence');
+      }
+    };
+  }
+  if (/\b(cse\s*cy|cyber\s*security|cy)\b/i.test(s)) {
+    return {
+      code: 'CY',
+      name: 'Computer Science & Engineering (Cyber Security)',
+      building: 'CRD',
+      buildingId: 'block-crd',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('cyber');
+      }
+    };
+  }
+  if (/\b(cse|computer\s*science)\b/i.test(s)) {
+    return {
+      code: 'CSE',
+      name: 'Computer Science & Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return (d.includes('computer science') || d === 'cse') && !d.includes('ai & ml') && !d.includes('aiml') && !d.includes('cyber');
+      }
+    };
+  }
+  if (/\b(ece|electronics\s*&\s*communication)\b/i.test(s)) {
+    return {
+      code: 'ECE',
+      name: 'Electronics & Communication Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('electronics & communication') || d.includes('ece');
+      }
+    };
+  }
+  if (/\b(et|telecom|telecommunication|electronics\s*&\s*telecommunication)\b/i.test(s)) {
+    return {
+      code: 'ET',
+      name: 'Electronics & Telecommunication Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('telecommunication') || d.includes('et');
+      }
+    };
+  }
+  if (/\b(ei|instrumentation|electronics\s*&\s*instrumentation)\b/i.test(s)) {
+    return {
+      code: 'EI',
+      name: 'Electronics & Instrumentation Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('instrumentation') || d.includes('ei');
+      }
+    };
+  }
+  // IMPORTANT: ME = Medical Electronics. Do NOT interpret ME as Mechanical Engineering per Section 4 & 6.
+  if (/\b(me|medical\s*electronics)\b/i.test(s) && !/\bmechanical\b/i.test(s)) {
+    return {
+      code: 'ME',
+      name: 'Medical Electronics Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('medical electronics');
+      }
+    };
+  }
+  if (/\b(cv|civil|civil\s*engineering)\b/i.test(s)) {
+    return {
+      code: 'CV',
+      name: 'Civil Engineering',
+      building: 'ESB',
+      buildingId: 'block-esb',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('civil') || d === 'cv';
+      }
+    };
+  }
+  if (/\b(biotech|biotechnology)\b/i.test(s)) {
+    return {
+      code: 'BIOTECH',
+      name: 'Biotechnology',
+      building: 'ESB',
+      buildingId: 'block-esb',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('biotech');
+      }
+    };
+  }
+  if (/\b(ind|industrial|iem|industrial\s*engineering)\b/i.test(s)) {
+    return {
+      code: 'IND',
+      name: 'Industrial Engineering & Management',
+      building: 'ESB',
+      buildingId: 'block-esb',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('industrial');
+      }
+    };
+  }
+  return null;
+}
 
 // ----------------------------------------------------------------------------
 // 1. Natural Language Normalization
@@ -223,19 +380,31 @@ export function normalizeQuery(query: string): string {
     [/\bsumana\s*maradithya\b|\bsumana\s*maraditya\b/g, 'sumana maradithaya'],
     [/\b1st\s*yr\b|\b1styr\b|\bfirst\s*yr\b|\bfreshers\b|\bfresher\b/g, 'first year'],
     [/\bwho\s*is\s*the\s*head\s*of\b/g, 'who is the hod of'],
-    [/\bhead\s*of\s*department\b/g, 'hod'],
+    [/\bhead\s*of\s*department\b|\bhead\s*of\s*dept\b|\bdepartment\s*head\b/g, 'hod'],
     [/\bwhere['\s]*s\b/g, 'where is'],
     [/\bwhat['\s]*s\b/g, 'what is'],
     [/\bhow['\s]*s\b/g, 'how is'],
-    [/\bkaha\s*hai\b|\bkahan\s*hai\b|\bkidhar\s*hai\b|\bkaha\s*h\b|\bkidhar\s*h\b|\bkahan\s*milega\b/g, 'where is'],
+    [/\bkaha\s*hai\b|\bkahan\s*hai\b|\bkidhar\s*hai\b|\bkaha\s*h\b|\bkidhar\s*h\b|\bkahan\s*milega\b|\bkaha\s*milenge\b|\bhai\s*kaha\b|\bhai\s*kidhar\b/g, 'where is'],
     [/\bkon\s*hai\b|\bkaun\s*hai\b|\bkaun\s*h\b/g, 'who is'],
     [/\bkab\s*free\b|\bkab\s*available\b|\bkab\s*milenge\b/g, 'when available'],
+    [/\bpadhne\s*ki\s*jagah\b|\bstudy\s*place\b|\bstudy\s*room\b/g, 'library'],
+    [/\baaj\s*kya\s*hai\b|\bcollege\s*me\s*kya\s*ho\s*raha\b|\bcollege\s*me\s*kya\s*h\b/g, 'events today'],
+    [/\bmeri\s*complaint\b|\bproblem\s*report\b|\bissue\s*status\b/g, 'issue status'],
+    [/\bki\s*mail\s*id\b|\bka\s*mail\b|\bmail\s*id\b|\bemail\s*id\b/g, 'email'],
     [/\bkiske\s*liye\b/g, 'for whom']
   ];
 
   for (const [pattern, replacement] of typoReplacements) {
     q = q.replace(pattern, replacement);
   }
+
+  // Room normalization: LHC 204, LHC-204, LHC204 -> LHC204
+  q = q.replace(/\b(lhc|esb|ab|arch)[- ]?(\d{3}[a-z]?)\b/gi, (_match, p1, p2) => {
+    const prefix = p1.toUpperCase();
+    if (prefix === 'LHC') return `LHC${p2}`;
+    if (prefix === 'ARCH') return `ARCH${p2}`;
+    return `${prefix}-${p2}`;
+  });
 
   return q.replace(/\s+/g, ' ').trim();
 }
@@ -248,11 +417,13 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   const q = normalizedQuery;
   const intents: CampusAiIntent[] = [];
 
+  const isHod = /\b(hod|head\s*of\s*department|head\s*of\s*the\s*department|dept\s*head|department\s*head)\b/i.test(q)
+    || (/\bhead\b/i.test(q) && /\b(ise|cse|ece|et|ei|me|aiml|cy|cv|biotech|ind|department|dept)\b/i.test(q));
+
   const hasEmail = /\b(email|e-mail|mail\s*id|email\s*id|mail\s*address|email\s*address|mail|contact\s*email)\b/.test(q);
   const hasCabin = /\b(cabin|office|which\s*cabin|find\s*cabin|sitting|sit)\b/.test(q);
   const hasAvailability = /\b(available|availability|free|busy|in\s*lecture|in\s*class|can\s*i\s*meet|who\s*can\s*i\s*meet|who\s*is\s*free|who\s*is\s*available|which\s*faculty\s*are\s*available|when\s*free|vacant)\b/.test(q);
   const hasSchedule = /\b(schedule|timetable|classes\s*today|routine)\b/.test(q);
-  const hasHod = /\b(hod|head\s*of\s*department|department\s*head)\b/.test(q);
   const hasLocation = /\b(where\s*is|where\s*can\s*i\s*find|where\s*are|where\s*to\s*find|location|floor|which\s*floor|which\s*block|which\s*building|take\s*me\s*to|show\s*on\s*map|view\s*on\s*map|nearest)\b/.test(q);
 
   const hasOccupancy = /\b(occupancy|how\s*crowded|crowded|busy|rush|empty|least\s*crowded|less\s*crowded|seats|full)\b/.test(q);
@@ -270,6 +441,23 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
 
   const hasRoom = /\b(ab[- ]?\d{3}[a-z]?|esb[- ]?\d{3}[a-z]?|lhc[- ]?\d{3}[a-z]?|arch[- ]?\d{3}[a-z]?|room[- ]?\d{3}[a-z]?|classroom|classrooms|seminar\s*hall|board\s*room|auditorium)\b/i.test(q);
   const mentionsBuilding = /\b(lhc|esb|apex|architecture|basketball|sports|quadrangle|multipurpose|workshop|crd|des|cafeteria|food\s*court|hostel|basic\s*sciences)\b/.test(q);
+
+  // HOD Intents (Part 2: DEPARTMENT_HOD, DEPARTMENT_HOD_EMAIL, DEPARTMENT_HOD_LOCATION, DEPARTMENT_HOD_DESIGNATION)
+  if (isHod) {
+    intents.push('FACULTY_HOD');
+    if (hasEmail) {
+      intents.push('DEPARTMENT_HOD_EMAIL');
+      intents.push('DEPARTMENT_HOD');
+    } else if (hasCabin || hasLocation) {
+      intents.push('DEPARTMENT_HOD_LOCATION');
+      intents.push('DEPARTMENT_HOD');
+    } else if (/\b(designation|post|title|role)\b/.test(q)) {
+      intents.push('DEPARTMENT_HOD_DESIGNATION');
+      intents.push('DEPARTMENT_HOD');
+    } else {
+      intents.push('DEPARTMENT_HOD');
+    }
+  }
 
   // 1. Events & Announcements
   if (hasEvents) intents.push('EVENT_SEARCH');
@@ -309,13 +497,12 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   }
 
   // 8. Building & Department locations (Takes precedence when asking "Where is LHC?")
-  if (hasHod) intents.push('FACULTY_HOD');
-  if (mentionsBuilding && hasLocation && !mentionsExplicitLibrary && !hasRoom && !hasIssues) intents.push('BUILDING_LOCATION');
+  if (mentionsBuilding && hasLocation && !mentionsExplicitLibrary && !hasRoom && !hasIssues && !isHod) intents.push('BUILDING_LOCATION');
 
   // 9. Faculty specific
-  if (hasEmail) intents.push('FACULTY_EMAIL');
-  if (hasCabin) intents.push('FACULTY_CABIN');
-  if (hasLocation && !mentionsExplicitLibrary && !mentionsBuilding && !hasRoom && !hasIssues) intents.push('FACULTY_LOCATION');
+  if (hasEmail && !isHod) intents.push('FACULTY_EMAIL');
+  if (hasCabin && !isHod) intents.push('FACULTY_CABIN');
+  if (hasLocation && !mentionsExplicitLibrary && !mentionsBuilding && !hasRoom && !hasIssues && !isHod) intents.push('FACULTY_LOCATION');
   if (hasAvailability) intents.push('FACULTY_AVAILABILITY');
   if (hasSchedule) intents.push('FACULTY_SCHEDULE');
 
@@ -353,7 +540,8 @@ export function extractEntities(
   };
 
   // --- Pronoun Follow-up Resolution ---
-  const hasFacultyPronoun = /\b(she|her|he|his|him|the professor|the teacher|that professor|this professor)\b/.test(normQ) && !normQ.includes('library') && !normQ.includes('crowded');
+  const hasFacultyPronoun = /\b(she|her|he|his|him|the professor|the teacher|that professor|this professor|unka|unki|uska|uski|unke|uske)\b/i.test(normQ) && !normQ.includes('library') && !normQ.includes('crowded');
+  const isBareFacultyFollowup = /^\s*(cabin|mail|email|schedule|timetable|location|dept|department)\s*[?]?\s*$/i.test(rawQuery);
   const hasLibraryPronoun = /\b(it|its|the library|that library|this library)\b/.test(normQ);
   const hasBuildingPronoun = /\b(it|its|that block|that building|this block)\b/.test(normQ);
 
@@ -371,8 +559,27 @@ export function extractEntities(
     }
   }
 
-  // --- Faculty Entity Matching ---
-  if (hasFacultyPronoun && context?.lastFaculty) {
+  // --- HOD Query Resolution ---
+  const isHod = _intents.some((i) => i.includes('HOD')) || /\b(hod|head\s*of\s*department|head\s*of\s*the\s*department|dept\s*head|department\s*head)\b/i.test(normQ + ' ' + rawQuery)
+    || (/\bhead\b/i.test(normQ) && /\b(ise|cse|ece|et|ei|me|aiml|cy|cv|biotech|ind|department|dept)\b/i.test(normQ));
+
+  if (isHod) {
+    entities.role = 'HOD';
+    const deptInfo = resolveDepartment(normQ + ' ' + rawQuery) || (context?.lastDepartment ? (typeof context.lastDepartment === 'string' ? resolveDepartment(context.lastDepartment) : resolveDepartment(context.lastDepartment.code)) : null);
+    if (deptInfo) {
+      entities.departmentCode = deptInfo.code;
+      const deptFaculty = FACULTY_MSRIT_DATA.filter((f) => deptInfo.matchFn(f));
+      const hodMatches = deptFaculty.filter((f) => /\b(hod|head)\b/i.test(f.designation || ''));
+      if (hodMatches.length === 1) {
+        entities.matchedFaculty = hodMatches[0];
+      } else if (hodMatches.length > 1) {
+        entities.multipleFaculty = hodMatches;
+      }
+    }
+  }
+
+  // --- Faculty Entity Matching (Including Pronoun Resolution) ---
+  if ((hasFacultyPronoun || isBareFacultyFollowup) && context?.lastFaculty && !entities.matchedFaculty) {
     entities.matchedFaculty = context.lastFaculty;
     entities.isPronounFaculty = true;
   }
@@ -385,7 +592,10 @@ export function extractEntities(
       .replace(/\s+/g, ' ')
       .trim();
 
-    const FACULTY_STOP_WORDS = new Set(['and', 'the', 'for', 'with', 'of', 'in', 'on', 'at', 'to', 'is', 'are', 'was', 'where', 'what', 'which', 'who', 'how', 'principal', 'head', 'dean', 'director']);
+    const FACULTY_STOP_WORDS = new Set([
+      'and', 'the', 'for', 'with', 'of', 'in', 'on', 'at', 'to', 'is', 'are', 'was', 'where', 'what', 'which', 'who', 'how', 'principal', 'head', 'dean', 'director',
+      'abhi', 'kal', 'parso', 'waha', 'kaise', 'jana', 'room', 'free', 'khali', 'kaha', 'kidhar', 'cse', 'ise', 'ece', 'lhc', 'esb', 'crd', 'apex', 'library', 'notice', 'event', 'complaint', 'emergency', 'fire'
+    ]);
 
     for (const fac of FACULTY_MSRIT_DATA) {
       const fClean = cleanFacultyName(fac.name);
@@ -515,6 +725,84 @@ export function getFacultyAnswer(
       multipleFaculty,
       clarificationNeeded: true,
       clarificationOptions: options
+    };
+  }
+
+  // HOD Intent Handler (Part 1, 2, 5, 16, 17)
+  const isHodQuery = intents.some((i) => i.includes('HOD')) || /\b(hod|head\s*of\s*department)\b/i.test(normQ + ' ' + rawQuery);
+
+  if (isHodQuery) {
+    const deptInfo = resolveDepartment(normQ + ' ' + rawQuery) || (entities.departmentCode ? resolveDepartment(entities.departmentCode) : null);
+    const deptCode = deptInfo?.code || entities.departmentCode || 'ISE';
+
+    if (multipleFaculty && multipleFaculty.length > 1) {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['DEPARTMENT_HOD'],
+        responseText: "Multiple HOD records found. Please select one.",
+        subText: "Strict Faculty Resolution Rule: Multiple HOD records found.",
+        multipleFaculty
+      };
+    }
+
+    let hod = matchedFaculty;
+    if (!hod && deptInfo) {
+      const deptFaculty = FACULTY_MSRIT_DATA.filter((f) => deptInfo.matchFn(f));
+      const hodMatches = deptFaculty.filter((f) => /\b(hod|head)\b/i.test(f.designation || ''));
+      if (hodMatches.length === 1) hod = hodMatches[0];
+      else if (hodMatches.length > 1) {
+        return {
+          queryText: rawQuery,
+          normalizedQuery: normQ,
+          intents: ['DEPARTMENT_HOD'],
+          responseText: "Multiple HOD records found. Please select one.",
+          subText: "Strict Faculty Resolution Rule: Multiple HOD records found.",
+          multipleFaculty: hodMatches
+        };
+      }
+    }
+
+    if (!hod) {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['DEPARTMENT_HOD'],
+        responseText: `I couldn't find a verified HOD for ${deptCode} in the Campus Pulse data.`,
+        subText: "Zero-hallucination verification against official MSRIT registry."
+      };
+    }
+
+    const wantsEmail = intents.includes('DEPARTMENT_HOD_EMAIL') || /\b(email|mail|e-mail|gmail|mail\s*id|email\s*id)\b/i.test(normQ + ' ' + rawQuery);
+    const wantsLocation = intents.includes('DEPARTMENT_HOD_LOCATION') || /\b(kaha|kahan|kidhar|where|cabin|office|sitting|milenge|milega|location)\b/i.test(normQ + ' ' + rawQuery);
+    const wantsDesignation = intents.includes('DEPARTMENT_HOD_DESIGNATION') || /\b(designation|post|title|role)\b/i.test(normQ + ' ' + rawQuery);
+
+    let primaryIntent: CampusAiIntent = 'DEPARTMENT_HOD';
+    let ans = '';
+
+    if (wantsEmail) {
+      primaryIntent = 'DEPARTMENT_HOD_EMAIL';
+      ans = `${deptCode} HOD\n\n${hod.name}\n${hod.designation || 'Head of Department'}\n\n✉️ ${hod.email || 'Email not available'}`;
+    } else if (wantsLocation) {
+      primaryIntent = 'DEPARTMENT_HOD_LOCATION';
+      ans = `${deptCode} HOD\n\n${hod.name}\n📍 ${hod.cabinLocation || `${deptInfo?.building || 'LHC'} Block`}`;
+    } else if (wantsDesignation) {
+      primaryIntent = 'DEPARTMENT_HOD_DESIGNATION';
+      ans = `${deptCode} HOD\n\n${hod.name}\n${hod.designation || 'Head of Department'}`;
+    } else {
+      primaryIntent = 'DEPARTMENT_HOD';
+      ans = `${deptCode} HOD\n\n${hod.name}\n${hod.designation || 'Head of Department'}${hod.email ? `\n\n✉️ ${hod.email}` : ''}`;
+    }
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: [primaryIntent, 'DEPARTMENT_HOD'],
+      responseText: ans,
+      subText: "Verified from official MSRIT faculty registry.",
+      matchedFaculty: { ...hod, isCollegeOpen: true },
+      matchedDepartment: entities.matchedDepartment,
+      actionTargetId: hod.nodeId || deptInfo?.buildingId || 'block-lhc'
     };
   }
 

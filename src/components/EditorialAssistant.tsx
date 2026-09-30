@@ -467,15 +467,27 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                         </div>
                       ) : <div />}
 
-                      {activeResult.actionTargetId && (
-                        <button
-                          onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
-                          className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
-                        >
-                          <MapPin className="w-3.5 h-3.5 text-rose-300" />
-                          <span>VIEW ON MAP →</span>
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {activeResult.matchedFaculty?.department && (
+                          <button
+                            onClick={() => handleQuerySubmit(`Show ${activeResult.matchedDepartment?.code || activeResult.matchedFaculty!.department} faculty`)}
+                            className="px-2.5 py-1.5 bg-gray-100 dark:bg-white/10 hover:bg-[#DC2626] hover:text-white text-[#111111] dark:text-gray-200 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
+                          >
+                            <Building2 className="w-3.5 h-3.5" />
+                            <span>VIEW DEPARTMENT</span>
+                          </button>
+                        )}
+
+                        {activeResult.actionTargetId && (
+                          <button
+                            onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
+                            className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
+                          >
+                            <MapPin className="w-3.5 h-3.5 text-rose-300" />
+                            <span>VIEW ON MAP →</span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
 

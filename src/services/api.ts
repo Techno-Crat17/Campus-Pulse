@@ -7,7 +7,14 @@ import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUser
  */
 
 const getApiBaseUrl = (): string => {
-  let envUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL ? import.meta.env.VITE_API_URL : 'http://localhost:5000/api').trim();
+  const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  let envUrl = (
+    typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL
+      ? import.meta.env.VITE_API_URL
+      : isLocalhost
+        ? 'http://localhost:5000/api'
+        : 'https://campus-pulse-leyt.onrender.com/api'
+  ).trim();
   if (envUrl.endsWith('/')) {
     envUrl = envUrl.slice(0, -1);
   }
@@ -402,7 +409,7 @@ export async function fetchClubs(): Promise<{ success: boolean; data: any[]; las
 // 7. ASK CAMPUS AI API
 // ----------------------------------------------------
 
-export async function queryCampusAi(query: string, sessionId?: string): Promise<{ intent: string; answer: string; data?: any }> {
+export async function queryCampusAi(query: string, sessionId?: string): Promise<{ intent: string; answer: string; data?: any; actions?: any[] }> {
   try {
     const isOnline = await checkBackendHealth();
     if (isOnline) {
@@ -413,7 +420,14 @@ export async function queryCampusAi(query: string, sessionId?: string): Promise<
       });
       if (res.ok) {
         const json = await res.json();
-        if (json.success) return json.data;
+        if (json.success) {
+          return {
+            intent: json.intent,
+            answer: json.answer,
+            data: json.data,
+            actions: json.actions
+          };
+        }
       }
     }
   } catch (err) {
