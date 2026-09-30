@@ -203,8 +203,8 @@ export const VERIFIED_MSRIT_CLUBS: VerifiedClub[] = [
     active: true
   },
   {
-    name: 'Secur1t',
-    normalizedName: 'secur1t',
+    name: 'SecureIT',
+    normalizedName: 'secureit',
     category: 'Technical & Co-Curricular Chapters',
     description: 'Cybersecurity, ethical hacking, CTF competitions, and information security student community.',
     type: 'CLUB',

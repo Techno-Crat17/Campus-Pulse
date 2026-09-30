@@ -648,7 +648,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                           <div key={idx} className="p-3.5 border border-[#111111]/10 dark:border-white/10 bg-white/60 dark:bg-white/5 space-y-2">
                             <div className="flex justify-between items-center">
                               <span className="font-syne font-bold text-base text-[#111111] dark:text-white">{c.name}</span>
-                              <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] font-bold text-[10px] uppercase">{c.category}</span>
                             </div>
                             {c.description && (
                               <p className="text-[#666660] dark:text-gray-300 text-xs leading-relaxed">

@@ -553,12 +553,6 @@ export const EditorialOthers: React.FC = () => {
                             className="p-4 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-3 group shadow-2xs flex flex-col justify-between"
                           >
                             <div className="space-y-2">
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold text-[9px] uppercase">
-                                  {club.category}
-                                </span>
-                              </div>
-
                               <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
                                 {club.name}
                               </h4>

@@ -307,7 +307,7 @@ export function detectIntents(normQuery, rawQuery = '') {
 
   const hasEvents = /\b(event|program|programme|function|activity|aaj kya|upcoming)\b/.test(q);
   const hasAnnouncements = /\b(announcement|notice|circular|news|latest notice|new notice)\b/.test(q);
-  const hasClubs = /\b(club|clubs|organization|society|societies|extracurricular|ieee|nss|coderit|secur1t|aion|velocita|aws|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|quiz\s*club|iclick|inara|comedy\s*club|studio\.?rit|clutchrit|nakama|ritmunsoc|dance|drama|theatre|photography|gaming|anime|debate|coding|cybersecurity|cloud)\b/i.test(q);
+  const hasClubs = /\b(club|clubs|organization|society|societies|extracurricular|ieee|nss|coderit|secureit|secur1t|aion|velocita|aws|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|quiz\s*club|iclick|inara|comedy\s*club|studio\.?rit|clutchrit|nakama|ritmunsoc|dance|drama|theatre|photography|gaming|anime|debate|coding|cybersecurity|cloud)\b/i.test(q);
   const hasEmergency = /\b(emergency|ambulance|fire|anti ragging|helpline|police|contact number)\b/.test(q);
 
   const hasIssues = /\b(issue|issues|problem|complaint|complain|wifi|water|electricity|broken|repair|status|resolve)\b/.test(q);

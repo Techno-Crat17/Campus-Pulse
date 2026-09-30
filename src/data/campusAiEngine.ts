@@ -875,7 +875,7 @@ export function extractEntities(
     else if (/\bieee\b|\bwie\b|\bpes\b|\bembs\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('IEEE'));
     else if (/\bnss\b|\bnss\s*msrit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'NSS MSRIT');
     else if (/\bcoderit\b|\bcoding\s*club\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'CodeRIT');
-    else if (/\bsecur1t\b|\bcybersecurity\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Secur1t');
+    else if (/\bsecureit\b|\bsecur1t\b|\bcybersecurity\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'SecureIT');
     else if (/\baion\b|\baion\s*rit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'AION RIT');
     else if (/\bvelocita\b|\bvelocita\s*racing\b|\bracing\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('Velocita'));
     else if (/\baws\b|\baws\s*club\b|\bcloud\s*club\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'AWS Club');
@@ -2067,7 +2067,7 @@ export async function getClubsAnswer(
   context?: CampusAiContext
 ): Promise<CampusAiResult | null> {
   const isClubIntent = intents.includes('CLUB_SEARCH') || intents.includes('CLUB_DETAILS') || intents.includes('CLUB_CATEGORY_SEARCH');
-  const mentionsClubs = /\b(club|clubs|society|societies|chapter|chapters|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|iclick|inara|clutchrit|nakama|ritmunsoc|ieee|nss|coderit|secur1t|aion|velocita|aws)\b/i.test(normQ);
+  const mentionsClubs = /\b(club|clubs|society|societies|chapter|chapters|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|iclick|inara|clutchrit|nakama|ritmunsoc|ieee|nss|coderit|secureit|secur1t|aion|velocita|aws)\b/i.test(normQ);
 
   if (!isClubIntent && !mentionsClubs && !entities.matchedClub && !entities.isPronounClub) {
     return null;
@@ -2169,7 +2169,7 @@ export async function getClubsAnswer(
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'CodeRIT' || c.name.includes('IEEE'));
     domainTitle = 'Coding & Software Development Clubs';
   } else if (isCyber) {
-    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'Secur1t');
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'SecureIT');
     domainTitle = 'Cybersecurity & Information Security Chapters';
   } else if (isAi) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'AION RIT');
