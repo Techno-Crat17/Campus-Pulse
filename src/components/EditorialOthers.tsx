@@ -3,27 +3,15 @@ import {
   Megaphone,
   Calendar,
   ShieldAlert,
-  Star,
   ExternalLink,
-  Info,
-  Smartphone,
   ChevronRight,
   X,
-  Building2,
-  BookOpen,
-  MapPin,
-  AlertTriangle,
-  Users,
   Search,
   Loader2,
   RefreshCw,
   Target
 } from 'lucide-react';
 import { fetchAnnouncements, fetchEvents, fetchClubs } from '../services/api';
-
-interface EditorialOthersProps {
-  onNavigateSection: (sectionId: string) => void;
-}
 
 export interface AnnouncementItem {
   title: string;
@@ -61,7 +49,7 @@ export interface ClubItem {
   active?: boolean;
 }
 
-export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSection }) => {
+export const EditorialOthers: React.FC = () => {
   // Announcements State
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [announcementsLoading, setAnnouncementsLoading] = useState<boolean>(true);
@@ -170,13 +158,6 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
     <section id="sec-others" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
-        {/* Header telemetry badge */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center justify-end">
-          <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] bg-white dark:bg-[#1A1C24] px-3 py-1 border border-[#111111]/15 dark:border-white/15 text-[11px]">
-            <Info className="w-3.5 h-3.5 text-[#DC2626]" />
-            <span>LIVE MSRIT DATA DISPATCH</span>
-          </div>
-        </div>
         {/* Section Title & Subtitle */}
         <div className="space-y-4">
           <div>
@@ -455,155 +436,7 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
             </div>
           </div>
 
-          {/* Card 4: ⭐ Quick Access */}
-          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all">
-            <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
-                <Star className="w-4 h-4 text-[#DC2626]" />
-                <span>QUICK ACCESS</span>
-              </div>
-              <span className="text-[10px] text-[#DC2626] font-bold uppercase">NAVIGATION</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: 'FACULTY', icon: Users, id: 'sec-faculty' },
-                { label: 'LIBRARIES', icon: BookOpen, id: 'sec-find' },
-                { label: 'BUILDINGS', icon: Building2, id: 'sec-map' },
-                { label: 'ROOMS', icon: Search, id: 'sec-find' },
-                { label: 'CAMPUS MAP', icon: MapPin, id: 'sec-map' },
-                { label: 'REPORT ISSUE', icon: AlertTriangle, id: 'sec-report' },
-                { label: 'LOST & FOUND', icon: Target, id: 'sec-lostfound' },
-                { label: 'ASK CAMPUS AI', icon: Info, id: 'sec-ask' }
-              ].map((item, idx) => {
-                const IconComponent = item.icon;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => onNavigateSection(item.id)}
-                    className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] hover:bg-[#111111] hover:text-white dark:hover:bg-[#DC2626] transition-all text-left group flex flex-col justify-between space-y-2 cursor-pointer"
-                  >
-                    <IconComponent className="w-4 h-4 text-[#DC2626] group-hover:text-white transition-colors" />
-                    <span className="font-bold text-[10px] tracking-wider">{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Card 5: 🔗 Useful Links */}
-          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all">
-            <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
-                <ExternalLink className="w-4 h-4 text-[#DC2626]" />
-                <span>USEFUL LINKS</span>
-              </div>
-              <span className="text-[10px] text-[#666660] dark:text-[#9CA3AF] uppercase">EXTERNAL & INTERNAL</span>
-            </div>
-
-            <div className="space-y-2">
-              <a
-                href="https://www.msrit.edu"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] flex items-center justify-between transition-all group"
-              >
-                <div className="space-y-0.5">
-                  <div className="font-bold text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors text-xs">
-                    MSRIT OFFICIAL WEBSITE
-                  </div>
-                  <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                    www.msrit.edu
-                  </div>
-                </div>
-                <ExternalLink className="w-3.5 h-3.5 text-[#666660] group-hover:text-[#DC2626] shrink-0" />
-              </a>
-
-              <button
-                onClick={() => onNavigateSection('sec-map')}
-                className="w-full p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] flex items-center justify-between transition-all group text-left cursor-pointer"
-              >
-                <div className="space-y-0.5">
-                  <div className="font-bold text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors text-xs">
-                    INTERACTIVE CAMPUS MAP
-                  </div>
-                  <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                    Geographic Building Explorer
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#666660] group-hover:text-[#DC2626] shrink-0" />
-              </button>
-
-              <button
-                onClick={() => onNavigateSection('sec-ask')}
-                className="w-full p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] flex items-center justify-between transition-all group text-left cursor-pointer"
-              >
-                <div className="space-y-0.5">
-                  <div className="font-bold text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors text-xs">
-                    ASK CAMPUS AI
-                  </div>
-                  <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                    Real-time Telemetry Intelligence
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#666660] group-hover:text-[#DC2626] shrink-0" />
-              </button>
-
-              <button
-                onClick={() => onNavigateSection('sec-report')}
-                className="w-full p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] flex items-center justify-between transition-all group text-left cursor-pointer"
-              >
-                <div className="space-y-0.5">
-                  <div className="font-bold text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors text-xs">
-                    REPORT AN ISSUE
-                  </div>
-                  <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                    Anonymous Dispatch Queue
-                  </div>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-[#666660] group-hover:text-[#DC2626] shrink-0" />
-              </button>
-            </div>
-          </div>
-
-          {/* Card 6: ℹ️ Campus Information */}
-          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all">
-            <div className="flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3">
-              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
-                <Building2 className="w-4 h-4 text-[#DC2626]" />
-                <span>CAMPUS INFORMATION</span>
-              </div>
-              <span className="px-2 py-0.5 bg-[#111111] text-white text-[10px] font-bold uppercase">
-                VERIFIED
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF] uppercase">INSTITUTION</div>
-                <div className="font-syne font-bold text-base text-[#111111] dark:text-[#F3F3EE]">
-                  Ramaiah Institute of Technology
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-[10px] text-[#666660] dark:text-[#9CA3AF] uppercase">LOCATION</div>
-                <div className="font-bold text-xs text-[#111111] dark:text-[#F3F3EE]">
-                  MSR Nagar, MSRIT Post, Mathikere<br />
-                  Bengaluru, Karnataka 560054
-                </div>
-              </div>
-
-              <div className="pt-2 border-t border-[#111111]/10 dark:border-white/10 space-y-1 text-[11px] text-[#666660] dark:text-[#9CA3AF]">
-                <div>MONITORED BUILDINGS: <strong className="text-[#111111] dark:text-[#F3F3EE]">8 Verified Blocks</strong></div>
-                <div>LIBRARIES MONITORED: <strong className="text-[#111111] dark:text-[#F3F3EE]">3 Libraries</strong></div>
-                <div>DYNAMIC ROOMS: <strong className="text-[#111111] dark:text-[#F3F3EE]">51 Study Rooms</strong></div>
-                <div>FACULTY DIRECTORY: <strong className="text-[#111111] dark:text-[#F3F3EE]">409 Verified Roster</strong></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 7: 🎯 Clubs & Student Activities (Full Row Card) */}
+          {/* Card 4: 🎯 Clubs & Student Activities (Full Row Card) */}
           <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-6 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all md:col-span-2 lg:col-span-3">
             
             {/* Card Header */}
@@ -752,42 +585,6 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                 })}
               </div>
             )}
-          </div>
-
-          {/* Card 8: 📱 PWA & Web App Status */}
-          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-4 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all md:col-span-2 lg:col-span-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 gap-2">
-              <div className="flex items-center gap-2 text-[#111111] dark:text-[#F3F3EE] font-bold uppercase text-xs">
-                <Smartphone className="w-4 h-4 text-[#DC2626]" />
-                <span>WEB APPLICATION & ACCESSIBILITY STATUS</span>
-              </div>
-              <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold uppercase self-start sm:self-auto">
-                ONLINE OPERATIONAL
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-1">
-                <div className="font-bold text-[#111111] dark:text-[#F3F3EE] uppercase text-[11px]">OPTIMIZED FOR MOBILE</div>
-                <p className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                  Fully responsive UI layout for smartphones, tablets, and desktop displays.
-                </p>
-              </div>
-
-              <div className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-1">
-                <div className="font-bold text-[#111111] dark:text-[#F3F3EE] uppercase text-[11px]">HOME SCREEN SHORTCUT</div>
-                <p className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                  Add Campus Pulse to your mobile home screen via your browser menu ("Add to Home Screen").
-                </p>
-              </div>
-
-              <div className="p-3 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 space-y-1">
-                <div className="font-bold text-[#111111] dark:text-[#F3F3EE] uppercase text-[11px]">DARK & LIGHT THEMES</div>
-                <p className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                  Includes high-contrast theme toggle for daylight and nighttime visibility.
-                </p>
-              </div>
-            </div>
           </div>
 
         </div>

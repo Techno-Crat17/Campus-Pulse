@@ -199,13 +199,6 @@ export const EditorialIssues: React.FC = () => {
     <section id="sec-report" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-12 sm:space-y-16">
         
-        {/* Header telemetry badge */}
-        <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center justify-end">
-          <div className="flex items-center gap-2 text-[#111111] bg-white px-3 py-1 border border-[#111111]/15 text-[11px]">
-            <AlertTriangle className="w-3.5 h-3.5 text-[#DC2626]" />
-            <span>ANONYMOUS DISPATCH PROTOCOL</span>
-          </div>
-        </div>
         {/* Section Title & Subtitle */}
         <div className="space-y-4">
           <div>

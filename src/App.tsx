@@ -156,26 +156,7 @@ export function App() {
               <Route path="/lostfound" element={<EditorialLostFound />} />
 
               {/* 08. /others -> Announcements, Events, Clubs & Emergency Contacts */}
-              <Route
-                path="/others"
-                element={
-                  <EditorialOthers
-                    onNavigateSection={(sectionId) => {
-                      const routeMap: Record<string, string> = {
-                        'sec-faculty': '/faculty',
-                        'sec-find': '/libraries',
-                        'sec-map': '/map',
-                        'sec-report': '/issues',
-                        'sec-lostfound': '/lost-found',
-                        'sec-ask': '/ask-ai',
-                        'sec-others': '/others',
-                        'sec-hero': '/'
-                      };
-                      navigate(routeMap[sectionId] || '/others');
-                    }}
-                  />
-                }
-              />
+              <Route path="/others" element={<EditorialOthers />} />
 
               {/* 404 Fallback */}
               <Route path="*" element={<NotFoundRoute />} />

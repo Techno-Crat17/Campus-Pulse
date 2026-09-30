@@ -120,13 +120,9 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
     return result;
   }, [libraryListWithDetails, searchQuery, activeFilter]);
 
-  // Overall campus library status helper
-  const allLibrariesOpen = isLibraryOpen(simulatedTime);
-
   return (
     <section id="sec-find" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 relative overflow-hidden bg-[#F5F4EF]">
       <div className="max-w-[1700px] mx-auto space-y-12">
-        
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between border-b border-[#111111]/10 pb-8 gap-6">
           <div className="space-y-3">
@@ -141,16 +137,6 @@ export const EditorialRecommender: React.FC<EditorialRecommenderProps> = ({
                 SPACE.
               </h2>
             </div>
-          </div>
-
-          <div className="font-mono text-xs text-[#666660] lg:text-right space-y-1.5 max-w-md">
-            <div className="flex items-center lg:justify-end gap-2 text-[#111111] font-bold">
-              <span className={`w-2 h-2 rounded-full ${allLibrariesOpen ? 'bg-emerald-500 animate-pulse' : 'bg-[#DC2626]'}`} />
-              <span>{allLibrariesOpen ? 'ALL 6 LIBRARIES OPEN NOW' : 'LIBRARIES CURRENTLY CLOSED'}</span>
-            </div>
-            <p className="leading-relaxed">
-              Operating Hours: <span className="text-[#111111] font-bold">09:00–21:00 Daily</span> (Monday through Sunday). Telemetry is dynamically generated and refreshed every 30–60 seconds across all 6 campus library units.
-            </p>
           </div>
         </div>
 

@@ -509,7 +509,7 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                         <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
                           <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1">
                             <BookOpen className="w-3.5 h-3.5 text-[#DC2626]" />
-                            CAMPUS LIBRARY TELEMETRY
+                            CAMPUS LIBRARY
                           </span>
                           <span className="text-[#DC2626] font-bold">
                             ESTIMATED OCCUPANCY: {libDetails.displayOccupancy}

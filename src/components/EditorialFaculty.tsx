@@ -267,9 +267,6 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                       {fac.email}
                     </a>
                   </div>
-                  <div className="text-[11px] text-[#666660]">
-                    NODE: <span className="font-bold text-[#111111]">{fac.nodeId}</span> • SOURCE: <span className="font-bold text-[#111111]">MSRIT FACULTY DIRECTORY</span>
-                  </div>
                 </div>
 
                 {/* Today's Schedule Breakdown */}

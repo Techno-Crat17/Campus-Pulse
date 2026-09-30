@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   X,
   Eye,
-  HelpCircle,
   CheckCircle2,
   AlertTriangle,
   Send,
@@ -308,19 +307,6 @@ export const EditorialLostFound: React.FC = () => {
             <p className="font-mono text-xs sm:text-sm text-[#666660] leading-relaxed">
               Report items found across the campus or search for misplaced belongings. All turned-in items are verified and deposited at the campus Security Enquiry Desk for owner claim and recovery.
             </p>
-
-            <div className="font-mono text-xs text-[#666660] space-y-2 pt-2 border-t border-[#111111]/10">
-              <div className="inline-flex items-center gap-2 text-[#DC2626] font-bold uppercase tracking-wider bg-[#DC2626]/10 px-3 py-1 border border-[#DC2626]/20">
-                <HelpCircle className="w-3.5 h-3.5 text-[#DC2626]" />
-                <span>STATUS SYSTEM // FOUND → RECOVERED</span>
-              </div>
-              <div className="text-[11px] text-[#111111]">
-                MODEL: PEER RECOVERY &amp; CAMPUS SECURITY DESK DEPOSITS
-              </div>
-              <div className="text-[10px] text-[#888880]">
-                NOTICE: REPORTED ITEMS ENTER THE DISPATCH REGISTRY IMMEDIATELY
-              </div>
-            </div>
           </div>
 
           {/* Right Column (7 Cols): Report Found Item Entry Form (Yellow Marked Target Area) */}

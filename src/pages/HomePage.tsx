@@ -7,21 +7,13 @@ import {
   Sparkles,
   AlertTriangle,
   Grid,
-  ShieldCheck,
   ArrowRight,
-  Building2,
   Tag
 } from 'lucide-react';
 import { EditorialHero } from '../components/EditorialHero';
 import { EditorialFooter } from '../components/EditorialFooter';
-import { isCampusOpen } from '../data/statusEngine';
-import { useTimeContext } from '../context/TimeContext';
-
 
 export const HomePage: React.FC = () => {
-  const { simulatedTime } = useTimeContext();
-  const campusIsOpen = isCampusOpen(simulatedTime);
-
   const moduleCards = [
     {
       title: 'ASK CAMPUS AI',
@@ -86,34 +78,8 @@ export const HomePage: React.FC = () => {
       {/* 01. Hero Section */}
       <EditorialHero />
 
-      {/* 02. Dashboard Overview & Quick Telemetry Section */}
+      {/* 02. Dashboard Overview & Modules Section */}
       <section className="py-12 px-4 sm:px-8 lg:px-12 max-w-[1700px] mx-auto space-y-12 font-mono">
-        
-        {/* Live Status Bar */}
-        <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-          <div className="flex items-center gap-3">
-            <span className={`w-3.5 h-3.5 rounded-full ${campusIsOpen ? 'bg-emerald-500 animate-pulse' : 'bg-[#DC2626]'}`} />
-            <div>
-              <div className="text-xs font-bold text-[#111111] dark:text-[#F3F3EE] uppercase tracking-wider">
-                MSRIT CAMPUS STATUS // {campusIsOpen ? 'OPEN FOR ACADEMICS' : 'COLLEGE CLOSED'}
-              </div>
-              <div className="text-[11px] text-[#666660] dark:text-[#9CA3AF]">
-                Faculty Hours: Mon–Fri 09:00–17:00, Sat 09:00–13:30 • Libraries: 09:00–21:00 Daily
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="px-3 py-1 bg-[#111111]/5 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 text-[11px] text-[#111111] dark:text-[#F3F3EE] font-bold uppercase flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>409 FACULTY RECORDS</span>
-            </span>
-            <span className="px-3 py-1 bg-[#111111]/5 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 text-[11px] text-[#111111] dark:text-[#F3F3EE] font-bold uppercase flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-blue-600" />
-              <span>6 LIBRARIES MONITORED</span>
-            </span>
-          </div>
-        </div>
 
         {/* Section Heading */}
         <div className="space-y-2">

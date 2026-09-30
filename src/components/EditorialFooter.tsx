@@ -9,9 +9,6 @@ export const EditorialFooter: React.FC = () => {
         
         {/* Massive Closing Typography */}
         <div className="space-y-4">
-          <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold">
-            CONCLUSION // THE OPERATING VISION
-          </div>
 
           <h2 className="text-subgiant font-syne text-[#666660] uppercase tracking-tighter leading-none">
             MAKE THE CAMPUS
