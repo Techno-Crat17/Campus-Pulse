@@ -609,8 +609,8 @@ export function extractEntities(
   }
 
   // --- Pronoun Follow-up Resolution ---
-  const hasFacultyPronoun = /\b(she|her|he|his|him|the professor|the teacher|that professor|this professor|unka|unki|uska|uski|unke|uske)\b/i.test(normQ) && !normQ.includes('library') && !normQ.includes('crowded') && !roomCat;
-  const isBareFacultyFollowup = /^\s*(cabin|mail|email|schedule|timetable|location|dept|department)\s*[?]?\s*$/i.test(rawQuery);
+  const hasFacultyPronoun = /\b(she|her|he|his|him|the professor|the teacher|that professor|this professor|unka|unki|uska|uski|unke|uske|sir|mam|honge|hoga)\b/i.test(normQ) && !normQ.includes('library') && !normQ.includes('crowded') && !roomCat;
+  const isBareFacultyFollowup = /^\s*(cabin|mail|email|schedule|timetable|location|dept|department|kab free|kab free honge|when free|free kab)\s*[?]?\s*$/i.test(rawQuery) || /\b(kab\s*free|kab\s*free\s*honge|kab\s*free\s*hoga|when\s*free|free\s*kab)\b/i.test(normQ);
   const hasLibraryPronoun = /\b(it|its|the library|that library|this library)\b/.test(normQ);
   const hasBuildingPronoun = /\b(it|its|that block|that building|this block)\b/.test(normQ);
 
@@ -975,8 +975,17 @@ export function getFacultyAnswer(
     }
 
     if (facultyList.length > 0) {
-      const sample = facultyList.slice(0, 5);
-      const listText = sample.map((f) => `• **${f.name}** (${f.designation}) — Cabin: ${f.cabinLocation}`).join('\n');
+      const sample = facultyList.slice(0, 8);
+      const listText = sample.map((f, idx) => {
+        const live = getFacultyLiveStatus(f, simulatedTime);
+        const statusTag = live.status === 'AVAILABLE'
+          ? '🟢 AVAILABLE'
+          : live.status === 'BUSY'
+          ? `🔴 BUSY · ${live.currentLocation}${live.nextAvailableTime ? ` (Until ${live.nextAvailableTime})` : ''}`
+          : '⚫ OFF CAMPUS';
+        return `${idx + 1}. **${f.name}** — ${statusTag}\n   Cabin: ${f.cabinLocation || 'N/A'}`;
+      }).join('\n\n');
+
       const bldgTag = filterLhc ? ' in LHC Block' : '';
       const availTag = filterAvailable ? ' currently available' : '';
 
@@ -984,8 +993,8 @@ export function getFacultyAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['FACULTY_SEARCH'],
-        responseText: `${deptFilter} Faculty${bldgTag}${availTag} (${facultyList.length} total):\n\n${listText}${facultyList.length > 5 ? `\n\n...and ${facultyList.length - 5} more.` : ''}`,
-        subText: `Department Base: ${bldgMapping.primaryBuilding} • Sourced from official faculty registry.`,
+        responseText: `**${deptFilter} Faculty${bldgTag}${availTag}** (${facultyList.length} total):\n\n${listText}${facultyList.length > 8 ? `\n\n...and ${facultyList.length - 8} more faculty members.` : ''}`,
+        subText: `Department Base: ${bldgMapping.primaryBuilding} • Dynamic status evaluated from timetable schedule & campus hours.`,
         matchedDepartment: entities.matchedDepartment,
         actionTargetId: filterLhc ? 'block-lhc' : undefined
       };
@@ -1064,12 +1073,12 @@ export function getFacultyAnswer(
 
   const fac = matchedFaculty;
   const liveInfo = getFacultyLiveStatus(fac, simulatedTime);
-  const statusBadgeStr = liveInfo.status === 'AVAILABLE' ? '🟢 AVAILABLE' : liveInfo.status === 'BUSY' ? '🔴 BUSY' : '⚫ OFF CAMPUS';
 
   const wantsEmail = intents.includes('FACULTY_EMAIL') || /\b(email|mail)\b/.test(normQ);
   const wantsDepartment = intents.includes('FACULTY_DEPARTMENT') || /\b(department|dept|branch)\b/.test(normQ);
-  const wantsLocation = intents.includes('FACULTY_LOCATION') || intents.includes('FACULTY_CABIN') || /\b(where|location|find|cabin|office)\b/.test(normQ);
-  const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|consult|college\s*me\s*hai|campus\s*me\s*hai)\b/.test(normQ);
+  const wantsCabin = intents.includes('FACULTY_CABIN') || /\b(cabin|office)\b/.test(normQ);
+  const wantsLocation = intents.includes('FACULTY_LOCATION') || /\b(where|location|find|kaha|kidhar|where is|kahan)\b/.test(normQ);
+  const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|consult|college\s*me\s*hai|campus\s*me\s*hai|kab\s*free|free\s*kab)\b/.test(normQ);
   const wantsSchedule = intents.includes('FACULTY_SCHEDULE') || /\b(schedule|timetable)\b/.test(normQ);
   const wantsDesignation = intents.includes('FACULTY_DESIGNATION') || /\b(designation|title|post|position|role)\b/.test(normQ);
 
@@ -1080,7 +1089,7 @@ export function getFacultyAnswer(
   );
 
   // 1. Designation Only
-  if (wantsDesignation && !wantsEmail && !wantsLocation && !wantsDepartment) {
+  if (wantsDesignation && !wantsEmail && !wantsLocation && !wantsDepartment && !wantsCabin) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
@@ -1093,7 +1102,7 @@ export function getFacultyAnswer(
   }
 
   // 2. Department Only (e.g. "unka department?", "yogish ka department")
-  if (wantsDepartment && !wantsEmail && !wantsLocation) {
+  if (wantsDepartment && !wantsEmail && !wantsLocation && !wantsCabin) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
@@ -1106,7 +1115,7 @@ export function getFacultyAnswer(
   }
 
   // 3. Email Only (e.g. "yogish ka email", "unka mail")
-  if (wantsEmail && !wantsLocation) {
+  if (wantsEmail && !wantsLocation && !wantsCabin) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
@@ -1118,71 +1127,103 @@ export function getFacultyAnswer(
     };
   }
 
-  // 4. Location / Cabin Only (e.g. "unka cabin?", "yogish ka cabin", "yogish sir kaha hai")
-  if (wantsLocation && !wantsEmail) {
-    const locText = fac.cabinLocation;
-    if (!locText) {
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['FACULTY_LOCATION'],
-        responseText: `**${fac.name}**\nLocation information is currently unavailable.`,
-        subText: `Department: ${fac.department}`,
-        matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
-        actionTargetId: bldgId
-      };
-    }
+  // 4. Cabin Query specifically (e.g. "Yogish sir ka cabin kaha hai?", "unka cabin?")
+  if (wantsCabin && !wantsEmail) {
+    const statusLabel = liveInfo.status === 'AVAILABLE'
+      ? '🟢 AVAILABLE (On campus · No active scheduled commitment)'
+      : liveInfo.status === 'BUSY'
+      ? `🔴 BUSY (Currently in ${liveInfo.activeEvent || 'Class'} · ${liveInfo.currentLocation})`
+      : `⚫ OFF CAMPUS (${liveInfo.statusReason || 'Outside campus hours'})`;
 
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
-      intents: ['FACULTY_LOCATION'],
-      responseText: `**${fac.name}**\n📍 ${locText}`,
+      intents: ['FACULTY_CABIN'],
+      responseText: `${fac.name}'s official cabin is **${fac.cabinLocation || 'LHC Block'}**.\n\nCurrent status: ${statusLabel}`,
       subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // 4. Multi-Intent: Email AND Location
-  if (wantsEmail && wantsLocation) {
-    const locText = liveInfo.status === 'BUSY'
-      ? `${liveInfo.currentLocation}${liveInfo.activeEvent ? ` (${liveInfo.activeEvent})` : ''}`
-      : liveInfo.status === 'AVAILABLE'
-      ? fac.cabinLocation
-      : 'Off-Campus';
+  // 5. Location / Presence Query (e.g. "yogish sir kaha hai?", "where is Dr Yogish")
+  if (wantsLocation && !wantsEmail && !wantsCabin) {
+    if (liveInfo.status === 'AVAILABLE') {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['FACULTY_LOCATION'],
+        responseText: `**${fac.name} — AVAILABLE**\nOn campus · No current scheduled activity.\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+        subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
+        matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+        actionTargetId: bldgId
+      };
+    }
 
+    if (liveInfo.status === 'BUSY') {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['FACULTY_LOCATION'],
+        responseText: `**${fac.name} — BUSY**\nCurrently in ${liveInfo.activeEvent || 'Scheduled Session'} · ${liveInfo.currentLocation}\nUntil: ${liveInfo.nextAvailableTime}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+        subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
+        matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+        actionTargetId: bldgId
+      };
+    }
+
+    // OFF CAMPUS
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
-      intents: ['FACULTY_EMAIL', 'FACULTY_LOCATION'],
-      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n${statusBadgeStr}${locText !== 'Off-Campus' ? `\n📍 ${locText}` : ''}\n📧 ${fac.email || 'N/A'}`,
-      subText: `Building: ${fac.primaryBuilding || 'LHC Block'}`,
+      intents: ['FACULTY_LOCATION'],
+      responseText: `**${fac.name} — OFF CAMPUS**\n${liveInfo.statusReason || 'Faculty campus hours ended at 4:30 PM.'}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+      subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // 5. Availability Only / Activity Query ("yogish available hai?", "yogish busy hai?", "yogish college me hai?")
-  if (wantsAvailability || /\b(kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai)\b/i.test(normQ)) {
-    const locLine = liveInfo.status === 'BUSY'
-      ? `📍 Location: ${liveInfo.currentLocation}${liveInfo.activeEvent ? ` (${liveInfo.activeEvent})` : ''}`
-      : liveInfo.status === 'AVAILABLE'
-      ? `📍 Cabin: ${fac.cabinLocation}`
-      : '';
+  // 6. Availability / Busy / Follow-up Query ("yogish available hai?", "yogish busy hai?", "kab free honge?")
+  if (wantsAvailability || /\b(kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai|kab free|when free)\b/i.test(normQ)) {
+    if (liveInfo.status === 'AVAILABLE') {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['FACULTY_AVAILABILITY'],
+        responseText: `**${fac.name} — AVAILABLE**\nOn campus · No current scheduled activity.\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+        subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
+        matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+        actionTargetId: bldgId
+      };
+    }
 
+    if (liveInfo.status === 'BUSY') {
+      const followUpText = `Current ${liveInfo.activeEvent || 'class'} ${liveInfo.nextAvailableTime} tak hai. Uske baad next scheduled activity nahi hai, so he is expected to be AVAILABLE.`;
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['FACULTY_AVAILABILITY'],
+        responseText: `**${fac.name} — BUSY**\nCurrently in ${liveInfo.activeEvent || 'Scheduled Activity'} · ${liveInfo.currentLocation}\nUntil ${liveInfo.nextAvailableTime}.\n\n*${followUpText}*`,
+        subText: `Department: ${fac.department} • Official Cabin: ${fac.cabinLocation}`,
+        matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+        actionTargetId: bldgId
+      };
+    }
+
+    // OFF CAMPUS
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_AVAILABILITY'],
-      responseText: `${fac.name}\n${statusBadgeStr}${locLine ? `\n${locLine}` : ''}\nNext Available: ${liveInfo.nextAvailableTime}`,
-      subText: `Department: ${fac.department}`,
+      responseText: `**${fac.name} — OFF CAMPUS**\n${liveInfo.statusReason || 'Faculty campus hours ended at 4:30 PM.'}\nNext available: ${liveInfo.nextAvailableTime}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+      subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // 6. Schedule Only
+  // 7. Schedule Only
   if (wantsSchedule) {
     const schedList = (fac.todaySchedule && fac.todaySchedule.length > 0)
       ? fac.todaySchedule.map((s) => `• ${s.time}: ${s.event} (${s.room})`).join('\n')
@@ -1193,18 +1234,19 @@ export function getFacultyAnswer(
       normalizedQuery: normQ,
       intents: ['FACULTY_SCHEDULE'],
       responseText: `Today's Schedule for ${fac.name}:\n\n${schedList}`,
-      subText: `Status: ${statusBadgeStr} | Cabin: ${fac.cabinLocation}`,
+      subText: `Status: ${liveInfo.status} | Cabin: ${fac.cabinLocation}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // 7. General Detailed Faculty Inquiry ("Tell me about Dr Sumana")
+  // 8. General Detailed Faculty Inquiry ("Tell me about Dr Sumana")
+  const generalStatusBadge = liveInfo.status === 'AVAILABLE' ? '🟢 AVAILABLE' : liveInfo.status === 'BUSY' ? '🔴 BUSY' : '⚫ OFF CAMPUS';
   return {
     queryText: rawQuery,
     normalizedQuery: normQ,
     intents: ['FACULTY_SEARCH'],
-    responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\nStatus: ${statusBadgeStr}\n📍 Cabin: ${fac.cabinLocation}\n📧 ${fac.email || 'N/A'}`,
+    responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\nStatus: ${generalStatusBadge}\n📍 Cabin: ${fac.cabinLocation}\n📧 ${fac.email || 'N/A'}`,
     subText: `Building: ${fac.primaryBuilding || 'LHC Block'}`,
     matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
     actionTargetId: bldgId
@@ -1223,8 +1265,33 @@ export function getRoomAnswer(
 ): CampusAiResult | null {
   const { matchedRoom, roomQuery, departmentCode, roomCategory, buildingKey } = entities;
 
+  // Strictly prevent room handler from intercepting faculty, professor, HOD, or teacher queries
+  const isFacultyContext = !!(
+    entities.matchedFaculty ||
+    entities.facultyName ||
+    entities.multipleFaculty ||
+    _intents.some((i) => i.startsWith('FACULTY_') || i.startsWith('DEPARTMENT_HOD')) ||
+    /\b(faculty|professor|prof|teacher|sir|mam|hod|dr|kab\s*free|free\s*honge|when\s*free|free\s*kab)\b/i.test(normQ)
+  );
+  if (isFacultyContext) {
+    return null;
+  }
+
   // 0. Room Availability Queries (e.g. "LHC 204 free hai?", "lhc me free room hai?", "2 se 3 baje room chahiye")
-  const wantsAvailability = _intents.includes('ROOM_AVAILABILITY') || /\b(free|available|khali|empty|vacant|room\s*chahiye|chahiye|need\s*a\s*room)\b/i.test(normQ) || /\b\d{1,2}\s*(se|to|-)\s*\d{1,2}\s*(baje|pm|am)?\b/i.test(normQ);
+  const isExplicitRoomQuery = matchedRoom != null ||
+    roomQuery != null ||
+    roomCategory != null ||
+    _intents.includes('ROOM_AVAILABILITY') ||
+    _intents.includes('ROOM_LOCATION') ||
+    _intents.includes('ROOM_SEARCH') ||
+    _intents.includes('CLASSROOM_QUERY') ||
+    /\b(room|rooms|classroom|classrooms|lab|labs|seminar\s*hall|space|seat|seats)\b/i.test(normQ);
+
+  const wantsAvailability = isExplicitRoomQuery && (
+    _intents.includes('ROOM_AVAILABILITY') ||
+    /\b(free|available|khali|empty|vacant|room\s*chahiye|chahiye|need\s*a\s*room)\b/i.test(normQ) ||
+    /\b\d{1,2}\s*(se|to|-)\s*\d{1,2}\s*(baje|pm|am)?\b/i.test(normQ)
+  );
 
   if (wantsAvailability) {
     if (matchedRoom) {

@@ -8,6 +8,7 @@ export type FacultyStatusType = 'AVAILABLE' | 'BUSY' | 'OFF_CAMPUS';
 export interface FacultyDynamicStatus {
   status: FacultyStatusType;
   statusType: 'available' | 'busy' | 'off_campus';
+  statusReason?: string;
   currentLocation: string;
   currentEvent: string | null;
   scheduleStart?: string;
@@ -47,16 +48,16 @@ export interface CampusOperatingHours {
 const DAYS_OF_WEEK_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 /**
- * Returns campus operating hours configuration for a given date/time:
- * - Monday–Friday: 09:00–17:00
- * - Saturday: 09:00–13:30 (Half Day)
- * - Sunday: CLOSED ALL DAY
+ * Returns faculty campus operating hours configuration for a given date/time:
+ * - Monday–Friday: 09:00–16:30 (4:30 PM)
+ * - Saturday: 09:00–13:00 (1:00 PM Half Day)
+ * - Sunday: OFF CAMPUS ALL DAY
  */
 export function getCampusOperatingHours(date?: Date | SimulatedTimeState | null): CampusOperatingHours {
   const { day } = parseCurrentTime(date);
   const dayName = DAYS_OF_WEEK_NAMES[day];
 
-  // Sunday: Closed all day
+  // Sunday: Closed / Off campus all day
   if (day === 0) {
     return {
       dayOfWeek: 0,
@@ -67,11 +68,11 @@ export function getCampusOperatingHours(date?: Date | SimulatedTimeState | null)
       closeMinutes: 0,
       openTimeStr: 'CLOSED',
       closeTimeStr: 'CLOSED',
-      scheduleSummary: 'CLOSED'
+      scheduleSummary: 'OFF CAMPUS'
     };
   }
 
-  // Saturday: 09:00–13:30 (Half day)
+  // Saturday: 09:00–13:00 (1:00 PM Half day)
   if (day === 6) {
     return {
       dayOfWeek: 6,
@@ -79,34 +80,32 @@ export function getCampusOperatingHours(date?: Date | SimulatedTimeState | null)
       isOpenDay: true,
       isHalfDay: true,
       openMinutes: 9 * 60, // 540
-      closeMinutes: 13 * 60 + 30, // 810
+      closeMinutes: 13 * 60, // 780 (01:00 PM)
       openTimeStr: '09:00',
-      closeTimeStr: '13:30',
-      scheduleSummary: '09:00–13:30 (Half Day)'
+      closeTimeStr: '13:00',
+      scheduleSummary: '09:00–13:00 (Half Day)'
     };
   }
 
-  // Monday–Friday: 09:00–17:00
+  // Monday–Friday: 09:00–16:30 (4:30 PM)
   return {
     dayOfWeek: day,
     dayName,
     isOpenDay: true,
     isHalfDay: false,
     openMinutes: 9 * 60, // 540
-    closeMinutes: 17 * 60, // 1020
+    closeMinutes: 16 * 60 + 30, // 990 (04:30 PM)
     openTimeStr: '09:00',
-    closeTimeStr: '17:00',
-    scheduleSummary: '09:00–17:00'
+    closeTimeStr: '16:30',
+    scheduleSummary: '09:00–16:30'
   };
 }
 
 /**
- * Centralized function to check if campus is open:
- * Monday–Friday: 09:00–17:00
- * Saturday: 09:00–13:30 (Half day)
- * Sunday: CLOSED ALL DAY
- *
- * Uses strict 24-hour time internally.
+ * Centralized function to check if faculty campus hours are currently open:
+ * Monday–Friday: 09:00–16:30
+ * Saturday: 09:00–13:00 (Half day)
+ * Sunday: OFF CAMPUS ALL DAY
  */
 export function isCampusOpen(date?: Date | SimulatedTimeState | null): boolean {
   const { day, hours, minutes } = parseCurrentTime(date);
@@ -119,28 +118,26 @@ export function isCampusOpen(date?: Date | SimulatedTimeState | null): boolean {
 
   const openingMinutes = 9 * 60; // 09:00 = 540 min
 
-  // Saturday: 09:00–13:30
+  // Saturday: 09:00–13:00 (1:00 PM)
   if (day === 6) {
-    const closingMinutes = 13 * 60 + 30; // 13:30 = 810 min
+    const closingMinutes = 13 * 60; // 13:00 = 780 min
     return currentMinutes >= openingMinutes && currentMinutes < closingMinutes;
   }
 
-  // Monday–Friday: 09:00–17:00
-  const closingMinutes = 17 * 60; // 17:00 = 1020 min
+  // Monday–Friday: 09:00–16:30 (4:30 PM)
+  const closingMinutes = 16 * 60 + 30; // 16:30 = 990 min
   return currentMinutes >= openingMinutes && currentMinutes < closingMinutes;
 }
 
-/**
- * Faculty consultation follows campus/faculty working hours:
- * Monday–Friday: 09:00–17:00
- * Saturday: 09:00–13:30 (Half day)
- * Sunday: CLOSED ALL DAY
- */
+export function isFacultyCampusHoursOpen(date?: Date | SimulatedTimeState | null): boolean {
+  return isCampusOpen(date);
+}
+
 export function isFacultyConsultationOpen(date?: Date | SimulatedTimeState | null): boolean {
   return isCampusOpen(date);
 }
 
-function parseTimeString(timeStr: string, isEndPMContext: boolean = false): number {
+function parseTimeString(timeStr: string, isEndPMContext: boolean = false, isStart: boolean = false): number {
   const clean = timeStr.trim().toUpperCase();
   const isPM = clean.includes('PM');
   const isAM = clean.includes('AM');
@@ -155,7 +152,12 @@ function parseTimeString(timeStr: string, isEndPMContext: boolean = false): numb
   } else if (isAM) {
     if (hours === 12) hours = 0;
   } else {
-    if (hours >= 1 && hours <= 7) {
+    // No explicit AM/PM
+    if (isStart && (hours === 8 || hours === 9 || hours === 10 || hours === 11)) {
+      // Morning college slots are AM
+    } else if (!isStart && hours === 12) {
+      // 12 noon
+    } else if (hours >= 1 && hours <= 7) {
       hours += 12;
     } else if (isEndPMContext && hours < 12 && hours >= 1 && hours <= 7) {
       hours += 12;
@@ -185,8 +187,8 @@ export function parseScheduleInterval(timeRangeStr: string): { startMin: number;
   const rawEnd = parts[1].trim();
 
   const isEndPM = rawEnd.toUpperCase().includes('PM');
-  let endMin = parseTimeString(rawEnd, isEndPM);
-  let startMin = parseTimeString(rawStart, isEndPM);
+  let startMin = parseTimeString(rawStart, isEndPM, true);
+  let endMin = parseTimeString(rawEnd, isEndPM, false);
 
   if (rawStart.startsWith('11:') && isEndPM) {
     startMin = 11 * 60 + parseInt(rawStart.split(':')[1] || '0', 10);
@@ -237,33 +239,38 @@ export function getStatusTypeFromStatus(status: string): 'available' | 'busy' | 
  * Primary status evaluation function:
  * Returns ONLY "AVAILABLE", "BUSY", or "OFF_CAMPUS".
  *
- * Decision tree priority:
- * 1. Explicit reliable OFF_CAMPUS status indicator
- * 2. Outside faculty working hours
- * 3. Active schedule event -> BUSY
+ * Deterministic Decision Tree:
+ * 1. Is today Sunday? -> YES -> OFF CAMPUS
+ * 2. Is current time outside faculty campus hours? -> YES -> OFF CAMPUS (OFF CAMPUS has absolute priority)
+ * 3. Is faculty currently scheduled in an active timetable commitment? (startTime <= now && now < endTime) -> YES -> BUSY
  * 4. Otherwise -> AVAILABLE
  */
 export function getFacultyStatus(
   faculty: MSRITFacultyRecord,
   currentDateTime?: Date | SimulatedTimeState | null
 ): FacultyStatusType {
-  // Priority 1: Explicit reliable OFF_CAMPUS indicator
-  const rawStatus = (faculty.status || '').toUpperCase().trim();
-  if (rawStatus === 'OFF_CAMPUS' || rawStatus === 'OFF CAMPUS' || rawStatus === 'OFF-CAMPUS') {
-    return 'OFF_CAMPUS';
-  }
-
-  // Priority 2: Outside faculty working hours
-  const campusOpen = isCampusOpen(currentDateTime);
-  if (!campusOpen) {
-    return 'OFF_CAMPUS';
-  }
-
-  // Priority 3: Active schedule event -> BUSY
-  const { hours, minutes } = parseCurrentTime(currentDateTime);
+  const { day, hours, minutes } = parseCurrentTime(currentDateTime);
   const currentTotalMins = hours * 60 + minutes;
-  const schedule = faculty.todaySchedule || [];
 
+  // Priority 1: Sunday -> OFF CAMPUS
+  if (day === 0) {
+    return 'OFF_CAMPUS';
+  }
+
+  // Priority 2: Outside faculty campus hours -> OFF CAMPUS (Mon-Fri 09:00–16:30, Sat 09:00–13:00)
+  let isWithinCampusHours = false;
+  if (day === 6) {
+    isWithinCampusHours = currentTotalMins >= 9 * 60 && currentTotalMins < 13 * 60;
+  } else {
+    isWithinCampusHours = currentTotalMins >= 9 * 60 && currentTotalMins < 16 * 60 + 30;
+  }
+
+  if (!isWithinCampusHours) {
+    return 'OFF_CAMPUS';
+  }
+
+  // Priority 3: Active schedule event currently in progress -> BUSY
+  const schedule = faculty.todaySchedule || [];
   for (const item of schedule) {
     const interval = parseScheduleInterval(item.time);
     if (interval && currentTotalMins >= interval.startMin && currentTotalMins < interval.endMin) {
@@ -271,7 +278,7 @@ export function getFacultyStatus(
     }
   }
 
-  // Priority 4: No active schedule during working hours -> AVAILABLE
+  // Priority 4: No active schedule during campus hours -> AVAILABLE
   return 'AVAILABLE';
 }
 
@@ -290,18 +297,33 @@ export function getFacultyStatusDetails(
 
   if (primaryStatus === 'OFF_CAMPUS') {
     const isSunday = day === 0;
-    const isSaturdayAfternoon = day === 6 && currentTotalMins >= 13 * 60 + 30;
+    const isSaturdayAfternoon = day === 6 && currentTotalMins >= 13 * 60;
+    const isWeekdayAfternoon = day >= 1 && day <= 5 && currentTotalMins >= (16 * 60 + 30);
+    const isMorningBeforeHours = currentTotalMins < 9 * 60;
+
+    let reason = 'Outside official faculty campus hours.';
+    if (isSunday) {
+      reason = 'Faculty are off campus on Sundays.';
+    } else if (isSaturdayAfternoon) {
+      reason = 'Faculty campus hours ended at 1:00 PM.';
+    } else if (isWeekdayAfternoon) {
+      reason = 'Faculty campus hours ended at 4:30 PM.';
+    } else if (isMorningBeforeHours) {
+      reason = 'Faculty campus hours start at 9:00 AM.';
+    }
+
     const nextAvailableTime = (isSunday || isSaturdayAfternoon)
       ? 'Monday at 09:00 AM'
+      : isMorningBeforeHours
+      ? 'Today at 09:00 AM'
       : 'Next Working Day at 09:00 AM';
 
-    const location = (faculty.currentLocation && faculty.currentLocation !== 'Faculty Cabin' && faculty.currentLocation !== 'AVAILABLE')
-      ? faculty.currentLocation
-      : 'Off-Campus';
+    const location = 'Off-Campus';
 
     return {
       status: 'OFF_CAMPUS',
       statusType: 'off_campus',
+      statusReason: reason,
       currentLocation: location,
       currentEvent: null,
       nextAvailableTime,
@@ -345,6 +367,7 @@ export function getFacultyStatusDetails(
     return {
       status: 'BUSY',
       statusType: 'busy',
+      statusReason: 'CURRENT_SCHEDULED_ACTIVITY',
       currentLocation: location,
       currentEvent: activeEvent.event,
       scheduleStart: activeInterval.startFormatted,
@@ -378,6 +401,7 @@ export function getFacultyStatusDetails(
   return {
     status: 'AVAILABLE',
     statusType: 'available',
+    statusReason: 'ON_CAMPUS_NO_ACTIVE_SCHEDULE',
     currentLocation: cabin,
     currentEvent: null,
     nextAvailableTime: nextAvailableStr,

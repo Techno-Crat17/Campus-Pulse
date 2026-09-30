@@ -6,9 +6,10 @@ export interface CollegeHoursConfig {
 }
 
 export const COLLEGE_HOURS_CONFIG = {
-  facultyWeekday: { start: "09:00", end: "17:00" },
-  facultySaturday: { start: "09:00", end: "13:30" },
+  facultyWeekday: { start: "09:00", end: "16:30" },
+  facultySaturday: { start: "09:00", end: "13:00" },
   facultySunday: { closed: true },
   librariesDaily: { start: "09:00", end: "21:00" }
 };
+
 
