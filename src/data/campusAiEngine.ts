@@ -304,13 +304,13 @@ export function resolveDepartment(input: string): {
     };
   }
 
-  // 5. ISE (Information Science & Engineering - LHC Block)
+  // 5. ISE (Information Science & Engineering - DES Block)
   if (/\b(ise|i\s*\.\s*s\s*\.\s*e|i\s*s\s*e|information\s*science|information\s*science\s*and\s*engineering|information\s*science\s*&\s*engineering|info\s*science|info\s*science\s*&\s*engineering)\b/i.test(s)) {
     return {
       code: 'ISE',
       name: 'Information Science & Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
         return d.includes('information science') || d.includes('ise');
@@ -318,7 +318,7 @@ export function resolveDepartment(input: string): {
     };
   }
 
-  // 6. Pure CSE (Computer Science & Engineering - LHC Block, strictly non-AIML / non-Cyber)
+  // 6. Pure CSE (Computer Science & Engineering - LHC / DES / Apex Block, strictly non-AIML / non-Cyber)
   if (/\b(cse|c\s*\.\s*s\s*\.\s*e|c\s*s\s*e|computer\s*science|computer\s*science\s*and\s*engineering|comp\s*science|computer\s*science\s*dept)\b/i.test(s)) {
     return {
       code: 'CSE',
@@ -332,13 +332,13 @@ export function resolveDepartment(input: string): {
     };
   }
 
-  // 7. ECE / E&CE (Electronics & Communication - LHC / DES)
+  // 7. ECE / E&CE (Electronics & Communication - DES / Apex / LHC)
   if (/\b(ece|e\s*\.\s*c\s*\.\s*e|e&ce|e\s*&\s*ce|electronics\s*&\s*communication|electronics\s*and\s*communication|electronics\s*communication)\b/i.test(s)) {
     return {
       code: 'ECE',
       name: 'Electronics & Communication Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
         return d.includes('electronics & communication') || d.includes('ece') || d.includes('e&ce');
@@ -346,35 +346,35 @@ export function resolveDepartment(input: string): {
     };
   }
 
-  // 8. ETE / E&TE (Electronics & Telecommunication - LHC / DES)
+  // 8. ETE / E&TE (Electronics & Telecommunication - DES Block)
   if (/\b(ete|e\s*\.\s*t\s*\.\s*e|e&te|e\s*&\s*te|telecom|telecommunication|electronics\s*&\s*telecommunication|electronics\s*and\s*telecommunication|telecommunication\s*engineering|electronics\s*telecommunication)\b/i.test(s)) {
     return {
       code: 'ET',
       name: 'Electronics & Telecommunication Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('telecommunication') || d.includes('et') || d.includes('ete');
+        return d.includes('telecommunication') || d.includes('et') || d.includes('ete') || d.includes('e&te');
       }
     };
   }
 
-  // 9. EIE / E&IE (Electronics & Instrumentation - LHC / DES)
+  // 9. EIE / E&IE (Electronics & Instrumentation - DES Block)
   if (/\b(eie|e\s*\.\s*i\s*\.\s*e|e&ie|e\s*&\s*ie|instrumentation|electronics\s*&\s*instrumentation|electronics\s*and\s*instrumentation|instrumentation\s*engineering)\b/i.test(s)) {
     return {
       code: 'EI',
       name: 'Electronics & Instrumentation Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('instrumentation') || d.includes('ei') || d.includes('eie');
+        return d.includes('instrumentation') || d.includes('ei') || d.includes('eie') || d.includes('e&ie');
       }
     };
   }
 
-  // 10. MLE (Medical Electronics - LHC / DES)
+  // 10. MLE (Medical Electronics - LHC Block)
   if (/\b(mle|medical\s*electronics|medical\s*electronics\s*engineering)\b/i.test(s) || (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))) {
     return {
       code: 'MLE',
@@ -388,13 +388,13 @@ export function resolveDepartment(input: string): {
     };
   }
 
-  // 11. EEE / E&EE (Electrical & Electronics - LHC / DES)
+  // 11. EEE / E&EE (Electrical & Electronics - DES / LHC)
   if (/\b(eee|e\s*\.\s*e\s*\.\s*e|e&ee|e\s*&\s*ee|electrical|electrical\s*&\s*electronics|electrical\s*and\s*electronics|electrical\s*electronics)\b/i.test(s)) {
     return {
       code: 'E&EE',
       name: 'Electrical & Electronics Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
         return d.includes('electrical') || d.includes('e&ee') || d.includes('eee');
@@ -503,8 +503,17 @@ export function normalizeQuery(query: string): string {
     .toLowerCase()
     .replace(/[’‘`]/g, "'")
     .replace(/["“”]/g, '"')
-    .replace(/['"]s\b/g, '') // e.g. sumana's -> sumana, yogish's -> yogish
-    .replace(/[?.,!;:()[\]{}]/g, ' ')
+    .replace(/['"]s\b/g, ''); // e.g. sumana's -> sumana, yogish's -> yogish
+
+  // Normalize acronyms with dots: s.t.a.r.d.u.s.t -> stardust, i.s.e. -> ise, e.c.e. -> ece, etc.
+  q = q.replace(/\b([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\b/gi, '$1$2$3$4$5$6$7');
+  q = q.replace(/\b([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\b/gi, '$1$2$3$4$5$6');
+  q = q.replace(/\b([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\b/gi, '$1$2$3$4$5');
+  q = q.replace(/\b([a-z0-9])\.([a-z0-9])\.([a-z0-9])\.([a-z0-9])\b/gi, '$1$2$3$4');
+  q = q.replace(/\b([a-z0-9])\.([a-z0-9])\.([a-z0-9])\b/gi, '$1$2$3');
+  q = q.replace(/\b([a-z0-9])\.([a-z0-9])\b/gi, '$1$2');
+
+  q = q.replace(/[?.,!;:()[\]{}]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -821,15 +830,15 @@ export function extractEntities(
     }
   }
 
-  // Handle Room Name lookups (e.g. "LHC Seminar Hall – II", "Antenna Fabrication Unit", "Ramaiah Evolute", "Schneider Centre")
-  if (!entities.matchedRoom && !entities.departmentCode) {
+  // Handle Facility & Room Name lookups (e.g. "Stardust Lab", "Cloud & Security Lab", "Hardware Lab", "Control Systems Lab", "LHC Seminar Hall – II", "Antenna Fabrication Unit")
+  if (!entities.matchedRoom && !(entities.departmentCode && entities.roomCategory)) {
     const qClean = normQ
       .replace(/\b(where is|where are|where can i find|where do i find|where's|find|locate|show me|address of|kaha hai|kahan hai|kidhar hai|kaha hain|kahan hain|kidhar hain|kaha h|kidhar h|kahan h|kaha milega|kaha milenge|location batao|location btao|kaun sa room hai|kya hai|kis floor pe|kis floor par|kis block me|kis building me|batao|btao|hai|hain|h)\b/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
     const GENERIC_CATEGORY_WORDS = new Set([
-      'faculty room', 'faculty rooms', 'faculty lounge', 'faculty lounges', 'staff room', 'teachers room', 'seminar hall', 'seminar halls', 'seminar room', 'seminar rooms', 'lab', 'labs', 'laboratory', 'laboratories', 'computer lab', 'computer labs', 'classroom', 'classrooms'
+      'faculty room', 'faculty rooms', 'faculty lounge', 'faculty lounges', 'staff room', 'teachers room', 'seminar hall', 'seminar halls', 'seminar room', 'seminar rooms', 'lab', 'labs', 'laboratory', 'laboratories', 'computer lab', 'computer labs', 'classroom', 'classrooms', 'rooms', 'room'
     ]);
 
     const qWithoutBldg = qClean
@@ -838,11 +847,22 @@ export function extractEntities(
       .trim();
 
     if (qClean.length >= 2 && !GENERIC_CATEGORY_WORDS.has(qClean.toLowerCase()) && !GENERIC_CATEGORY_WORDS.has(qWithoutBldg.toLowerCase())) {
-      const nameMatches = findRoomsByName(qClean);
+      let nameMatches = findRoomsByName(qClean);
+      if (nameMatches.length === 0 && qWithoutBldg.length >= 2) {
+        nameMatches = findRoomsByName(qWithoutBldg);
+      }
       if (nameMatches.length > 0) {
-        // If there's an exact normalized room name match, choose that specific room
+        // If department constraint or building was extracted, prioritize matching rooms
+        if (entities.departmentCode) {
+          const deptFiltered = nameMatches.filter(r => (r.department === entities.departmentCode || (r.departments || []).includes(entities.departmentCode!)));
+          if (deptFiltered.length > 0) nameMatches = deptFiltered;
+        }
+        if (entities.matchedBlock) {
+          const bldgFiltered = nameMatches.filter(r => (r.buildingCode?.toLowerCase() === entities.matchedBlock!.id.toLowerCase() || r.building?.toLowerCase().includes(entities.matchedBlock!.id.toLowerCase())));
+          if (bldgFiltered.length > 0) nameMatches = bldgFiltered;
+        }
         const qSearch = normalizeRoomNameForSearch(qClean);
-        const exact = nameMatches.find(r => normalizeRoomNameForSearch(r.name || '') === qSearch);
+        const exact = nameMatches.find(r => normalizeRoomNameForSearch(r.name || '') === qSearch || (r.aliases || []).some(al => normalizeRoomNameForSearch(al) === qSearch));
         entities.matchedRoom = exact || nameMatches[0];
         if (nameMatches.length > 1 && !exact) {
           entities.matchedRoomsList = nameMatches;
@@ -1727,20 +1747,6 @@ export function getRoomAnswer(
   if (departmentCode && (roomCategory || normQ.includes('room') || normQ.includes('lab') || normQ.includes('lounge') || normQ.includes('kaha') || normQ.includes('kidhar') || normQ.includes('where'))) {
     const deptDisplayName = getDepartmentDisplayName(departmentCode);
     const bldgFilter = buildingKey || (['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch'].find((b) => normQ.includes(b)));
-
-    // Special handling for ISE Faculty space (located in LHC 3rd Floor ISE Wing)
-    if (departmentCode === 'ISE' && (roomCategory === 'FACULTY_ROOM' || normQ.includes('faculty') || normQ.includes('staff') || normQ.includes('teacher') || normQ.includes('lounge') || normQ.includes('cabin'))) {
-      const whoIsThere = /\b(who\s*is\s*there|who\s*sits\s*there|kon\s*baithta\s*hai|kaun\s*baithta\s*hai|who\s*all\s*are\s*there|who\s*is\s*in)\b/i.test(normQ + ' ' + rawQuery);
-      const facultyListSnippet = whoIsThere ? '\n\n👥 ISE Faculty include Dr. Sumana M (HOD), Dr. Savita K, Dr. Yogish H K, Dr. Krishna Raj P M, Dr. Geetha V, and other ISE professors.' : '';
-
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['ROOM_LOCATION', 'FACULTY_LOCATION'],
-        responseText: `**ISE Faculty Cubicles & Research Cabins**\nInformation Science & Engineering · 3rd Floor · LHC Block (ISE Wing)${facultyListSnippet}`,
-        actionTargetId: 'block-lhc'
-      };
-    }
 
     // Execute structured query with hard constraints against database
     const matchingRooms = queryRooms({

@@ -5,8 +5,8 @@
     "designation": "Professor & HoD",
     "department": "Information Science & Engineering",
     "email": "sumana.m@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, HOD Office",
-    "nodeId": "ise_hod_office",
+    "cabinLocation": "DES Block, 1st Floor, DES-305 (HOD Office)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -27,7 +27,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, HOD Office"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/1vtRPcp/Picture4.jpg"
+    "avatarUrl": "https://i.ibb.co/1vtRPcp/Picture4.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_2",
@@ -35,8 +38,8 @@
     "designation": "Professor",
     "department": "Information Science & Engineering",
     "email": "yogishhk@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 2",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 2)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -57,7 +60,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 2"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/YQXSnkC/yhk.jpg"
+    "avatarUrl": "https://i.ibb.co/YQXSnkC/yhk.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_3",
@@ -65,8 +71,8 @@
     "designation": "Professor",
     "department": "Information Science & Engineering",
     "email": "krishnaraj@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 3",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 3)",
+    "nodeId": "block-des",
     "status": "In Meeting",
     "currentLocation": null,
     "nextAvailableTime": "Today at 2:30 PM",
@@ -87,7 +93,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 3"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/HfCTfk9k/Whats-App-Image-2025-10-13-at-1-25-07-PM.jpg"
+    "avatarUrl": "https://i.ibb.co/HfCTfk9k/Whats-App-Image-2025-10-13-at-1-25-07-PM.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_4",
@@ -95,8 +104,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "geethav@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 4",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 4)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -117,7 +126,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 4"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/BLCcmrr/Picture5.jpg"
+    "avatarUrl": "https://i.ibb.co/BLCcmrr/Picture5.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_5",
@@ -125,8 +137,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "lincymm99@gmail.com, lincymm99@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 5",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 5)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -147,7 +159,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 5"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/RbNnwvB/Picture6.jpg"
+    "avatarUrl": "https://i.ibb.co/RbNnwvB/Picture6.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_6",
@@ -155,8 +170,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "pushpalathamn@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 6",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 6)",
+    "nodeId": "block-des",
     "status": "In Lecture",
     "currentLocation": "Lecture Hall 206",
     "nextAvailableTime": "Today at 2:30 PM",
@@ -177,7 +192,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 6"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/vkvmRy4/Picture1.jpg"
+    "avatarUrl": "https://i.ibb.co/vkvmRy4/Picture1.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_7",
@@ -185,8 +203,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "manisekharsr@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 7",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 7)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -207,7 +225,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 7"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/1TfVDMg/Picture8.jpg"
+    "avatarUrl": "https://i.ibb.co/1TfVDMg/Picture8.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_8",
@@ -215,8 +236,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "savita_ks1@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 8",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 8)",
+    "nodeId": "block-des",
     "status": "In Meeting",
     "currentLocation": null,
     "nextAvailableTime": "Today at 4:30 PM",
@@ -237,7 +258,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 8"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/pht8zbY/Picture9.jpg"
+    "avatarUrl": "https://i.ibb.co/pht8zbY/Picture9.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_9",
@@ -245,8 +269,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "anithap@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 9",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 9)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -267,7 +291,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 9"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/6NDD2KD/Picture17.jpg"
+    "avatarUrl": "https://i.ibb.co/6NDD2KD/Picture17.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_10",
@@ -275,8 +302,8 @@
     "designation": "Associate Professor",
     "department": "Information Science & Engineering",
     "email": "djsai@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 10",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 10)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -297,7 +324,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 10"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/31S0GSB/Picture12.jpg"
+    "avatarUrl": "https://i.ibb.co/31S0GSB/Picture12.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_11",
@@ -305,8 +335,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "prathima3006@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 11",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 11)",
+    "nodeId": "block-des",
     "status": "In Lecture",
     "currentLocation": "Lecture Hall 211",
     "nextAvailableTime": "Today at 4:30 PM",
@@ -327,7 +357,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 11"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/vZRrmf8/Picture11.jpg"
+    "avatarUrl": "https://i.ibb.co/vZRrmf8/Picture11.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_12",
@@ -335,8 +368,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "prash.kambli@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 12",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 12)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -357,7 +390,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 12"
       }
     ],
-    "avatarUrl": "https://image.ibb.co/feBkOy/PRA.png"
+    "avatarUrl": "https://image.ibb.co/feBkOy/PRA.png",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_13",
@@ -365,8 +401,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "sureshkumar@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 13",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 13)",
+    "nodeId": "block-des",
     "status": "In Meeting",
     "currentLocation": null,
     "nextAvailableTime": "Today at 3:30 PM",
@@ -387,7 +423,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 13"
       }
     ],
-    "avatarUrl": "https://image.ibb.co/jJjiAd/SKR_Photo.jpg"
+    "avatarUrl": "https://image.ibb.co/jJjiAd/SKR_Photo.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_14",
@@ -395,8 +434,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "shruthigmysore@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 14",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 14)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -417,7 +456,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 14"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/WvW6Hrt/Picture14.jpg"
+    "avatarUrl": "https://i.ibb.co/WvW6Hrt/Picture14.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_15",
@@ -425,8 +467,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "evangeline88@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 15",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 15)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -447,7 +489,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 15"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/WFHC58G/Picture15.jpg"
+    "avatarUrl": "https://i.ibb.co/WFHC58G/Picture15.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_16",
@@ -455,8 +500,8 @@
     "designation": "Assistant Professor Designate",
     "department": "Information Science & Engineering",
     "email": "mushtaq.ahmed@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 16",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 16)",
+    "nodeId": "block-des",
     "status": "In Lecture",
     "currentLocation": "Lecture Hall 204",
     "nextAvailableTime": "Today at 3:30 PM",
@@ -477,7 +522,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 16"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/PzxbTNS/Picture18.jpg"
+    "avatarUrl": "https://i.ibb.co/PzxbTNS/Picture18.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_17",
@@ -485,8 +533,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "kusuma.s@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 17",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 17)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -507,7 +555,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 17"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/Dk04ggP/Image.jpg"
+    "avatarUrl": "https://i.ibb.co/Dk04ggP/Image.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_18",
@@ -515,8 +566,8 @@
     "designation": "Assistant Professor Designate",
     "department": "Information Science & Engineering",
     "email": "shivanandagowda@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 18",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 18)",
+    "nodeId": "block-des",
     "status": "In Meeting",
     "currentLocation": null,
     "nextAvailableTime": "Today at 2:30 PM",
@@ -537,7 +588,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 18"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/vk4ts2x/Picture20.jpg"
+    "avatarUrl": "https://i.ibb.co/vk4ts2x/Picture20.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_19",
@@ -545,8 +599,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "jrshruti@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 19",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 19)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -567,7 +621,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 19"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/R0gsMNW/Picture21.jpg"
+    "avatarUrl": "https://i.ibb.co/R0gsMNW/Picture21.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_20",
@@ -575,8 +632,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "kavya@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 20",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 20)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -597,7 +654,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 20"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/n7KTXH2/Picture22.jpg"
+    "avatarUrl": "https://i.ibb.co/n7KTXH2/Picture22.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_21",
@@ -605,8 +665,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "charunayana@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 21",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 21)",
+    "nodeId": "block-des",
     "status": "In Lecture",
     "currentLocation": "Lecture Hall 209",
     "nextAvailableTime": "Today at 2:30 PM",
@@ -627,7 +687,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 21"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/5s7sSvD/Picture23.jpg"
+    "avatarUrl": "https://i.ibb.co/5s7sSvD/Picture23.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_22",
@@ -635,8 +698,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "shanmugapriya@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 22",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 22)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -657,7 +720,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 22"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/hCbddXC/Shanmuga-Priya.jpg"
+    "avatarUrl": "https://i.ibb.co/hCbddXC/Shanmuga-Priya.jpg",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_23",
@@ -665,8 +731,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "subiasalma@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 23",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 23)",
+    "nodeId": "block-des",
     "status": "In Meeting",
     "currentLocation": null,
     "nextAvailableTime": "Today at 4:30 PM",
@@ -687,7 +753,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 23"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/sJz4P1xz/423e283f-fd16-45a8-85c8-a9e0f09188f0.webp"
+    "avatarUrl": "https://i.ibb.co/sJz4P1xz/423e283f-fd16-45a8-85c8-a9e0f09188f0.webp",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_24",
@@ -695,8 +764,8 @@
     "designation": "Assistant Professor",
     "department": "Information Science & Engineering",
     "email": "sudha.k@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 24",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 24)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -717,7 +786,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 24"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/1J0zkRLv/5c8b9a2d-fab6-49d1-a6f8-7e20d999e89a.webp"
+    "avatarUrl": "https://i.ibb.co/1J0zkRLv/5c8b9a2d-fab6-49d1-a6f8-7e20d999e89a.webp",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_25",
@@ -725,8 +797,8 @@
     "designation": "Senior Lecturer",
     "department": "Information Science & Engineering",
     "email": "zeenat@msrit.edu",
-    "cabinLocation": "LHC / ISE Wing, 3rd Floor, Cabin 25",
-    "nodeId": "ise_faculty_cubicles",
+    "cabinLocation": "DES Block, 1st Floor, DES-305/303/304/311 (ISE Faculty Room, Cabin 25)",
+    "nodeId": "block-des",
     "status": "Available in Cabin",
     "currentLocation": null,
     "nextAvailableTime": "Now (Consultation Open)",
@@ -747,7 +819,10 @@
         "room": "LHC / ISE Wing, 3rd Floor, Cabin 25"
       }
     ],
-    "avatarUrl": "https://i.ibb.co/8g3DRZxS/4f092b2e-3fb1-4ab2-8798-20ac85866d32.webp"
+    "avatarUrl": "https://i.ibb.co/8g3DRZxS/4f092b2e-3fb1-4ab2-8798-20ac85866d32.webp",
+    "building": "DES",
+    "primaryBuilding": "DES Block",
+    "homeBuilding": "DES Block"
   },
   {
     "id": "fac_26",

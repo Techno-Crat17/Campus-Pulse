@@ -342,7 +342,16 @@
       "verified": true,
       "temporalStatus": "current",
       "roomNumberNormalized": "AB401",
-      "normalizedName": "dept of mca library"
+      "normalizedName": "dept of mca library",
+      "aliases": [
+        "MCA Library",
+        "MCA Department Library",
+        "MCA Dept Library",
+        "Dept of MCA Library",
+        "Department of MCA Library",
+        "AB 401",
+        "AB-401"
+      ]
     },
     {
       "roomNumber": "AB-403",
@@ -423,7 +432,8 @@
       "department": "E&CE",
       "departments": [
         "E&CE",
-        "ECE"
+        "ECE",
+        "Electronics & Communication Engineering"
       ],
       "type": "Lab",
       "sourceTitle": "Apex Block Directory Board",
@@ -431,7 +441,22 @@
       "verified": true,
       "temporalStatus": "current",
       "roomNumberNormalized": "AB513",
-      "normalizedName": "dept of e&ce - s.t.a.r.d.u.s.t lab"
+      "normalizedName": "dept of e&ce - s.t.a.r.d.u.s.t lab",
+      "category": "Lab",
+      "aliases": [
+        "Stardust Lab",
+        "S.T.A.R.D.U.S.T Lab",
+        "STARDUST Lab",
+        "Stardust Laboratory",
+        "Stardust",
+        "STAR DUST Lab",
+        "STARDUST",
+        "AB-513 Stardust",
+        "AB 513",
+        "AB-513",
+        "Stardust Lab ECE",
+        "ECE Stardust Lab"
+      ]
     },
     {
       "roomNumber": "AB-605",
@@ -609,7 +634,19 @@
       "verified": true,
       "temporalStatus": "current",
       "roomNumberNormalized": "AB714",
-      "normalizedName": "library & information center (first year)"
+      "normalizedName": "library & information center (first year)",
+      "aliases": [
+        "Apex Library",
+        "Apex Block Library",
+        "Apex First Year Library",
+        "First Year Library",
+        "1st Year Library",
+        "Apex 1st Year Library",
+        "Apex Library & Information Center",
+        "Library & Information Center (First year)",
+        "AB 714",
+        "AB-714"
+      ]
     },
     {
       "roomNumber": "AB-801",
@@ -978,552 +1015,6 @@
       "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
       "sourceYear": 2026,
       "normalizedName": "faculty lounge"
-    },
-    {
-      "roomNumber": "DES-101/102",
-      "name": "Electrical Machines Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES101/102",
-      "normalizedName": "electrical machines lab"
-    },
-    {
-      "roomNumber": "DES-103/104",
-      "name": "Power Electronics Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES103/104",
-      "normalizedName": "power electronics lab"
-    },
-    {
-      "roomNumber": "DES-105",
-      "name": "Control Systems & Simulation Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES105",
-      "normalizedName": "control systems & simulation lab"
-    },
-    {
-      "roomNumber": "DES-106",
-      "name": "Power System Simulation Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES106",
-      "normalizedName": "power system simulation lab"
-    },
-    {
-      "roomNumber": "DES-109",
-      "name": "Measurements & Circuits Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES109",
-      "normalizedName": "measurements & circuits lab"
-    },
-    {
-      "roomNumber": "DES-111",
-      "name": "E&EE Department Library",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Library",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES111",
-      "normalizedName": "e&ee department library"
-    },
-    {
-      "roomNumber": "DES-113",
-      "name": "Microcontroller & DSP Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES113",
-      "normalizedName": "microcontroller & dsp lab"
-    },
-    {
-      "roomNumber": "DES-114",
-      "name": "Dept of E&EE HOD & Staff Room",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Office",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES114",
-      "normalizedName": "dept of e&ee hod & staff room"
-    },
-    {
-      "roomNumber": "DES-115",
-      "name": "E&EE Faculty Room & Research Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": "E&EE",
-      "departments": [
-        "E&EE",
-        "Electrical & Electronics Engineering"
-      ],
-      "type": "Office",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES115",
-      "normalizedName": "e&ee faculty room & research lab"
-    },
-    {
-      "roomNumber": "DES-118",
-      "name": "DES Hi-Tech Seminar Hall",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Basement",
-      "department": null,
-      "departments": [],
-      "type": "Seminar Hall",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES118",
-      "normalizedName": "des hi-tech seminar hall"
-    },
-    {
-      "roomNumber": "DES-201/202",
-      "name": "Analog Electronics Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Ground Floor",
-      "department": "ECE",
-      "departments": [
-        "ECE",
-        "Electronics & Communication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES201/202",
-      "normalizedName": "analog electronics lab"
-    },
-    {
-      "roomNumber": "DES-204",
-      "name": "Digital Electronics Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Ground Floor",
-      "department": "ECE",
-      "departments": [
-        "ECE",
-        "Electronics & Communication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES204",
-      "normalizedName": "digital electronics lab"
-    },
-    {
-      "roomNumber": "DES-207/308",
-      "name": "Advanced Communication Lab / RF & Microwave Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Ground Floor",
-      "department": "ECE",
-      "departments": [
-        "ECE",
-        "Electronics & Communication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES207/308",
-      "normalizedName": "advanced communication lab / rf & microwave lab"
-    },
-    {
-      "roomNumber": "DES-208/309",
-      "name": "VLSI Design & Embedded Systems Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "Ground Floor",
-      "department": "ECE",
-      "departments": [
-        "ECE",
-        "Electronics & Communication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES208/309",
-      "normalizedName": "vlsi design & embedded systems lab"
-    },
-    {
-      "roomNumber": "DES-301/203/210",
-      "name": "Signal Processing & Communication Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "1st Floor",
-      "department": "ECE",
-      "departments": [
-        "ECE",
-        "Electronics & Communication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES301/203/210",
-      "normalizedName": "signal processing & communication lab"
-    },
-    {
-      "roomNumber": "DES-305/303/304/311",
-      "name": "Microprocessor & IoT Research Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "1st Floor",
-      "department": "ECE",
-      "departments": [
-        "ECE",
-        "Electronics & Communication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES305/303/304/311",
-      "normalizedName": "microprocessor & iot research lab"
-    },
-    {
-      "roomNumber": "DES-402",
-      "name": "Dept of Electronics & Telecommunication Engineering (ETE) HOD & Staff",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "2nd Floor",
-      "department": "ETE",
-      "departments": [
-        "ETE",
-        "Telecommunication Engineering"
-      ],
-      "type": "Office",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES402",
-      "normalizedName": "dept of electronics & telecommunication engineering (ete) hod & staff"
-    },
-    {
-      "roomNumber": "DES-404",
-      "name": "Digital Signal Processing & Networks Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "2nd Floor",
-      "department": "ETE",
-      "departments": [
-        "ETE",
-        "Telecommunication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES404",
-      "normalizedName": "digital signal processing & networks lab"
-    },
-    {
-      "roomNumber": "DES-408",
-      "name": "Wireless Communication & Antenna Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "2nd Floor",
-      "department": "ETE",
-      "departments": [
-        "ETE",
-        "Telecommunication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES408",
-      "normalizedName": "wireless communication & antenna lab"
-    },
-    {
-      "roomNumber": "DES-409",
-      "name": "Optical Fiber & Microwave Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "2nd Floor",
-      "department": "ETE",
-      "departments": [
-        "ETE",
-        "Telecommunication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES409",
-      "normalizedName": "optical fiber & microwave lab"
-    },
-    {
-      "roomNumber": "DES-413/401/510/511",
-      "name": "Advanced Networking & IoT Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "2nd Floor",
-      "department": "ETE",
-      "departments": [
-        "ETE",
-        "Telecommunication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES413/401/510/511",
-      "normalizedName": "advanced networking & iot lab"
-    },
-    {
-      "roomNumber": "DES-413/405/411/511",
-      "name": "Telecommunication System Design & Simulation Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "2nd Floor",
-      "department": "ETE",
-      "departments": [
-        "ETE",
-        "Telecommunication Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES413/405/411/511",
-      "normalizedName": "telecommunication system design & simulation lab"
-    },
-    {
-      "roomNumber": "DES-501/502B",
-      "name": "Dept of Electronics & Instrumentation Engineering (EIE) HOD & Staff",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": "EIE",
-      "departments": [
-        "EIE",
-        "Instrumentation Engineering"
-      ],
-      "type": "Office",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES501/502B",
-      "normalizedName": "dept of electronics & instrumentation engineering (eie) hod & staff"
-    },
-    {
-      "roomNumber": "DES-502A",
-      "name": "Industrial Instrumentation & Process Control Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": "EIE",
-      "departments": [
-        "EIE",
-        "Instrumentation Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES502A",
-      "normalizedName": "industrial instrumentation & process control lab"
-    },
-    {
-      "roomNumber": "DES-503",
-      "name": "Biomedical Signal Processing & Medical Instrumentation Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": "MLE",
-      "departments": [
-        "MLE",
-        "Medical Electronics Engineering",
-        "EIE"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES503",
-      "normalizedName": "biomedical signal processing & medical instrumentation lab"
-    },
-    {
-      "roomNumber": "DES-506",
-      "name": "Transducers & Virtual Instrumentation Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": "EIE",
-      "departments": [
-        "EIE",
-        "Instrumentation Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES506",
-      "normalizedName": "transducers & virtual instrumentation lab"
-    },
-    {
-      "roomNumber": "DES-507",
-      "name": "Dept of Medical Electronics (MLE) HOD & Staff",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": "MLE",
-      "departments": [
-        "MLE",
-        "Medical Electronics Engineering"
-      ],
-      "type": "Office",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES507",
-      "normalizedName": "dept of medical electronics (mle) hod & staff"
-    },
-    {
-      "roomNumber": "DES-508",
-      "name": "Medical Electronics Systems & Bio-Telemetry Lab",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": "MLE",
-      "departments": [
-        "MLE",
-        "Medical Electronics Engineering"
-      ],
-      "type": "Lab",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES508",
-      "normalizedName": "medical electronics systems & bio-telemetry lab"
-    },
-    {
-      "roomNumber": "DES-512",
-      "name": "DES Board Room",
-      "building": "DES Block",
-      "buildingCode": "DES",
-      "floor": "3rd Floor",
-      "department": null,
-      "departments": [],
-      "type": "Board Room",
-      "sourceTitle": "DES Block Directory Board",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current",
-      "roomNumberNormalized": "DES512",
-      "normalizedName": "des board room"
     },
     {
       "roomNumber": "ESB Board Room",
@@ -2165,6 +1656,1675 @@
         "Medical Electronics Engineering"
       ],
       "normalizedName": ""
+    },
+    {
+      "roomNumber": "DES-101",
+      "name": "P G Laboratory - I, Project Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "PG Laboratory - I",
+        "PG Lab 1",
+        "PG Lab - I",
+        "Project Lab",
+        "CSE PG Lab",
+        "DES 101"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES101",
+      "normalizedName": "p g laboratory - i, project lab"
+    },
+    {
+      "roomNumber": "DES-102",
+      "name": "P G Laboratory - II, Project Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "PG Laboratory - II",
+        "PG Lab 2",
+        "PG Lab - II",
+        "Project Lab",
+        "CSE PG Lab",
+        "DES 102"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES102",
+      "normalizedName": "p g laboratory - ii, project lab"
+    },
+    {
+      "roomNumber": "DES-101/102",
+      "name": "P G Laboratory - I/II, Project Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "PG Laboratory - I/II, Project Lab",
+        "PG Lab",
+        "PG Laboratory",
+        "CSE PG Lab",
+        "CSE Project Lab",
+        "DES 101/102"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES101/102",
+      "normalizedName": "p g laboratory - i/ii, project lab"
+    },
+    {
+      "roomNumber": "DES-103",
+      "name": "R&D Laboratories",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "E&EE",
+        "Computer Science & Engineering",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "R&D Laboratories",
+        "R&D Lab",
+        "R and D Lab",
+        "Research & Development Lab",
+        "DES 103"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES103",
+      "normalizedName": "r&d laboratories"
+    },
+    {
+      "roomNumber": "DES-104",
+      "name": "R&D Laboratories",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "E&EE",
+        "Computer Science & Engineering",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "R&D Laboratories",
+        "R&D Lab",
+        "R and D Lab",
+        "Research & Development Lab",
+        "DES 104"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES104",
+      "normalizedName": "r&d laboratories"
+    },
+    {
+      "roomNumber": "DES-103/104",
+      "name": "R&D Laboratories",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "E&EE",
+        "Computer Science & Engineering",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "R&D Laboratories",
+        "R&D Lab",
+        "R and D Lab",
+        "Research & Development Laboratories",
+        "DES 103/104"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES103/104",
+      "normalizedName": "r&d laboratories"
+    },
+    {
+      "roomNumber": "DES-105",
+      "name": "Cloud & Security Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Cloud & Security Lab",
+        "Cloud and Security Lab",
+        "Security Lab",
+        "Cloud Lab",
+        "CSE Cloud Lab",
+        "CSE Security Lab",
+        "DES 105"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES105",
+      "normalizedName": "cloud & security lab"
+    },
+    {
+      "roomNumber": "DES-106",
+      "name": "Hardware Lab (M-Tech)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Hardware Lab (M-Tech)",
+        "Hardware Lab",
+        "M-Tech Hardware Lab",
+        "MTech Hardware Lab",
+        "EEE Hardware Lab",
+        "E&EE Hardware Lab",
+        "DES 106"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES106",
+      "normalizedName": "hardware lab (m-tech)"
+    },
+    {
+      "roomNumber": "DES-109",
+      "name": "Center for Antenna & Radio Frequency",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&TE",
+      "departments": [
+        "E&TE",
+        "ETE",
+        "Electronics & Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Center for Antenna & Radio Frequency",
+        "Antenna & Radio Frequency Lab",
+        "Antenna and Radio Frequency Lab",
+        "CARF",
+        "Antenna Lab",
+        "Radio Frequency Lab",
+        "RF Lab",
+        "ETE Antenna Lab",
+        "E&TE Antenna Lab",
+        "DES 109"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES109",
+      "normalizedName": "center for antenna & radio frequency"
+    },
+    {
+      "roomNumber": "DES-111",
+      "name": "Electrical Machines Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Electrical Machines Lab",
+        "Machines Lab",
+        "Electrical Machines Laboratory",
+        "EEE Electrical Machines Lab",
+        "E&EE Machines Lab",
+        "DES 111"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES111",
+      "normalizedName": "electrical machines lab"
+    },
+    {
+      "roomNumber": "DES-113",
+      "name": "Computer Lab / Micro Controllers Lab, NI Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab / Micro Controllers Lab, NI Lab",
+        "Micro Controllers Lab",
+        "Microcontroller Lab",
+        "NI Lab",
+        "National Instruments Lab",
+        "EEE Computer Lab",
+        "EEE Microcontroller Lab",
+        "E&EE NI Lab",
+        "DES 113"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES113",
+      "normalizedName": "computer lab / micro controllers lab, ni lab"
+    },
+    {
+      "roomNumber": "DES-114",
+      "name": "Relay and High Voltage Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Relay and High Voltage Lab",
+        "Relay & High Voltage Lab",
+        "High Voltage Lab",
+        "Relay Lab",
+        "HV Lab",
+        "EEE High Voltage Lab",
+        "E&EE Relay Lab",
+        "DES 114"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES114",
+      "normalizedName": "relay and high voltage lab"
+    },
+    {
+      "roomNumber": "DES-115",
+      "name": "Analog & Digital Electronics Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Analog & Digital Electronics Lab",
+        "Analog and Digital Electronics Lab",
+        "ADE Lab",
+        "Analog Electronics Lab",
+        "Digital Electronics Lab",
+        "EEE ADE Lab",
+        "E&EE ADE Lab",
+        "DES 115"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES115",
+      "normalizedName": "analog & digital electronics lab"
+    },
+    {
+      "roomNumber": "DES-118",
+      "name": "DES High Tech Seminar Hall",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Basement",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "DES",
+        "Computer Science & Engineering"
+      ],
+      "type": "Seminar Hall",
+      "category": "Seminar Hall",
+      "aliases": [
+        "DES High Tech Seminar Hall",
+        "DES Seminar Hall",
+        "High Tech Seminar Hall",
+        "Hi-Tech Seminar Hall",
+        "DES Hi Tech Seminar Hall",
+        "DES Hi-Tech Seminar Hall",
+        "DES 118"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES118",
+      "normalizedName": "des high tech seminar hall"
+    },
+    {
+      "roomNumber": "DES-201",
+      "name": "HOD & Faculty Room (E&EE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "E&EE HOD & Faculty Room",
+        "EEE Faculty Room",
+        "E&EE Faculty Room",
+        "EEE HOD Room",
+        "EEE Staff Room",
+        "DES 201"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES201",
+      "normalizedName": "hod & faculty room (e&ee)"
+    },
+    {
+      "roomNumber": "DES-202",
+      "name": "Faculty Room (E&EE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "E&EE Faculty Room",
+        "EEE Faculty Room",
+        "EEE Faculty Lounge",
+        "EEE Staff Room",
+        "DES 202"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES202",
+      "normalizedName": "faculty room (e&ee)"
+    },
+    {
+      "roomNumber": "DES-201/202",
+      "name": "HOD & Faculty Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "E&EE",
+      "departments": [
+        "E&EE",
+        "EEE",
+        "Electrical & Electronics Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room",
+        "E&EE HOD & Faculty Room",
+        "EEE Faculty Room",
+        "E&EE Faculty Room",
+        "EEE HOD Room",
+        "EEE Staff Room",
+        "EEE Faculty Lounge",
+        "E&EE Faculty Lounge",
+        "DES EEE Faculty Room",
+        "DES E&EE Faculty Room",
+        "DES 201/202"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES201/202",
+      "normalizedName": "hod & faculty room"
+    },
+    {
+      "roomNumber": "DES-204",
+      "name": "Control Systems Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Control Systems Lab",
+        "Control Systems Laboratory",
+        "CS Lab",
+        "EIE Control Systems Lab",
+        "E&IE Control Systems Lab",
+        "DES 204"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES204",
+      "normalizedName": "control systems lab"
+    },
+    {
+      "roomNumber": "DES-207",
+      "name": "Computer Lab - I",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab - I",
+        "Computer Lab 1",
+        "CSE Computer Lab 1",
+        "CSE Computer Lab - I",
+        "DES 207"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES207",
+      "normalizedName": "computer lab - i"
+    },
+    {
+      "roomNumber": "DES-308",
+      "name": "Computer Lab - II",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab - II",
+        "Computer Lab 2",
+        "CSE Computer Lab 2",
+        "CSE Computer Lab - II",
+        "DES 308"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES308",
+      "normalizedName": "computer lab - ii"
+    },
+    {
+      "roomNumber": "DES-207/308",
+      "name": "Computer Lab - I / II",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab - I / II",
+        "CSE Computer Lab - I/II",
+        "DES 207/308"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES207/308",
+      "normalizedName": "computer lab - i / ii"
+    },
+    {
+      "roomNumber": "DES-208",
+      "name": "Computer Lab - III",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab - III",
+        "Computer Lab 3",
+        "ISE Computer Lab 3",
+        "ISE Computer Lab - III",
+        "DES 208"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES208",
+      "normalizedName": "computer lab - iii"
+    },
+    {
+      "roomNumber": "DES-309",
+      "name": "Computer Lab - IV",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab - IV",
+        "Computer Lab 4",
+        "ISE Computer Lab 4",
+        "ISE Computer Lab - IV",
+        "DES 309"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES309",
+      "normalizedName": "computer lab - iv"
+    },
+    {
+      "roomNumber": "DES-208/309",
+      "name": "Computer Lab - III / IV",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Computer Lab - III / IV",
+        "ISE Computer Lab - III/IV",
+        "DES 208/309"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES208/309",
+      "normalizedName": "computer lab - iii / iv"
+    },
+    {
+      "roomNumber": "DES-203",
+      "name": "Faculty Room (CSE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (CSE)",
+        "CSE Faculty Room",
+        "CSE Staff Room",
+        "DES 203"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES203",
+      "normalizedName": "faculty room (cse)"
+    },
+    {
+      "roomNumber": "DES-210",
+      "name": "Faculty Room (CSE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "Ground Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (CSE)",
+        "CSE Faculty Room",
+        "CSE Staff Room",
+        "DES 210"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES210",
+      "normalizedName": "faculty room (cse)"
+    },
+    {
+      "roomNumber": "DES-301",
+      "name": "HOD & Faculty Room (CSE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room (CSE)",
+        "CSE HOD Room",
+        "CSE Faculty Room",
+        "CSE Staff Room",
+        "DES 301"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES301",
+      "normalizedName": "hod & faculty room (cse)"
+    },
+    {
+      "roomNumber": "DES-301/203/210",
+      "name": "HOD & Faculty Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room",
+        "CSE HOD & Faculty Room",
+        "CSE Faculty Room",
+        "CSE HOD Room",
+        "CSE Staff Room",
+        "CSE Faculty Lounge",
+        "DES CSE Faculty Room",
+        "CSE Faculty Area",
+        "DES 301/203/210"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES301/203/210",
+      "normalizedName": "hod & faculty room"
+    },
+    {
+      "roomNumber": "DES-303",
+      "name": "Faculty Room (ISE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (ISE)",
+        "ISE Faculty Room",
+        "ISE Staff Room",
+        "DES 303"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES303",
+      "normalizedName": "faculty room (ise)"
+    },
+    {
+      "roomNumber": "DES-304",
+      "name": "Faculty Room (ISE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (ISE)",
+        "ISE Faculty Room",
+        "ISE Staff Room",
+        "DES 304"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES304",
+      "normalizedName": "faculty room (ise)"
+    },
+    {
+      "roomNumber": "DES-305",
+      "name": "HOD & Faculty Room (ISE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room (ISE)",
+        "ISE HOD Room",
+        "ISE Faculty Room",
+        "ISE Staff Room",
+        "DES 305"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES305",
+      "normalizedName": "hod & faculty room (ise)"
+    },
+    {
+      "roomNumber": "DES-311",
+      "name": "Faculty Room (ISE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (ISE)",
+        "ISE Faculty Room",
+        "ISE Staff Room",
+        "DES 311"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES311",
+      "normalizedName": "faculty room (ise)"
+    },
+    {
+      "roomNumber": "DES-305/303/304/311",
+      "name": "HOD & Faculty Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room",
+        "ISE HOD & Faculty Room",
+        "ISE Faculty Room",
+        "ISE HOD Room",
+        "ISE Staff Room",
+        "ISE Faculty Lounge",
+        "DES ISE Faculty Room",
+        "ISE Faculty Area",
+        "ISE Teachers Room",
+        "ISE Staff Lounge",
+        "DES ISE Faculty Area",
+        "DES ISE Staff Room",
+        "DES 305/303/304/311"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES305/303/304/311",
+      "normalizedName": "hod & faculty room"
+    },
+    {
+      "roomNumber": "DES-402",
+      "name": "Embedded Systems Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Embedded Systems Lab",
+        "Embedded Systems Laboratory",
+        "ECE Embedded Systems Lab",
+        "E&CE Embedded Systems Lab",
+        "DES 402"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES402",
+      "normalizedName": "embedded systems lab"
+    },
+    {
+      "roomNumber": "DES-404",
+      "name": "VLSI Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "VLSI Lab",
+        "VLSI Laboratory",
+        "ECE VLSI Lab",
+        "E&CE VLSI Lab",
+        "DES 404"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES404",
+      "normalizedName": "vlsi lab"
+    },
+    {
+      "roomNumber": "DES-408",
+      "name": "Signal Processing Lab / Simulation Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Signal Processing Lab / Simulation Lab",
+        "Signal Processing Lab",
+        "Simulation Lab",
+        "SP Lab",
+        "ECE Signal Processing Lab",
+        "E&CE Signal Processing Lab",
+        "DES 408"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES408",
+      "normalizedName": "signal processing lab / simulation lab"
+    },
+    {
+      "roomNumber": "DES-409",
+      "name": "Circuits Lab & Communication Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Circuits Lab & Communication Lab",
+        "Circuits Lab",
+        "Communication Lab",
+        "Circuits and Communication Lab",
+        "ECE Circuits Lab",
+        "E&CE Circuits Lab",
+        "DES 409"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES409",
+      "normalizedName": "circuits lab & communication lab"
+    },
+    {
+      "roomNumber": "DES-401",
+      "name": "Faculty Room (E&TE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE",
+        "ETE",
+        "Electronics & Telecommunication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (E&TE)",
+        "ETE Faculty Room",
+        "E&TE Faculty Room",
+        "ETE Staff Room",
+        "DES 401"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES401",
+      "normalizedName": "faculty room (e&te)"
+    },
+    {
+      "roomNumber": "DES-405",
+      "name": "Faculty Room (E&CE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (E&CE)",
+        "ECE Faculty Room",
+        "E&CE Faculty Room",
+        "ECE Staff Room",
+        "DES 405"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES405",
+      "normalizedName": "faculty room (e&ce)"
+    },
+    {
+      "roomNumber": "DES-411",
+      "name": "Faculty Room (E&CE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (E&CE)",
+        "ECE Faculty Room",
+        "E&CE Faculty Room",
+        "ECE Staff Room",
+        "DES 411"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES411",
+      "normalizedName": "faculty room (e&ce)"
+    },
+    {
+      "roomNumber": "DES-413",
+      "name": "HOD & Faculty Room (E&CE / E&TE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "E&TE",
+        "ETE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room (E&CE / E&TE)",
+        "ECE HOD Room",
+        "ETE HOD Room",
+        "DES 413"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES413",
+      "normalizedName": "hod & faculty room (e&ce / e&te)"
+    },
+    {
+      "roomNumber": "DES-413/405/411/511",
+      "name": "HOD & Faculty Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room",
+        "E&CE HOD & Faculty Room",
+        "ECE Faculty Room",
+        "E&CE Faculty Room",
+        "ECE HOD Room",
+        "ECE Staff Room",
+        "ECE Faculty Lounge",
+        "DES ECE Faculty Room",
+        "DES 413/405/411/511"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES413/405/411/511",
+      "normalizedName": "hod & faculty room"
+    },
+    {
+      "roomNumber": "DES-413/401/510/511",
+      "name": "HOD & Faculty Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE",
+        "ETE",
+        "Electronics & Telecommunication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room",
+        "E&TE HOD & Faculty Room",
+        "ETE Faculty Room",
+        "E&TE Faculty Room",
+        "ETE HOD Room",
+        "ETE Staff Room",
+        "ETE Faculty Lounge",
+        "DES ETE Faculty Room",
+        "DES 413/401/510/511"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES413/401/510/511",
+      "normalizedName": "hod & faculty room"
+    },
+    {
+      "roomNumber": "DES-501",
+      "name": "HOD & Faculty Room (E&IE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room (E&IE)",
+        "EIE HOD Room",
+        "EIE Faculty Room",
+        "E&IE Faculty Room",
+        "EIE Staff Room",
+        "DES 501"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES501",
+      "normalizedName": "hod & faculty room (e&ie)"
+    },
+    {
+      "roomNumber": "DES-502B",
+      "name": "Faculty Room (E&IE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (E&IE)",
+        "EIE Faculty Room",
+        "E&IE Faculty Room",
+        "EIE Staff Room",
+        "DES 502B"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES502B",
+      "normalizedName": "faculty room (e&ie)"
+    },
+    {
+      "roomNumber": "DES-501/502B",
+      "name": "HOD & Faculty Room",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "HOD & Faculty Room",
+        "E&IE HOD & Faculty Room",
+        "EIE Faculty Room",
+        "E&IE Faculty Room",
+        "EIE HOD Room",
+        "EIE Staff Room",
+        "EIE Faculty Lounge",
+        "DES EIE Faculty Room",
+        "DES 501/502B"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES501/502B",
+      "normalizedName": "hod & faculty room"
+    },
+    {
+      "roomNumber": "DES-502A",
+      "name": "Project Lab / ITC_RIT",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Project Lab / ITC_RIT",
+        "Project Lab",
+        "ITC_RIT",
+        "ITC RIT",
+        "EIE Project Lab",
+        "E&IE Project Lab",
+        "ITC RIT Lab",
+        "DES 502A"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES502A",
+      "normalizedName": "project lab / itc_rit"
+    },
+    {
+      "roomNumber": "DES-503",
+      "name": "PG Lab (Digital Communication) / Research Lab / Project Lab / IoT Research",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE",
+        "ETE",
+        "Electronics & Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "PG Lab (Digital Communication)",
+        "Digital Communication Lab",
+        "Research Lab",
+        "Project Lab / IoT Research",
+        "IoT Research Lab",
+        "IoT Lab",
+        "ETE Research Lab",
+        "ETE IoT Lab",
+        "ETE PG Lab",
+        "E&TE Research Lab",
+        "DES 503"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES503",
+      "normalizedName": "pg lab (digital communication) / research lab / project lab / iot research"
+    },
+    {
+      "roomNumber": "DES-506",
+      "name": "Digital Electronics Lab / Micro Controller Lab / Embedded Systems Lab / Micro wave and Antenna Lab / Mitsubishi Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE",
+        "ETE",
+        "Electronics & Telecommunication Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Digital Electronics Lab",
+        "Micro Controller Lab",
+        "Microcontroller Lab",
+        "Embedded Systems Lab",
+        "Micro wave and Antenna Lab",
+        "Microwave and Antenna Lab",
+        "Mitsubishi Lab",
+        "ETE Mitsubishi Lab",
+        "ETE Embedded Systems Lab",
+        "ETE Microcontroller Lab",
+        "E&TE Mitsubishi Lab",
+        "DES 506"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES506",
+      "normalizedName": "digital electronics lab / micro controller lab / embedded systems lab / micro wave and antenna lab / mitsubishi lab"
+    },
+    {
+      "roomNumber": "DES-507",
+      "name": "Automation Lab / Process Control & Instrumentation Lab",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Lab",
+      "category": "Lab",
+      "aliases": [
+        "Automation Lab",
+        "Process Control & Instrumentation Lab",
+        "Process Control Lab",
+        "Instrumentation Lab",
+        "PCI Lab",
+        "EIE Automation Lab",
+        "E&IE Automation Lab",
+        "EIE Process Control Lab",
+        "DES 507"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES507",
+      "normalizedName": "automation lab / process control & instrumentation lab"
+    },
+    {
+      "roomNumber": "DES-508",
+      "name": "Board Room - I / II",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE",
+        "EIE",
+        "Electronics & Instrumentation Engineering"
+      ],
+      "type": "Board Room",
+      "category": "Seminar Hall",
+      "aliases": [
+        "Board Room - I / II",
+        "Board Room 1",
+        "Board Room 2",
+        "DES Board Room",
+        "EIE Board Room",
+        "E&IE Board Room",
+        "Board Room I",
+        "Board Room II",
+        "DES 508"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES508",
+      "normalizedName": "board room - i / ii"
+    },
+    {
+      "roomNumber": "DES-511",
+      "name": "Faculty Room (E&CE / E&TE)",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "E&TE",
+        "ETE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Office",
+      "category": "Faculty Space",
+      "aliases": [
+        "Faculty Room (E&CE / E&TE)",
+        "ECE Faculty Room",
+        "ETE Faculty Room",
+        "DES 511"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES511",
+      "normalizedName": "faculty room (e&ce / e&te)"
+    },
+    {
+      "roomNumber": "DES-512",
+      "name": "Board Room / Seminar Hall",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "DES",
+      "departments": [
+        "DES"
+      ],
+      "type": "Board Room",
+      "category": "Seminar Hall",
+      "aliases": [
+        "DES 512",
+        "DES-512",
+        "Seminar Hall",
+        "DES Board Room",
+        "DES Seminar Hall 512"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES512",
+      "normalizedName": "board room / seminar hall"
+    },
+    {
+      "roomNumber": "DES-302",
+      "name": "Dept of CSE Department Library",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "CSE",
+      "departments": [
+        "CSE",
+        "Computer Science & Engineering"
+      ],
+      "type": "Library",
+      "category": "Library",
+      "aliases": [
+        "CSE Department Library",
+        "CSE Dept Library",
+        "CSE Library DES",
+        "DES-302 Library",
+        "DES 302 Library",
+        "Department Library CSE",
+        "CSE Library",
+        "DES 302"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES302",
+      "normalizedName": "dept of cse department library"
+    },
+    {
+      "roomNumber": "DES-311-LIB",
+      "name": "Dept of ISE Department Library",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "1st Floor",
+      "department": "ISE",
+      "departments": [
+        "ISE",
+        "Information Science & Engineering"
+      ],
+      "type": "Library",
+      "category": "Library",
+      "aliases": [
+        "ISE Department Library",
+        "ISE Dept Library",
+        "ISE Library DES",
+        "DES-311 Library",
+        "DES 311 Library",
+        "Department Library ISE",
+        "ISE Library",
+        "DES 311 LIB"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES311LIB",
+      "normalizedName": "dept of ise department library"
+    },
+    {
+      "roomNumber": "DES-412",
+      "name": "Dept of ECE Department Library",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "2nd Floor",
+      "department": "E&CE",
+      "departments": [
+        "E&CE",
+        "ECE",
+        "Electronics & Communication Engineering"
+      ],
+      "type": "Library",
+      "category": "Library",
+      "aliases": [
+        "ECE Department Library",
+        "E&CE Department Library",
+        "ECE Dept Library",
+        "DES-412 Library",
+        "DES 412 Library",
+        "Department Library ECE",
+        "ECE Library",
+        "E&CE Library",
+        "DES 412"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES412",
+      "normalizedName": "dept of ece department library"
+    },
+    {
+      "roomNumber": "DES-510",
+      "name": "Dept of ETE Department Library",
+      "building": "DES Block",
+      "buildingCode": "DES",
+      "floor": "3rd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE",
+        "ETE",
+        "Electronics & Telecommunication Engineering"
+      ],
+      "type": "Library",
+      "category": "Library",
+      "aliases": [
+        "ETE Department Library",
+        "E&TE Department Library",
+        "ETE Dept Library",
+        "DES-510 Library",
+        "DES 510 Library",
+        "Department Library ETE",
+        "ETE Library",
+        "E&TE Library",
+        "DES 510"
+      ],
+      "sourceTitle": "DES Block Directory Board",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DES510",
+      "normalizedName": "dept of ete department library"
     }
   ]
 }

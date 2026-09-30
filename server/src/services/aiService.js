@@ -165,13 +165,13 @@ export function resolveDepartment(input) {
     };
   }
 
-  // 5. ISE (Information Science & Engineering - LHC Block)
+  // 5. ISE (Information Science & Engineering - DES Block)
   if (/\b(ise|i\s*\.\s*s\s*\.\s*e|i\s*s\s*e|information\s*science|information\s*science\s*and\s*engineering|information\s*science\s*&\s*engineering|info\s*science|info\s*science\s*&\s*engineering)\b/i.test(s)) {
     return {
       code: 'ISE',
       name: 'Information Science & Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
         return d.includes('information science') || d.includes('ise');
@@ -179,7 +179,7 @@ export function resolveDepartment(input) {
     };
   }
 
-  // 6. Pure CSE (Computer Science & Engineering - LHC Block, strictly non-AIML / non-Cyber)
+  // 6. Pure CSE (Computer Science & Engineering - LHC / DES / Apex Block, strictly non-AIML / non-Cyber)
   if (/\b(cse|c\s*\.\s*s\s*\.\s*e|c\s*s\s*e|computer\s*science|computer\s*science\s*and\s*engineering|comp\s*science|computer\s*science\s*dept)\b/i.test(s)) {
     return {
       code: 'CSE',
@@ -193,13 +193,13 @@ export function resolveDepartment(input) {
     };
   }
 
-  // 7. ECE / E&CE (Electronics & Communication - LHC / DES)
+  // 7. ECE / E&CE (Electronics & Communication - DES / Apex / LHC)
   if (/\b(ece|e\s*\.\s*c\s*\.\s*e|e&ce|e\s*&\s*ce|electronics\s*&\s*communication|electronics\s*and\s*communication|electronics\s*communication)\b/i.test(s)) {
     return {
       code: 'ECE',
       name: 'Electronics & Communication Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
         return d.includes('electronics & communication') || d.includes('ece') || d.includes('e&ce');
@@ -207,35 +207,35 @@ export function resolveDepartment(input) {
     };
   }
 
-  // 8. ETE / E&TE (Electronics & Telecommunication - LHC / DES)
+  // 8. ETE / E&TE (Electronics & Telecommunication - DES Block)
   if (/\b(ete|e\s*\.\s*t\s*\.\s*e|e&te|e\s*&\s*te|telecom|telecommunication|electronics\s*&\s*telecommunication|electronics\s*and\s*telecommunication|telecommunication\s*engineering|electronics\s*telecommunication)\b/i.test(s)) {
     return {
       code: 'ET',
       name: 'Electronics & Telecommunication Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('telecommunication') || d.includes('et') || d.includes('ete');
+        return d.includes('telecommunication') || d.includes('et') || d.includes('ete') || d.includes('e&te');
       }
     };
   }
 
-  // 9. EIE / E&IE (Electronics & Instrumentation - LHC / DES)
+  // 9. EIE / E&IE (Electronics & Instrumentation - DES Block)
   if (/\b(eie|e\s*\.\s*i\s*\.\s*e|e&ie|e\s*&\s*ie|instrumentation|electronics\s*&\s*instrumentation|electronics\s*and\s*instrumentation|instrumentation\s*engineering)\b/i.test(s)) {
     return {
       code: 'EI',
       name: 'Electronics & Instrumentation Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('instrumentation') || d.includes('ei') || d.includes('eie');
+        return d.includes('instrumentation') || d.includes('ei') || d.includes('eie') || d.includes('e&ie');
       }
     };
   }
 
-  // 10. MLE (Medical Electronics - LHC / DES)
+  // 10. MLE (Medical Electronics - LHC Block)
   if (/\b(mle|medical\s*electronics|medical\s*electronics\s*engineering)\b/i.test(s) || (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))) {
     return {
       code: 'MLE',
@@ -249,13 +249,13 @@ export function resolveDepartment(input) {
     };
   }
 
-  // 11. EEE / E&EE (Electrical & Electronics - LHC / DES)
+  // 11. EEE / E&EE (Electrical & Electronics - DES / LHC)
   if (/\b(eee|e\s*\.\s*e\s*\.\s*e|e&ee|e\s*&\s*ee|electrical|electrical\s*&\s*electronics|electrical\s*and\s*electronics|electrical\s*electronics)\b/i.test(s)) {
     return {
       code: 'E&EE',
       name: 'Electrical & Electronics Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
+      building: 'DES',
+      buildingId: 'block-des',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
         return d.includes('electrical') || d.includes('e&ee') || d.includes('eee');
@@ -1344,9 +1344,9 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
           return {
             success: true,
             intent: 'ROOM_SEARCH',
-            answer: `ISE Faculty Room & Department Space\n📍 3rd Floor, LHC Block (ISE Wing)\nDepartment: Information Science & Engineering\nStatus: 🟢 Open for Consultation`,
-            data: { department: 'ISE', building: 'LHC', floor: '3rd Floor', name: 'ISE Faculty Room' },
-            actions: [{ type: 'VIEW_ON_MAP', targetId: 'block-lhc' }]
+            answer: `DES-305/303/304/311 — ISE Faculty Room\n📍 1st Floor, DES Block\nDepartment: Information Science & Engineering\nStatus: 🟢 Open for Consultation`,
+            data: { department: 'ISE', building: 'DES', floor: '1st Floor', name: 'ISE Faculty Room', roomNumber: 'DES-305/303/304/311' },
+            actions: [{ type: 'VIEW_ON_MAP', targetId: 'block-des' }]
           };
         }
         if (deptCode === 'E&EE' || deptCode === 'EEE') {

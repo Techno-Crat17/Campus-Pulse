@@ -108,12 +108,67 @@ export function resolveFacultyBuildingMapping(deptName: string): {
     };
   }
 
+  // DES BLOCK (Division of Electrical Sciences):
+  // - ISE (DES-305/303/304/311)
+  // - ETE / E&TE (DES-413/401/510/511)
+  // - EIE / E&IE (DES-501/502B)
+  // - EEE / E&EE (DES-201/202)
+  if (
+    d.includes('information science') ||
+    d === 'ise'
+  ) {
+    return {
+      building: 'DES',
+      primaryBuilding: 'DES Block',
+      homeBuilding: 'DES Block',
+      nodeId: 'block-des'
+    };
+  }
+
+  if (
+    d.includes('telecommunication') ||
+    d === 'et' ||
+    d === 'ete' ||
+    d === 'e&te'
+  ) {
+    return {
+      building: 'DES',
+      primaryBuilding: 'DES Block',
+      homeBuilding: 'DES Block',
+      nodeId: 'block-des'
+    };
+  }
+
+  if (
+    d.includes('instrumentation') ||
+    d === 'ei' ||
+    d === 'eie' ||
+    d === 'e&ie'
+  ) {
+    return {
+      building: 'DES',
+      primaryBuilding: 'DES Block',
+      homeBuilding: 'DES Block',
+      nodeId: 'block-des'
+    };
+  }
+
+  if (
+    d.includes('electrical') ||
+    d === 'eee' ||
+    d === 'e&ee'
+  ) {
+    return {
+      building: 'DES',
+      primaryBuilding: 'DES Block',
+      homeBuilding: 'DES Block',
+      nodeId: 'block-des'
+    };
+  }
+
   // LHC BLOCK:
   // - CSE
-  // - ISE
   // - ECE
-  // - ET
-  // - EI
   // - ME (Medical Electronics)
   // CRITICAL: "ME" means Medical Electronics, NOT Mechanical Engineering!
   if (
@@ -121,16 +176,8 @@ export function resolveFacultyBuildingMapping(deptName: string): {
     d.includes('medical electronics') ||
     d.includes('computer science') ||
     d === 'cse' ||
-    d.includes('information science') ||
-    d === 'ise' ||
     d.includes('communication') ||
-    d === 'ece' ||
-    d.includes('telecommunication') ||
-    d === 'et' ||
-    d === 'ete' ||
-    d.includes('instrumentation') ||
-    d === 'ei' ||
-    d === 'eie'
+    d === 'ece'
   ) {
     return {
       building: 'LHC',

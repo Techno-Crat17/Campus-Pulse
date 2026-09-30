@@ -12,6 +12,7 @@ export interface MSRITRoomRecord {
   departments?: string[];
   type: 'Classroom' | 'Lab' | 'Seminar Hall' | 'Board Room' | 'Auditorium' | 'Office' | 'Library' | 'Lounge' | 'Other' | string;
   category?: string;
+  aliases?: string[];
   description?: string;
   libraryReference?: string;
   nodeId?: string;
@@ -194,6 +195,7 @@ export function normalizeRoomNameForSearch(name: string): string {
   return name
     .toLowerCase()
     .replace(/[’‘`'"]/g, '')
+    .replace(/\./g, '') // remove periods from acronyms like S.T.A.R.D.U.S.T -> stardust
     .replace(/[–—_–-]/g, ' ')
     .replace(/\b(ii|2)\b/gi, '2')
     .replace(/\b(i|1)\b/gi, '1')
@@ -207,7 +209,7 @@ export function normalizeRoomNameForSearch(name: string): string {
 }
 
 /**
- * Looks up room by its descriptive name or title
+ * Looks up room by its descriptive name, facility name, or title
  */
 export function findRoomsByName(query: string): MSRITRoomRecord[] {
   if (!query || typeof query !== 'string') return [];
@@ -246,12 +248,13 @@ export function findRoomsByName(query: string): MSRITRoomRecord[] {
     return [];
   }
 
-  // 1. Exact or substring match on normalized name or room number
+  // 1. Exact or substring match on normalized name, aliases, or room number
   const exactMatches = MSRIT_ROOMS.filter((r) => {
     const name = r.name || '';
     const num = r.roomNumber || '';
     const desc = r.description || '';
     const cat = r.category || '';
+    const aliases = r.aliases || [];
 
     const nameSearch = normalizeRoomNameForSearch(name);
     const numSearch = normalizeRoomNameForSearch(num);
@@ -261,6 +264,12 @@ export function findRoomsByName(query: string): MSRITRoomRecord[] {
     }
     if (numSearch && (numSearch === qSearch || (/\d/.test(qSearch) && numSearch.includes(qSearch)))) {
       return true;
+    }
+    for (const al of aliases) {
+      const alSearch = normalizeRoomNameForSearch(al);
+      if (alSearch && (alSearch === qSearch || alSearch.includes(qSearch) || (qSearch.length >= 4 && qSearch.includes(alSearch)))) {
+        return true;
+      }
     }
     if (desc && desc.toLowerCase().includes(q) && !BUILDING_NAMES.has(q)) return true;
     if (cat && cat.length >= 4 && cat.toLowerCase().includes(q)) return true;
