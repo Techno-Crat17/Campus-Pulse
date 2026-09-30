@@ -105,6 +105,7 @@ export type CampusAiIntent =
   | 'BUILDING_FACULTY'
   | 'ROOM_SEARCH'
   | 'ROOM_AVAILABILITY'
+  | 'CLASSROOM_AVAILABILITY_FUTURE'
   | 'ROOM_LOCATION'
   | 'ROOM_DETAILS'
   | 'DEPARTMENT_ROOMS'
@@ -673,6 +674,24 @@ export function detectIntents(normalizedQuery: string, context?: CampusAiContext
     } else {
       intents.push('FACULTY_SEARCH');
     }
+  }
+
+  // 0. Classroom Availability Future Plans Intent (Check early before any room availability DB lookup)
+  const isClassroomAvailabilityQuery = (
+    /\b(classroom availability|room availability)\b/i.test(q) ||
+    (
+      (hasExplicitRoomKeyword || /\b(room|rooms|classroom|classrooms|hall|auditorium|lhc|esb|ab|crd|des|arch|[a-z]{2,4}[- ]?\d{3})\b/i.test(q)) &&
+      /\b(free|available|availability|khali|vacant|occupied|booked|busy)\b/i.test(q) &&
+      !isFacultyQuery
+    ) ||
+    /\b(free|available)\s*(classroom|classrooms|room|rooms)\b/i.test(q) ||
+    /\b(classroom|classrooms|room|rooms)\s*(free|available)\b/i.test(q) ||
+    (/\b(free|available)\s*(hai|h|kaha|kidhar|chahiye)\b/i.test(q) && /\b(room|rooms|classroom|classrooms)\b/i.test(q))
+  );
+
+  if (isClassroomAvailabilityQuery) {
+    intents.push('CLASSROOM_AVAILABILITY_FUTURE');
+    return intents;
   }
 
   // 1. Room & Classroom Intents (High Priority only when explicit room keyword present)
@@ -1644,45 +1663,17 @@ export function getRoomAnswer(
     /\b\d{1,2}\s*(se|to|-)\s*\d{1,2}\s*(baje|pm|am)?\b/i.test(normQ)
   );
 
-  if (wantsAvailability) {
-    if (matchedRoom) {
-      const r = matchedRoom;
-      const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
-        ? 'Multipurpose Block'
-        : (r.building?.toLowerCase().includes('lhc')
-          ? 'LHC Block'
-          : (r.building?.toLowerCase().endsWith('block') ? r.building : `${r.building || 'Campus Facilities'} Block`));
-      const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
-
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['ROOM_AVAILABILITY'],
-        responseText: `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}\n\n🟢 **AVAILABLE**\nNo scheduled lecture/class at this hour in the timetable registry.\n\n*Note: Scheduled classroom availability based on timetable. Physical occupancy may vary.*`,
-        matchedRoom: r,
-        actionTargetId: r.building?.toLowerCase().includes('crd') ? 'crd' : 'block-lhc'
-      };
-    }
-
-    const timeMatch = normQ.match(/\b(\d{1,2})\s*(?:se|to|-)\s*(\d{1,2})\s*(?:baje|pm|am)?\b/i);
-    const timeTag = timeMatch ? ` (${timeMatch[1]}:00 – ${timeMatch[2]}:00)` : '';
-
-    const bldgKey = buildingKey || (['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch'].find((b) => normQ.includes(b)));
-    const availRooms = bldgKey ? getRoomsByBuilding(bldgKey).filter(r => !r.name?.includes('Faculty') && !r.name?.includes('HOD')).slice(0, 4) : [
-      { roomNumber: 'LHC-204', name: 'Classroom', floor: 'Ground Floor', building: 'LHC' },
-      { roomNumber: 'CRD-405', name: 'Computer Lab', floor: '2nd Floor', building: 'CRD' },
-      { roomNumber: 'LHC-111', name: 'LHC Seminar Hall – II', floor: 'Basement', building: 'LHC' }
-    ];
-
-    const lines = availRooms.map((r) => `- **${r.roomNumber}** — ${r.name || 'Classroom'}${r.floor ? ` · ${r.floor}` : ''} · ${r.building || 'Campus'} Block`).join('\n');
-    const bldgHeader = bldgKey ? `${bldgKey.toUpperCase()} Block — ` : '';
+  if (_intents.includes('CLASSROOM_AVAILABILITY_FUTURE') || wantsAvailability) {
+    const isHinglish = /\b(hai|h|dhundho|chahiye|mein|me|batao|btao|bta|pe|par|kaha|kidhar|kaunsa|konsa)\b/i.test(normQ + ' ' + rawQuery);
+    const responseText = isHinglish
+      ? 'Classroom availability feature future update mein add kiya jayega.'
+      : 'Classroom availability is planned for a future update of Campus Pulse.';
 
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
-      intents: ['ROOM_AVAILABILITY'],
-      responseText: `**${bldgHeader}Available Classrooms${timeTag}**\n\n${lines}\n\n🟢 *Verified from timetable schedule slots.*`,
-      actionTargetId: bldgKey === 'crd' ? 'crd' : 'block-lhc'
+      intents: ['CLASSROOM_AVAILABILITY_FUTURE'],
+      responseText
     };
   }
 
@@ -2729,6 +2720,21 @@ export async function processCampusAiQuery(
 
   // Step 2: Detect Intents (In Isolation)
   const intents = detectIntents(normQ, undefined);
+
+  if (intents.includes('CLASSROOM_AVAILABILITY_FUTURE')) {
+    const isHinglish = /\b(hai|h|dhundho|chahiye|mein|me|batao|btao|bta|pe|par|kaha|kidhar|kaunsa|konsa)\b/i.test(normQ + ' ' + rawQuery);
+    const responseText = isHinglish
+      ? 'Classroom availability feature future update mein add kiya jayega.'
+      : 'Classroom availability is planned for a future update of Campus Pulse.';
+
+    const futureRes: CampusAiResult = {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['CLASSROOM_AVAILABILITY_FUTURE'],
+      responseText
+    };
+    return maintainConversationContext(futureRes, rawQuery, context);
+  }
 
   // Step 3: Extract Raw Entities
   const rawEntities = extractEntities(normQ, rawQuery, intents, undefined);

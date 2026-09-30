@@ -75,7 +75,7 @@ const ROTATING_PLACEHOLDERS = [
   "Which library is least crowded?",
   "What events are happening today?",
   "Show CSE faculty in LHC.",
-  "Which classrooms are available?",
+  "Where is LHC204?",
   "What issues are reported in LHC?",
   "What clubs are available?",
   "Where is LHC?",
@@ -98,7 +98,7 @@ const SUGGESTION_CATEGORIES = [
       { label: 'Find a building', query: 'Where is LHC?' },
       { label: 'Find a room', query: 'Find AB-401' },
       { label: 'Campus map', query: 'Where is ESB?' },
-      { label: 'Classroom availability', query: 'Find a room in LHC' }
+      { label: 'Classrooms in LHC', query: 'Find a room in LHC' }
     ]
   },
   {

@@ -345,11 +345,29 @@ export function detectIntents(normQuery, rawQuery = '', context = {}) {
 
   if (hasNavigation) intents.push('CAMPUS_NAVIGATION');
 
+  // 0. Classroom Availability Future Plans Intent
+  const isClassroomAvailabilityQuery = (
+    /\b(classroom availability|room availability)\b/i.test(q) ||
+    (
+      (hasExplicitRoomKeyword || /\b(room|rooms|classroom|classrooms|hall|auditorium|lhc|esb|ab|crd|des|arch|[a-z]{2,4}[- ]?\d{3})\b/i.test(q)) &&
+      /\b(free|available|availability|khali|vacant|occupied|booked|busy)\b/i.test(q) &&
+      !isFacultyQuery
+    ) ||
+    /\b(free|available)\s*(classroom|classrooms|room|rooms)\b/i.test(q) ||
+    /\b(classroom|classrooms|room|rooms)\s*(free|available)\b/i.test(q) ||
+    (/\b(free|available)\s*(hai|h|kaha|kidhar|chahiye)\b/i.test(q) && /\b(room|rooms|classroom|classrooms)\b/i.test(q))
+  );
+
+  if (isClassroomAvailabilityQuery) {
+    intents.push('CLASSROOM_AVAILABILITY_FUTURE');
+    return intents;
+  }
+
   if (hasExplicitRoomKeyword || /\b\d{3}\b/.test(q)) {
     if (hasLocation || /\b(where|kaha|kidhar|location)\b/i.test(q)) {
       intents.push('ROOM_LOCATION');
     } else if (hasAvailability) {
-      intents.push('ROOM_AVAILABILITY');
+      intents.push('CLASSROOM_AVAILABILITY_FUTURE');
     } else {
       intents.push('ROOM_SEARCH');
     }
@@ -654,6 +672,28 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
   const intents = isFollowUp ? detectIntents(normQuery, rawQuery, effectiveContext) : rawIntents;
   const entities = isFollowUp ? await extractEntities(normQuery, rawQuery, effectiveContext) : rawEntities;
   dbQueryTimeMs = Date.now() - dbStart;
+
+  // --------------------------------------------------------------------------
+  // INTENT HANDLER: CLASSROOM AVAILABILITY FUTURE PLANS
+  // --------------------------------------------------------------------------
+  if (intents.includes('CLASSROOM_AVAILABILITY_FUTURE')) {
+    const ans = language === 'HINGLISH'
+      ? 'Classroom availability feature future update mein add kiya jayega.'
+      : 'Classroom availability is planned for a future update of Campus Pulse.';
+
+    const resObj = {
+      success: true,
+      intent: 'CLASSROOM_AVAILABILITY_FUTURE',
+      answer: ans,
+      data: {
+        featureStatus: 'PLANNED',
+        featureName: 'Classroom Availability'
+      },
+      actions: []
+    };
+    logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);
+    return resObj;
+  }
 
   // Ambiguity Guard
   if (entities.multipleFaculty && entities.multipleFaculty.length > 1) {
