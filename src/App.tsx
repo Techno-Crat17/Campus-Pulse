@@ -15,6 +15,7 @@ import { TimeProvider } from './context/TimeContext';
 import { TimeSimulationBar } from './components/TimeSimulationBar';
 import { FloatingScrollArrow } from './components/FloatingScrollArrow';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { PwaInstallPrompt } from './components/PwaInstallPrompt';
 
 export function App() {
   const [selectedBuildingId, setSelectedBuildingId] = useState<string>('ise-lab-2');
@@ -36,6 +37,9 @@ export function App() {
       <TimeProvider>
         <div className="min-h-screen bg-[#F5F4EF] dark:bg-[#0E0F12] text-[#111111] dark:text-[#F3F3EE] font-sans selection-red relative transition-colors duration-200">
         
+        {/* PWA Mobile/Tablet Install Prompt */}
+        <PwaInstallPrompt />
+
         {/* Floating Time Simulation Widget */}
         <TimeSimulationBar />
 
