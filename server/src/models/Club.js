@@ -17,6 +17,7 @@ const ClubSchema = new mongoose.Schema({
   type: { type: String, default: 'CLUB' },
   relatedChapters: [{ type: String }],
   source: { type: String, default: 'Provided MSRIT club directory' },
+  instagramUrl: { type: String, default: null },
   active: { type: Boolean, default: true, index: true }
 }, {
   timestamps: true

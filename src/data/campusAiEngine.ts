@@ -152,7 +152,7 @@ export interface CampusAiResult {
   matchedRoomsList?: MSRITRoomRecord[];
   matchedEvents?: Array<{ title: string; date: string; location?: string; link?: string; category?: string }>;
   matchedAnnouncements?: Array<{ title: string; date: string; link?: string; category?: string }>;
-  matchedClubs?: Array<{ name: string; category: string; description?: string; officialUrl?: string; sourceUrl?: string; department?: string }>;
+  matchedClubs?: Array<{ name: string; category: string; description?: string; officialUrl?: string; sourceUrl?: string; instagramUrl?: string; department?: string }>;
   matchedClub?: VerifiedClub;
   matchedEmergencyContacts?: Array<{ label: string; phone: string; category: string }>;
   sourceUrl?: string;
@@ -857,14 +857,14 @@ export function extractEntities(
 
   if (!entities.matchedClub) {
     // Specific club keyword lookups
-    if (/\btnt\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'TNT');
+    if (/\btnt\b|\btri-?nation\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'TNT');
     else if (/\blasya\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Lasya');
     else if (/\btheatrix\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Theatrix');
     else if (/\bprayaag\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Prayaag');
     else if (/\bchiraranga\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Chiraranga');
     else if (/\bdebsoc\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('DEBSOC'));
     else if (/\b19a\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === '19A');
-    else if (/\bquiz\s*club\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Quiz Club');
+    else if (/\bquiz\s*club\b|\bqc\s*msrit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Quiz Club');
     else if (/\biclick\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'iClick');
     else if (/\binara\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'INARA');
     else if (/\bcomedy\s*club\b|\bramaiah\s*comedy\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('Comedy'));
@@ -872,13 +872,13 @@ export function extractEntities(
     else if (/\bclutchrit\b|\bclutch\s*rit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'ClutchRIT');
     else if (/\bnakama\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('Nakama'));
     else if (/\britmunsoc\b|\bmunsoc\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'RITMUNSOC');
-    else if (/\bieee\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('IEEE'));
-    else if (/\bcsi\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('CSI'));
-    else if (/\bici\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('ICI'));
-    else if (/\biiche\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('IIChE'));
-    else if (/\broborit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'RoboRIT');
-    else if (/\bindian\s*music\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Indian Music Team');
-    else if (/\bwestern\s*music\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Western Music Team');
+    else if (/\bieee\b|\bwie\b|\bpes\b|\bembs\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('IEEE'));
+    else if (/\bnss\b|\bnss\s*msrit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'NSS MSRIT');
+    else if (/\bcoderit\b|\bcoding\s*club\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'CodeRIT');
+    else if (/\bsecur1t\b|\bcybersecurity\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Secur1t');
+    else if (/\baion\b|\baion\s*rit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'AION RIT');
+    else if (/\bvelocita\b|\bvelocita\s*racing\b|\bracing\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('Velocita'));
+    else if (/\baws\b|\baws\s*club\b|\bcloud\s*club\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'AWS Club');
     else {
       // General match
       for (const club of VERIFIED_MSRIT_CLUBS) {
@@ -2067,7 +2067,7 @@ export async function getClubsAnswer(
   context?: CampusAiContext
 ): Promise<CampusAiResult | null> {
   const isClubIntent = intents.includes('CLUB_SEARCH') || intents.includes('CLUB_DETAILS') || intents.includes('CLUB_CATEGORY_SEARCH');
-  const mentionsClubs = /\b(club|clubs|society|societies|chapter|chapters|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|iclick|inara|clutchrit|nakama|ritmunsoc|ieee|csi|ici|iiche|roborit)\b/i.test(normQ);
+  const mentionsClubs = /\b(club|clubs|society|societies|chapter|chapters|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|iclick|inara|clutchrit|nakama|ritmunsoc|ieee|nss|coderit|secur1t|aion|velocita|aws)\b/i.test(normQ);
 
   if (!isClubIntent && !mentionsClubs && !entities.matchedClub && !entities.isPronounClub) {
     return null;
@@ -2085,6 +2085,7 @@ export async function getClubsAnswer(
     if (c.relatedChapters && c.relatedChapters.length > 0) {
       chaptersBlock = `\n\n**Related Chapters:**\n${c.relatedChapters.map((ch) => `• ${ch}`).join('\n')}`;
     }
+    const igBlock = c.instagramUrl ? `\n\n**Instagram / Social:** [GET TO KNOW →](${c.instagramUrl})` : '';
 
     // Check if asking specifically about chapters (e.g. "uske chapters?", "What chapters are under IEEE?")
     if (/\b(chapter|chapters|wings|sub-chapters|subchapters)\b/i.test(normQ) && c.relatedChapters && c.relatedChapters.length > 0) {
@@ -2092,9 +2093,15 @@ export async function getClubsAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['CLUB_DETAILS'],
-        responseText: `**${c.name} — Related Chapters**\n\n${c.relatedChapters.map((ch) => `• **${ch}**`).join('\n')}\n\n*${c.description}*`,
+        responseText: `**${c.name} — Related Chapters**\n\n${c.relatedChapters.map((ch) => `• **${ch}**`).join('\n')}\n\n*${c.description}*${igBlock}`,
         subText: `Category: ${c.category} • Source: ${c.source || 'Provided MSRIT club directory'}`,
         matchedClub: c,
+        matchedClubs: [{
+          name: c.name,
+          category: c.category,
+          description: c.description,
+          instagramUrl: c.instagramUrl
+        }],
         actionTargetId: 'sec-others'
       };
     }
@@ -2103,28 +2110,39 @@ export async function getClubsAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['CLUB_DETAILS'],
-      responseText: `**${c.name}**\n${c.category}\n\n${c.description}${chaptersBlock}`,
+      responseText: `**${c.name}**\n${c.category}\n\n${c.description}${chaptersBlock}${igBlock}`,
       subText: `Category: ${c.category} • Source: ${c.source || 'Provided MSRIT club directory'}`,
       matchedClub: c,
+      matchedClubs: [{
+        name: c.name,
+        category: c.category,
+        description: c.description,
+        instagramUrl: c.instagramUrl
+      }],
       actionTargetId: 'sec-others'
     };
   }
 
-  // 2. Domain / Genre Query (e.g. "dance clubs?", "music club hai kya?", "photography club?", "debate club", "gaming club", "robotics club")
+  // 2. Domain / Genre Query (e.g. "dance clubs?", "coding club hai kya?", "photography club?", "debate club", "gaming club", "cybersecurity club")
   const isDance = /\b(dance|dancing|choreography)\b/i.test(normQ);
-  const isMusic = /\b(music|vocal|singing|band|bands|instrumental)\b/i.test(normQ);
   const isDrama = /\b(drama|theatre|theater|nukkad|natak|acting|plays)\b/i.test(normQ);
   const isPhoto = /\b(photo|photography|videography|video|camera)\b/i.test(normQ);
   const isGaming = /\b(gaming|esports|games|gamer)\b/i.test(normQ);
   const isAnime = /\b(anime|manga|japanese|otaku)\b/i.test(normQ);
   const isDebate = /\b(debate|debating|debates|mun|public\s*speaking|parliamentary)\b/i.test(normQ);
-  const isRobotics = /\b(robotics|robot|robots|automation)\b/i.test(normQ);
-  const isCoding = /\b(coding|software|code|hackathon|hackathons|csi)\b/i.test(normQ);
-  const isCivil = /\b(civil|concrete|ici)\b/i.test(normQ);
-  const isChemical = /\b(chemical|iiche)\b/i.test(normQ);
+  const isCoding = /\b(coding|software|code|hackathon|hackathons|programmer)\b/i.test(normQ);
+  const isCyber = /\b(cyber|cybersecurity|security|hacking|ethical\s*hacking|ctf)\b/i.test(normQ);
+  const isAi = /\b(ai|artificial\s*intelligence|machine\s*learning|ml|data\s*science)\b/i.test(normQ);
+  const isRacing = /\b(racing|formula|automotive|motorsport|vehicle)\b/i.test(normQ);
+  const isNss = /\b(nss|social\s*service|outreach|blood\s*donation|welfare)\b/i.test(normQ);
+  const isAws = /\b(aws|cloud|cloud\s*computing|amazon\s*web\s*services)\b/i.test(normQ);
   const isComedy = /\b(comedy|stand-up|standup|improv)\b/i.test(normQ);
-  const isTechCat = /\b(technical|co-curricular|chapters|technology)\b/i.test(normQ);
+  const isQuiz = /\b(quiz|quizzing|trivia)\b/i.test(normQ);
+  const isLit = /\b(literary|writing|poetry|creative\s*writing)\b/i.test(normQ);
+  const isArt = /\b(art|arts|design|fine\s*arts|drawing|painting)\b/i.test(normQ) && !normQ.includes('performing');
+  const isTechCat = /\b(technical|co-curricular|chapters|technology|tech)\b/i.test(normQ);
   const isCulturalCat = /\b(cultural|arts|performing\s*arts)\b/i.test(normQ) && !isTechCat;
+  const isLiteraryCat = /\b(literary|quizzing|media)\b/i.test(normQ) && !isTechCat;
 
   let domainMatches: VerifiedClub[] = [];
   let domainTitle = '';
@@ -2132,9 +2150,6 @@ export async function getClubsAnswer(
   if (isDance) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'TNT' || c.name === 'Lasya');
     domainTitle = 'Dance & Performing Arts Clubs';
-  } else if (isMusic) {
-    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('Music'));
-    domainTitle = 'Music & Vocal Clubs';
   } else if (isDrama) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'Theatrix' || c.name === 'Chiraranga');
     domainTitle = 'Theatre & Dramatics Clubs';
@@ -2150,31 +2165,49 @@ export async function getClubsAnswer(
   } else if (isDebate) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('DEBSOC') || c.name.includes('RITMUNSOC'));
     domainTitle = 'Debating & Model United Nations Clubs';
-  } else if (isRobotics) {
-    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'RoboRIT');
-    domainTitle = 'Robotics & Automation Clubs';
   } else if (isCoding) {
-    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('CSI') || c.name.includes('IEEE'));
-    domainTitle = 'Coding & Technical Chapters';
-  } else if (isCivil) {
-    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('ICI'));
-    domainTitle = 'Civil Engineering Chapters';
-  } else if (isChemical) {
-    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('IIChE'));
-    domainTitle = 'Chemical Engineering Chapters';
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'CodeRIT' || c.name.includes('IEEE'));
+    domainTitle = 'Coding & Software Development Clubs';
+  } else if (isCyber) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'Secur1t');
+    domainTitle = 'Cybersecurity & Information Security Chapters';
+  } else if (isAi) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'AION RIT');
+    domainTitle = 'Artificial Intelligence & Machine Learning Clubs';
+  } else if (isRacing) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('Velocita'));
+    domainTitle = 'Automotive Engineering & Racing Teams';
+  } else if (isNss) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'NSS MSRIT');
+    domainTitle = 'National Service Scheme & Community Outreach';
+  } else if (isAws) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'AWS Club');
+    domainTitle = 'Cloud Computing & AWS Chapters';
   } else if (isComedy) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('Comedy'));
     domainTitle = 'Comedy & Improv Community';
+  } else if (isQuiz) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'Quiz Club');
+    domainTitle = 'Quizzing & Trivia Clubs';
+  } else if (isLit) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === '19A');
+    domainTitle = 'Literary & Creative Writing Clubs';
+  } else if (isArt) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'INARA');
+    domainTitle = 'Fine Arts & Design Clubs';
   } else if (isCulturalCat) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.category === 'Cultural & Performing Arts');
     domainTitle = 'Cultural & Performing Arts Clubs';
+  } else if (isLiteraryCat) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.category === 'Literary, Quizzing & Media');
+    domainTitle = 'Literary, Quizzing & Media Clubs';
   } else if (isTechCat) {
     domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.category === 'Technical & Co-Curricular Chapters');
     domainTitle = 'Technical & Co-Curricular Chapters';
   }
 
   if (domainMatches.length > 0) {
-    const list = domainMatches.map((c, i) => `${i + 1}. **${c.name}** — ${c.category}\n   ${c.description}`).join('\n\n');
+    const list = domainMatches.map((c, i) => `${i + 1}. **${c.name}** — ${c.category}\n   ${c.description}${c.instagramUrl ? ` • [GET TO KNOW →](${c.instagramUrl})` : ''}`).join('\n\n');
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
@@ -2184,7 +2217,8 @@ export async function getClubsAnswer(
       matchedClubs: domainMatches.map((c) => ({
         name: c.name,
         category: c.category,
-        description: c.description
+        description: c.description,
+        instagramUrl: c.instagramUrl
       })),
       matchedClub: domainMatches.length > 0 ? domainMatches[0] : undefined,
       actionTargetId: 'sec-others'
@@ -2193,18 +2227,19 @@ export async function getClubsAnswer(
 
   // 3. General Club Directory Listing (Limit to max 5 featured clubs per Prompt Rule 17)
   const sample = VERIFIED_MSRIT_CLUBS.slice(0, 5);
-  const sampleText = sample.map((c, i) => `${i + 1}. **${c.name}** — ${c.category}\n   ${c.description}`).join('\n\n');
+  const sampleText = sample.map((c, i) => `${i + 1}. **${c.name}** — ${c.category}\n   ${c.description}${c.instagramUrl ? ` • [GET TO KNOW →](${c.instagramUrl})` : ''}`).join('\n\n');
 
   return {
     queryText: rawQuery,
     normalizedQuery: normQ,
     intents: ['CLUB_SEARCH'],
-    responseText: `**MSRIT Clubs & Student Activities Directory** (22 Verified Clubs)\n\n**Categories:**\n• **Cultural & Performing Arts** (7 clubs)\n• **Literary, Quizzing & Media** (10 clubs)\n• **Technical & Co-Curricular Chapters** (5 clubs)\n\n**Featured Clubs:**\n\n${sampleText}\n\n*View all 22 clubs and chapters under Others → Clubs & Student Activities.*`,
+    responseText: `**MSRIT Clubs & Student Activities Directory** (22 Verified Clubs)\n\n**Categories:**\n• **Cultural & Performing Arts** (5 clubs)\n• **Literary, Quizzing & Media** (10 clubs)\n• **Technical & Co-Curricular Chapters** (7 clubs)\n\n**Featured Clubs:**\n\n${sampleText}\n\n*View all 22 clubs and chapters under Others → Clubs & Student Activities.*`,
     subText: 'Source: Provided MSRIT club directory • Filter by category or search by name.',
     matchedClubs: sample.map((c) => ({
       name: c.name,
       category: c.category,
-      description: c.description
+      description: c.description,
+      instagramUrl: c.instagramUrl
     })),
     actionTargetId: 'sec-others'
   };

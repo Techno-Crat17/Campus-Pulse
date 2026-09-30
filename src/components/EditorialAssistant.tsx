@@ -655,15 +655,14 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                                 {c.description}
                               </p>
                             )}
-                            {(c.officialUrl || c.sourceUrl) && (
+                            {c.instagramUrl && (
                               <a
-                                href={c.officialUrl || c.sourceUrl}
+                                href={c.instagramUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 text-[11px] text-[#DC2626] font-bold hover:underline pt-1"
+                                className="inline-flex items-center gap-1 text-[11px] text-[#DC2626] font-bold hover:underline pt-1 uppercase tracking-wider font-mono"
                               >
-                                <span>[View Details]</span>
-                                <ExternalLink className="w-3 h-3" />
+                                <span>GET TO KNOW →</span>
                               </a>
                             )}
                           </div>

@@ -387,6 +387,9 @@ export async function seedDatabase() {
 
     // --- Seed Verified Clubs & Student Activities ---
     console.log('Seeding verified Clubs & Student Activities directory...');
+    const validClubNames = VERIFIED_MSRIT_CLUBS.map((c) => c.normalizedName);
+    await Club.deleteMany({ normalizedName: { $nin: validClubNames } });
+
     for (const club of VERIFIED_MSRIT_CLUBS) {
       await Club.findOneAndUpdate(
         { normalizedName: club.normalizedName },
@@ -399,6 +402,7 @@ export async function seedDatabase() {
             type: club.type || 'CLUB',
             relatedChapters: club.relatedChapters || [],
             source: club.source || 'Provided MSRIT club directory',
+            instagramUrl: club.instagramUrl || null,
             active: club.active !== false
           }
         },

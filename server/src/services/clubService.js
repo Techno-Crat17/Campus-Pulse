@@ -64,6 +64,7 @@ export async function getLiveClubs({ category, q, limit, forceRefresh = false } 
             type: c.type || 'CLUB',
             relatedChapters: c.relatedChapters || [],
             source: c.source || 'Provided MSRIT club directory',
+            instagramUrl: c.instagramUrl || null,
             active: c.active !== false
           }))
         };
@@ -109,6 +110,7 @@ export async function getLiveClubs({ category, q, limit, forceRefresh = false } 
       type: c.type || 'CLUB',
       relatedChapters: c.relatedChapters || [],
       source: c.source || 'Provided MSRIT club directory',
+      instagramUrl: c.instagramUrl || null,
       active: c.active !== false
     }))
   };
@@ -145,6 +147,7 @@ export async function getClubById(idOrName) {
           type: club.type || 'CLUB',
           relatedChapters: club.relatedChapters || [],
           source: club.source || 'Provided MSRIT club directory',
+          instagramUrl: club.instagramUrl || null,
           active: club.active !== false
         };
       }
@@ -170,6 +173,7 @@ export async function getClubById(idOrName) {
       type: found.type || 'CLUB',
       relatedChapters: found.relatedChapters || [],
       source: found.source || 'Provided MSRIT club directory',
+      instagramUrl: found.instagramUrl || null,
       active: found.active !== false
     };
   }

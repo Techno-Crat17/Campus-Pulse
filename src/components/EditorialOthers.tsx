@@ -46,6 +46,7 @@ export interface ClubItem {
   type?: string;
   relatedChapters?: string[];
   source?: string;
+  instagramUrl?: string | null;
   active?: boolean;
 }
 
@@ -549,32 +550,47 @@ export const EditorialOthers: React.FC = () => {
                         {catClubs.map((club) => (
                           <div
                             key={club.id || club.name}
-                            className="p-4 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-2 group shadow-2xs"
+                            className="p-4 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-3 group shadow-2xs flex flex-col justify-between"
                           >
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold text-[9px] uppercase">
-                                {club.category}
-                              </span>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold text-[9px] uppercase">
+                                  {club.category}
+                                </span>
+                              </div>
+
+                              <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
+                                {club.name}
+                              </h4>
+
+                              <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] leading-relaxed">
+                                {club.description}
+                              </p>
+
+                              {club.relatedChapters && club.relatedChapters.length > 0 && (
+                                <div className="pt-1 flex flex-wrap gap-1">
+                                  {club.relatedChapters.map((ch, cIdx) => (
+                                    <span
+                                      key={cIdx}
+                                      className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[9px] font-bold"
+                                    >
+                                      {ch}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
                             </div>
 
-                            <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
-                              {club.name}
-                            </h4>
-
-                            <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] leading-relaxed">
-                              {club.description}
-                            </p>
-
-                            {club.relatedChapters && club.relatedChapters.length > 0 && (
-                              <div className="pt-1 flex flex-wrap gap-1">
-                                {club.relatedChapters.map((ch, cIdx) => (
-                                  <span
-                                    key={cIdx}
-                                    className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[9px] font-bold"
-                                  >
-                                    {ch}
-                                  </span>
-                                ))}
+                            {club.instagramUrl && (
+                              <div className="pt-2 border-t border-[#111111]/5 dark:border-white/5">
+                                <a
+                                  href={club.instagramUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] font-mono font-bold text-[#DC2626] hover:underline inline-flex items-center gap-1 uppercase tracking-wider"
+                                >
+                                  <span>GET TO KNOW →</span>
+                                </a>
                               </div>
                             )}
                           </div>

@@ -307,7 +307,7 @@ export function detectIntents(normQuery, rawQuery = '') {
 
   const hasEvents = /\b(event|program|programme|function|activity|aaj kya|upcoming)\b/.test(q);
   const hasAnnouncements = /\b(announcement|notice|circular|news|latest notice|new notice)\b/.test(q);
-  const hasClubs = /\b(club|clubs|organization|society|societies|extracurricular|ieee|csi|ici|iiche|roborit|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|quiz\s*club|iclick|inara|comedy\s*club|studio\.?rit|clutchrit|nakama|ritmunsoc|dance|music|drama|theatre|photography|gaming|anime|debate|robotics)\b/i.test(q);
+  const hasClubs = /\b(club|clubs|organization|society|societies|extracurricular|ieee|nss|coderit|secur1t|aion|velocita|aws|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|quiz\s*club|iclick|inara|comedy\s*club|studio\.?rit|clutchrit|nakama|ritmunsoc|dance|drama|theatre|photography|gaming|anime|debate|coding|cybersecurity|cloud)\b/i.test(q);
   const hasEmergency = /\b(emergency|ambulance|fire|anti ragging|helpline|police|contact number)\b/.test(q);
 
   const hasIssues = /\b(issue|issues|problem|complaint|complain|wifi|water|electricity|broken|repair|status|resolve)\b/.test(q);
@@ -999,17 +999,18 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
         const chStr = c.relatedChapters && c.relatedChapters.length > 0
           ? `\n\nRelated Chapters:\n${c.relatedChapters.map(ch => `• ${ch}`).join('\n')}`
           : '';
+        const igStr = c.instagramUrl ? `\n\n[GET TO KNOW →](${c.instagramUrl})` : '';
         return {
           success: true,
           intent: 'CLUB_DETAILS',
-          answer: `**${c.name}**\n${c.category}\n\n${c.description}${chStr}`,
+          answer: `**${c.name}**\n${c.category}\n\n${c.description}${chStr}${igStr}`,
           data: { club: c },
-          actions: []
+          actions: c.instagramUrl ? [{ label: 'GET TO KNOW →', url: c.instagramUrl, type: 'EXTERNAL_LINK' }] : []
         };
       }
       if (clubs.length > 1) {
         const sample = clubs.slice(0, 5);
-        const clubsText = sample.map(c => `• **${c.name}** (${c.category})\n  ${c.description}`).join('\n\n');
+        const clubsText = sample.map(c => `• **${c.name}** (${c.category})\n  ${c.description}${c.instagramUrl ? ` • [GET TO KNOW →](${c.instagramUrl})` : ''}`).join('\n\n');
         return {
           success: true,
           intent: 'CLUB_SEARCH',
