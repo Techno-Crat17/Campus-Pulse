@@ -179,7 +179,13 @@ export function findRoomsByName(query: string): MSRITRoomRecord[] {
     'lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch', 'architecture', 'workshop', 'quadrangle',
     'lhc block', 'crd block', 'apex block', 'esb block', 'des block', 'arch block', 'multipurpose block'
   ]);
-  if (BUILDING_NAMES.has(qSearch) || BUILDING_NAMES.has(q)) {
+  const GENERIC_CATEGORY_NAMES = new Set([
+    'faculty room', 'faculty rooms', 'faculty lounge', 'faculty lounges', 'staff room', 'teachers room',
+    'seminar hall', 'seminar halls', 'seminar room', 'seminar rooms', 'lab', 'labs', 'laboratory', 'laboratories',
+    'computer lab', 'computer labs', 'classroom', 'classrooms', 'office', 'offices'
+  ]);
+
+  if (BUILDING_NAMES.has(qSearch) || BUILDING_NAMES.has(q) || GENERIC_CATEGORY_NAMES.has(qSearch) || GENERIC_CATEGORY_NAMES.has(q)) {
     return [];
   }
 
@@ -280,38 +286,294 @@ export function getRoomsByFloor(buildingQuery: string, floorQuery: string): MSRI
 }
 
 /**
+ * Normalizes a department input string to a canonical department code
+ */
+export function normalizeDepartmentCode(input: string): string | null {
+  if (!input || typeof input !== 'string') return null;
+  const s = input.trim().toLowerCase();
+
+  if (/\b(cse[- ]?aiml|aiml|ai\s*&\s*ml|ai[- ]ml|artificial\s*intelligence)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(ai|aiml)\b/i.test(s))) {
+    return 'CSE-AIML';
+  }
+  if (/\b(cse[- ]?cy|cyber\s*security|cybersecurity|cyber|cy)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(cy|cyber)\b/i.test(s))) {
+    return 'CSE-CY';
+  }
+  if (/\b(mle|medical\s*electronics|medical\s*software|medical\s*instrumentation|medical\s*lab|medical)\b/i.test(s) || (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))) {
+    return 'MLE';
+  }
+  if (/\b(e&ee|eee|electrical|electrical\s*&\s*electronics)\b/i.test(s)) {
+    return 'E&EE';
+  }
+  if (/\b(e&ie|eie|instrumentation|electronics\s*&\s*instrumentation)\b/i.test(s)) {
+    return 'E&IE';
+  }
+  if (/\b(e&te|ete|telecom|telecommunication|electronics\s*&\s*telecommunication)\b/i.test(s)) {
+    return 'E&TE';
+  }
+  if (/\b(ise|information\s*science)\b/i.test(s)) {
+    return 'ISE';
+  }
+  if (/\b(ece|electronics\s*&\s*communication)\b/i.test(s)) {
+    return 'ECE';
+  }
+  if (/\b(cv|civil|civil\s*engineering)\b/i.test(s)) {
+    return 'CV';
+  }
+  if (/\b(biotech|biotechnology)\b/i.test(s)) {
+    return 'BIOTECH';
+  }
+  if (/\b(ind|industrial|iem|industrial\s*engineering)\b/i.test(s)) {
+    return 'IND';
+  }
+  if (/\b(mca)\b/i.test(s)) {
+    return 'MCA';
+  }
+  if (/\b(cse|computer\s*science)\b/i.test(s)) {
+    return 'CSE';
+  }
+
+  return null;
+}
+
+/**
+ * Returns human-friendly display name for a department code
+ */
+export function getDepartmentDisplayName(code: string): string {
+  switch (code) {
+    case 'CSE-AIML':
+    case 'AIML':
+      return 'CSE (AIML)';
+    case 'CSE-CY':
+    case 'CY':
+      return 'CSE (Cyber Security)';
+    case 'MLE':
+      return 'Medical Electronics (MLE)';
+    case 'E&EE':
+      return 'Electrical & Electronics (E&EE)';
+    case 'E&IE':
+      return 'Electronics & Instrumentation (E&IE)';
+    case 'E&TE':
+      return 'Electronics & Telecommunication (E&TE)';
+    case 'CSE':
+      return 'Computer Science & Engineering (CSE)';
+    case 'ISE':
+      return 'Information Science & Engineering (ISE)';
+    case 'ECE':
+      return 'Electronics & Communication (ECE)';
+    case 'CV':
+      return 'Civil Engineering (CV)';
+    case 'BIOTECH':
+      return 'Biotechnology';
+    case 'IND':
+      return 'Industrial Engineering & Management (IEM)';
+    case 'MCA':
+      return 'MCA';
+    default:
+      return code;
+  }
+}
+
+/**
+ * Extracts standard room-category concept from a query
+ */
+export function extractRoomCategory(query: string): 'FACULTY_ROOM' | 'LAB' | 'LIBRARY' | 'SEMINAR_HALL' | 'OFFICE' | 'CLASSROOM' | null {
+  if (!query) return null;
+  const q = query.toLowerCase();
+
+  if (/\b(faculty\s*room|faculty\s*rooms|faculty\s*lounge|faculty\s*lounges|staff\s*room|staff\s*rooms|teachers?\s*room|teachers?\s*rooms|professors?\s*room|faculty\s*area|faculty\s*space|faculty\s*office|faculty\s*cabin|teachers\s*ka\s*room|teachers\s*ke\s*room|faculty\s*ka\s*room|faculty\s*ke\s*rooms?)\b/i.test(q)) {
+    return 'FACULTY_ROOM';
+  }
+  if (/\b(lab|labs|laboratory|laboratories)\b/i.test(q)) {
+    return 'LAB';
+  }
+  if (/\b(library|libraries|department\s*library|dept\s*library)\b/i.test(q)) {
+    return 'LIBRARY';
+  }
+  if (/\b(seminar\s*hall|seminar\s*room|seminar\s*halls|auditorium|board\s*room)\b/i.test(q)) {
+    return 'SEMINAR_HALL';
+  }
+  if (/\b(office|admin\s*office|administrative\s*office)\b/i.test(q)) {
+    return 'OFFICE';
+  }
+  if (/\b(classroom|classrooms|lecture\s*hall)\b/i.test(q)) {
+    return 'CLASSROOM';
+  }
+
+  return null;
+}
+
+export interface RoomQueryConstraints {
+  roomNumber?: string | null;
+  department?: string | null;
+  building?: string | null;
+  roomCategory?: 'FACULTY_ROOM' | 'LAB' | 'LIBRARY' | 'SEMINAR_HALL' | 'OFFICE' | 'CLASSROOM' | string | null;
+  floor?: string | null;
+  name?: string | null;
+}
+
+/**
+ * Structured Multi-Constraint Room Query Engine
+ * Performs deterministic filtering across department, building, category, and floor.
+ */
+export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[] {
+  let rooms = [...MSRIT_ROOMS];
+
+  // 1. Room Number constraint (Highest Priority Exact Match)
+  if (constraints.roomNumber) {
+    const norm = normalizeRoomNumber(constraints.roomNumber);
+    const exact = findRoomByNumber(norm);
+    return exact ? [exact] : [];
+  }
+
+  // 2. Building constraint (Hard Filter)
+  if (constraints.building) {
+    const b = constraints.building.toLowerCase().trim();
+    rooms = rooms.filter((r) => {
+      const rb = (r.building || '').toLowerCase();
+      const rbc = (r.buildingCode || '').toLowerCase();
+      if (b === 'crd' || b === 'multipurpose') {
+        return rb.includes('crd') || rb.includes('multipurpose') || rbc === 'crd';
+      }
+      if (b === 'lhc') {
+        return rb.includes('lhc') || rbc === 'lhc' || rb.includes('lecture hall');
+      }
+      if (b === 'apex') {
+        return rb.includes('apex') || rbc === 'apex';
+      }
+      if (b === 'esb') {
+        return rb.includes('esb') || rbc === 'esb';
+      }
+      if (b === 'des') {
+        return rb.includes('des') || rbc === 'des';
+      }
+      if (b === 'arch' || b.includes('architecture')) {
+        return rb.includes('arch') || rbc === 'arch' || rb.includes('architecture');
+      }
+      return rb.includes(b) || rbc.includes(b);
+    });
+  }
+
+  // 3. Department constraint (HARD FILTER)
+  if (constraints.department) {
+    const normDept = normalizeDepartmentCode(constraints.department) || constraints.department.toUpperCase();
+    rooms = rooms.filter((r) => {
+      const depts = (r.departments || []).map((x) => x.toUpperCase());
+      const dStr = (r.department || '').toUpperCase();
+
+      if (normDept === 'CSE-AIML' || normDept === 'AIML') {
+        return depts.includes('CSE-AIML') || depts.includes('AIML') || dStr.includes('AIML') || dStr.includes('AI & ML') || dStr.includes('ARTIFICIAL INTELLIGENCE');
+      }
+      if (normDept === 'CSE-CY' || normDept === 'CY' || normDept === 'CYBER SECURITY') {
+        return depts.includes('CSE-CY') || depts.includes('CY') || dStr.includes('CYBER');
+      }
+      if (normDept === 'MLE') {
+        return depts.includes('MLE') || dStr.includes('MLE') || dStr.includes('MEDICAL ELECTRONICS') || dStr.includes('MEDICAL');
+      }
+      if (normDept === 'E&EE' || normDept === 'EEE') {
+        return depts.includes('E&EE') || depts.includes('EEE') || dStr.includes('E&EE') || dStr.includes('EEE') || dStr.includes('ELECTRICAL');
+      }
+      if (normDept === 'E&IE' || normDept === 'EIE') {
+        return depts.includes('E&IE') || depts.includes('EIE') || dStr.includes('E&IE') || dStr.includes('EIE') || dStr.includes('INSTRUMENTATION');
+      }
+      if (normDept === 'E&TE' || normDept === 'ETE') {
+        return depts.includes('E&TE') || depts.includes('ETE') || dStr.includes('E&TE') || dStr.includes('ETE') || dStr.includes('TELECOMMUNICATION');
+      }
+      if (normDept === 'CSE') {
+        return (depts.includes('CSE') || dStr === 'CSE' || dStr.includes('COMPUTER SCIENCE')) && !depts.includes('CSE-AIML') && !depts.includes('CSE-CY');
+      }
+      if (normDept === 'ISE') {
+        return depts.includes('ISE') || dStr.includes('ISE') || dStr.includes('INFORMATION SCIENCE');
+      }
+      if (normDept === 'ECE') {
+        return depts.includes('ECE') || dStr.includes('ECE') || dStr.includes('ELECTRONICS & COMM');
+      }
+      if (normDept === 'CV') {
+        return depts.includes('CV') || dStr.includes('CIVIL');
+      }
+      if (normDept === 'BIOTECH') {
+        return depts.includes('BIOTECH') || dStr.includes('BIOTECH');
+      }
+      if (normDept === 'IND') {
+        return depts.includes('IND') || dStr.includes('IND');
+      }
+      if (normDept === 'MCA') {
+        return depts.includes('MCA') || dStr.includes('MCA');
+      }
+
+      return depts.includes(normDept) || dStr.includes(normDept);
+    });
+  }
+
+  // 4. Room Category constraint
+  if (constraints.roomCategory) {
+    const cat = constraints.roomCategory;
+    if (cat === 'FACULTY_ROOM') {
+      rooms = rooms.filter((r) => {
+        const c = (r.category || '').toLowerCase();
+        const t = (r.type || '').toLowerCase();
+        const n = (r.name || '').toLowerCase();
+        return c.includes('faculty') || t === 'lounge' || n.includes('faculty') || n.includes('staff');
+      });
+    } else if (cat === 'LAB') {
+      rooms = rooms.filter((r) => {
+        const c = (r.category || '').toLowerCase();
+        const t = (r.type || '').toLowerCase();
+        const n = (r.name || '').toLowerCase();
+        return t === 'lab' || c.includes('lab') || n.includes('lab');
+      });
+    } else if (cat === 'LIBRARY') {
+      rooms = rooms.filter((r) => {
+        const t = (r.type || '').toLowerCase();
+        const n = (r.name || '').toLowerCase();
+        return t === 'library' || n.includes('library');
+      });
+    } else if (cat === 'SEMINAR_HALL') {
+      rooms = rooms.filter((r) => {
+        const t = (r.type || '').toLowerCase();
+        const n = (r.name || '').toLowerCase();
+        return t === 'seminar hall' || n.includes('seminar hall') || n.includes('auditorium');
+      });
+    } else if (cat === 'OFFICE') {
+      rooms = rooms.filter((r) => {
+        const t = (r.type || '').toLowerCase();
+        const n = (r.name || '').toLowerCase();
+        return t === 'office' || n.includes('office');
+      });
+    } else if (cat === 'CLASSROOM') {
+      rooms = rooms.filter((r) => {
+        const t = (r.type || '').toLowerCase();
+        const n = (r.name || '').toLowerCase();
+        return t === 'classroom' || n.includes('classroom');
+      });
+    }
+  }
+
+  // 5. Floor constraint
+  if (constraints.floor) {
+    const f = constraints.floor.toLowerCase().trim();
+    rooms = rooms.filter((r) => (r.floor || '').toLowerCase().includes(f));
+  }
+
+  // 6. Name / search term constraint (if provided)
+  if (constraints.name) {
+    const nSearch = normalizeRoomNameForSearch(constraints.name);
+    rooms = rooms.filter((r) => {
+      const rName = normalizeRoomNameForSearch(r.name || '');
+      const rNum = normalizeRoomNameForSearch(r.roomNumber || '');
+      return rName.includes(nSearch) || rNum.includes(nSearch);
+    });
+  }
+
+  return rooms;
+}
+
+/**
  * Filter rooms by department (e.g. MLE, E&EE, E&IE, E&TE, AIML, CY)
  */
 export function getRoomsByDepartment(deptQuery: string, buildingFilter?: string): MSRITRoomRecord[] {
-  if (!deptQuery) return [];
-  const d = deptQuery.toLowerCase().trim();
-  const pool = buildingFilter ? getRoomsByBuilding(buildingFilter) : MSRIT_ROOMS;
-
-  return pool.filter((r) => {
-    const deptStr = (r.department || '').toLowerCase();
-    const depts = (r.departments || []).map((x) => x.toLowerCase());
-
-    const matchesStr = deptStr.includes(d) || d.includes(deptStr);
-    const matchesArray = depts.some((item) => item.includes(d) || d.includes(item));
-
-    // Special aliases
-    if (d === 'mle' || d.includes('medical electronics')) {
-      return matchesStr || matchesArray || deptStr.includes('medical') || depts.some((x) => x.includes('mle'));
-    }
-    if (d === 'e&ee' || d === 'eee' || d.includes('electrical')) {
-      return matchesStr || matchesArray || deptStr.includes('electrical') || depts.some((x) => x.includes('e&ee') || x.includes('eee'));
-    }
-    if (d === 'e&ie' || d === 'eie' || d.includes('instrumentation')) {
-      return matchesStr || matchesArray || deptStr.includes('instrumentation') || depts.some((x) => x.includes('e&ie') || x.includes('eie'));
-    }
-    if (d === 'e&te' || d === 'ete' || d.includes('telecommunication')) {
-      return matchesStr || matchesArray || deptStr.includes('telecommunication') || depts.some((x) => x.includes('e&te') || x.includes('ete'));
-    }
-    if (d.includes('aiml') || d.includes('ai') || d.includes('cyber') || d.includes('cy')) {
-      return matchesStr || matchesArray;
-    }
-
-    return matchesStr || matchesArray;
+  return queryRooms({
+    department: deptQuery,
+    building: buildingFilter
   });
 }
 
@@ -330,6 +592,8 @@ export async function fetchRoomsApi(params?: {
   building?: string;
   floor?: string;
   department?: string;
+  category?: string;
+  roomCategory?: string;
   q?: string;
 }): Promise<MSRITRoomRecord[]> {
   try {
@@ -337,6 +601,7 @@ export async function fetchRoomsApi(params?: {
     if (params?.building) searchParams.append('building', params.building);
     if (params?.floor) searchParams.append('floor', params.floor);
     if (params?.department) searchParams.append('department', params.department);
+    if (params?.category || params?.roomCategory) searchParams.append('category', params.category || params.roomCategory || '');
     if (params?.q) searchParams.append('q', params.q);
 
     const queryUrl = `/api/rooms?${searchParams.toString()}`;
@@ -352,25 +617,12 @@ export async function fetchRoomsApi(params?: {
     // Graceful fallback to client dataset
   }
 
-  // Fallback using client dataset
-  let results = [...MSRIT_ROOMS];
-  if (params?.building) {
-    results = getRoomsByBuilding(params.building);
-  }
-  if (params?.floor) {
-    const f = params.floor.toLowerCase();
-    results = results.filter((r) => (r.floor || '').toLowerCase().includes(f));
-  }
-  if (params?.department) {
-    results = getRoomsByDepartment(params.department, params?.building);
-  }
-  if (params?.q) {
-    const q = params.q.toLowerCase();
-    results = results.filter((r) =>
-      r.roomNumber.toLowerCase().includes(q) ||
-      (r.name && r.name.toLowerCase().includes(q)) ||
-      (r.description && r.description.toLowerCase().includes(q))
-    );
-  }
-  return results;
+  // Fallback using client multi-constraint engine
+  return queryRooms({
+    building: params?.building,
+    floor: params?.floor,
+    department: params?.department,
+    roomCategory: params?.roomCategory || params?.category,
+    name: params?.q
+  });
 }

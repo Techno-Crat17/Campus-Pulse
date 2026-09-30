@@ -59,8 +59,12 @@ import {
   findRoomsByName,
   getRoomsByBuilding,
   getRoomsByFloor,
-  getRoomsByDepartment,
-  normalizeRoomNumber
+  normalizeRoomNumber,
+  normalizeRoomNameForSearch,
+  normalizeDepartmentCode,
+  getDepartmentDisplayName,
+  extractRoomCategory,
+  queryRooms
 } from './roomsData';
 import type { MSRITRoomRecord } from './roomsData';
 
@@ -160,6 +164,9 @@ export interface CampusAiContext {
   lastBlock?: VerifiedCampusBlock | null;
   lastLocation?: MSRITLocation | null;
   lastDepartment?: MSRITDepartment | null;
+  lastDepartmentCode?: string | null;
+  lastRoomCategory?: string | null;
+  lastBuildingKey?: string | null;
   lastRoom?: MSRITRoomRecord | null;
   lastIntents?: CampusAiIntent[];
   history?: Array<{ query: string; responseText: string; timestamp: number }>;
@@ -177,11 +184,13 @@ export interface ExtractedEntities {
   isHod?: boolean;
   departmentCode?: string;
   departmentName?: string;
+  departmentDisplayName?: string;
   matchedDepartment?: MSRITDepartment;
   libraryId?: string;
   matchedLibrary?: CampusLibrary;
   isPronounLibrary?: boolean;
   buildingId?: string;
+  buildingKey?: string;
   matchedBlock?: VerifiedCampusBlock;
   matchedLocation?: MSRITLocation;
   matchedNode?: CampusNode;
@@ -190,6 +199,7 @@ export interface ExtractedEntities {
   lostFoundKeyword?: string;
   issueKeyword?: string;
   roomQuery?: string;
+  roomCategory?: 'FACULTY_ROOM' | 'LAB' | 'LIBRARY' | 'SEMINAR_HALL' | 'OFFICE' | 'CLASSROOM' | string | null;
   matchedRoom?: MSRITRoomRecord;
   matchedRoomsList?: MSRITRoomRecord[];
 }
@@ -569,8 +579,34 @@ export function extractEntities(
     normQ
   };
 
+  // --- Department & Room Category Extraction ---
+  let deptCode = normalizeDepartmentCode(normQ);
+  let roomCat = extractRoomCategory(normQ);
+  const bldgKey = ['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch', 'workshop'].find((b) => normQ.includes(b));
+
+  // Follow-up context inheritance:
+  // e.g. "aur cyber security?" -> inherits previous lastRoomCategory ('FACULTY_ROOM')
+  if (!roomCat && deptCode && context?.lastRoomCategory) {
+    roomCat = context.lastRoomCategory as any;
+  }
+  // e.g. "unke labs?" -> inherits previous lastDepartmentCode
+  if (!deptCode && roomCat && context?.lastDepartmentCode) {
+    deptCode = context.lastDepartmentCode;
+  }
+
+  if (deptCode) {
+    entities.departmentCode = deptCode;
+    entities.departmentDisplayName = getDepartmentDisplayName(deptCode);
+  }
+  if (roomCat) {
+    entities.roomCategory = roomCat;
+  }
+  if (bldgKey) {
+    entities.buildingKey = bldgKey;
+  }
+
   // --- Pronoun Follow-up Resolution ---
-  const hasFacultyPronoun = /\b(she|her|he|his|him|the professor|the teacher|that professor|this professor|unka|unki|uska|uski|unke|uske)\b/i.test(normQ) && !normQ.includes('library') && !normQ.includes('crowded');
+  const hasFacultyPronoun = /\b(she|her|he|his|him|the professor|the teacher|that professor|this professor|unka|unki|uska|uski|unke|uske)\b/i.test(normQ) && !normQ.includes('library') && !normQ.includes('crowded') && !roomCat;
   const isBareFacultyFollowup = /^\s*(cabin|mail|email|schedule|timetable|location|dept|department)\s*[?]?\s*$/i.test(rawQuery);
   const hasLibraryPronoun = /\b(it|its|the library|that library|this library)\b/.test(normQ);
   const hasBuildingPronoun = /\b(it|its|that block|that building|this block)\b/.test(normQ);
@@ -593,9 +629,9 @@ export function extractEntities(
   if (!entities.matchedRoom) {
     const bldgPrefixMatch = normQ.match(/\b(lhc|crd|multipurpose|apex|esb|des|arch)\b.*?(\d{3}[A-Z]?)\b/i);
     if (bldgPrefixMatch) {
-      const bKey = bldgPrefixMatch[1].toLowerCase();
+      const bK = bldgPrefixMatch[1].toLowerCase();
       const rawNum = bldgPrefixMatch[2];
-      const prefix = (bKey.includes('crd') || bKey.includes('multipurpose')) ? 'CRD-' : (bKey.includes('lhc') ? 'LHC-' : (bKey.includes('apex') ? 'AB-' : (bKey.includes('esb') ? 'ESB-' : '')));
+      const prefix = (bK.includes('crd') || bK.includes('multipurpose')) ? 'CRD-' : (bK.includes('lhc') ? 'LHC-' : (bK.includes('apex') ? 'AB-' : (bK.includes('esb') ? 'ESB-' : '')));
       if (prefix) {
         const fullCandidate = `${prefix}${rawNum.toUpperCase()}`;
         const roomRec = findRoomByNumber(fullCandidate);
@@ -606,33 +642,41 @@ export function extractEntities(
     }
   }
 
-  // Handle Room Name lookups (e.g. "LHC Seminar Hall – II", "Antenna Fabrication Unit", "D & T Equipment Lab", "Medical Electronics Lab", "Ramaiah Evolute", "Schneider Centre", "International Relations")
-  const isDeptRoomSearch = (normQ.includes('mle') || normQ.includes('medical') || normQ.includes('e&ee') || normQ.includes('eee') || normQ.includes('e&ie') || normQ.includes('eie') || normQ.includes('e&te') || normQ.includes('ete') || normQ.includes('aiml') || normQ.includes('cyber') || normQ.includes('cse') || normQ.includes('mca')) &&
-    (normQ.includes('lhc') || normQ.includes('crd') || normQ.includes('multipurpose') || normQ.includes('esb') || normQ.includes('apex')) &&
-    /\b(room|rooms|lab|labs|kaha|kidhar|list|dikhao|show)\b/i.test(normQ) &&
-    !/\b\d{3}\b/.test(normQ);
-
-  if (!entities.matchedRoom && !isDeptRoomSearch) {
+  // Handle Room Name lookups (e.g. "LHC Seminar Hall – II", "Antenna Fabrication Unit", "Ramaiah Evolute", "Schneider Centre")
+  if (!entities.matchedRoom && !entities.departmentCode) {
     const qClean = normQ
-      .replace(/\b(where is|where are|where can i find|where do i find|where's|find|locate|show me|address of|kaha hai|kahan hai|kidhar hai|kaha h|kidhar h|kahan h|kaha milega|kaha milenge|location batao|location btao|kaun sa room hai|kya hai|kis floor pe|kis floor par|kis block me|kis building me|batao|btao|hai|h)\b/gi, ' ')
+      .replace(/\b(where is|where are|where can i find|where do i find|where's|find|locate|show me|address of|kaha hai|kahan hai|kidhar hai|kaha hain|kahan hain|kidhar hain|kaha h|kidhar h|kahan h|kaha milega|kaha milenge|location batao|location btao|kaun sa room hai|kya hai|kis floor pe|kis floor par|kis block me|kis building me|batao|btao|hai|hain|h)\b/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
-    if (qClean.length >= 2) {
+    const GENERIC_CATEGORY_WORDS = new Set([
+      'faculty room', 'faculty rooms', 'faculty lounge', 'faculty lounges', 'staff room', 'teachers room', 'seminar hall', 'seminar halls', 'seminar room', 'seminar rooms', 'lab', 'labs', 'laboratory', 'laboratories', 'computer lab', 'computer labs', 'classroom', 'classrooms'
+    ]);
+
+    const qWithoutBldg = qClean
+      .replace(/\b(in|at|of|on|me|par|ka|ke|ki|lhc|crd|multipurpose|apex|esb|des|arch|workshop|block|building)\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (qClean.length >= 2 && !GENERIC_CATEGORY_WORDS.has(qClean.toLowerCase()) && !GENERIC_CATEGORY_WORDS.has(qWithoutBldg.toLowerCase())) {
       const nameMatches = findRoomsByName(qClean);
       if (nameMatches.length > 0) {
-        entities.matchedRoom = nameMatches[0];
-        if (nameMatches.length > 1) {
+        // If there's an exact normalized room name match, choose that specific room
+        const qSearch = normalizeRoomNameForSearch(qClean);
+        const exact = nameMatches.find(r => normalizeRoomNameForSearch(r.name || '') === qSearch);
+        entities.matchedRoom = exact || nameMatches[0];
+        if (nameMatches.length > 1 && !exact) {
           entities.matchedRoomsList = nameMatches;
         }
       }
     }
   }
 
-  // Handle room follow-up context (e.g. "iska floor?", "floor kya hai?", "kis floor pe hai")
+  // Handle room follow-up context (e.g. "iska floor?", "floor kya hai?", "kis floor pe hai", "iska department?")
   if (!entities.matchedRoom && context?.lastRoom) {
     const isFloorFollowup = /\b(iska\s*floor|floor\s*kya|kis\s*floor|floor)\b/i.test(normQ) && !normQ.includes('lhc') && !normQ.includes('crd') && !normQ.includes('esb') && !normQ.includes('apex') && !/\d{3}/.test(normQ);
-    if (isFloorFollowup) {
+    const isDeptFollowup = /\b(iska\s*dept|iska\s*department|department\s*kya)\b/i.test(normQ);
+    if (isFloorFollowup || isDeptFollowup) {
       entities.matchedRoom = context.lastRoom;
     }
   }
@@ -672,7 +716,8 @@ export function extractEntities(
 
     const FACULTY_STOP_WORDS = new Set([
       'and', 'the', 'for', 'with', 'of', 'in', 'on', 'at', 'to', 'is', 'are', 'was', 'where', 'what', 'which', 'who', 'how', 'principal', 'head', 'dean', 'director',
-      'abhi', 'kal', 'parso', 'waha', 'kaise', 'jana', 'room', 'free', 'khali', 'kaha', 'kidhar', 'cse', 'ise', 'ece', 'lhc', 'esb', 'crd', 'apex', 'library', 'notice', 'event', 'complaint', 'emergency', 'fire'
+      'abhi', 'kal', 'parso', 'waha', 'kaise', 'jana', 'room', 'rooms', 'free', 'khali', 'kaha', 'kidhar', 'cse', 'ise', 'ece', 'lhc', 'esb', 'crd', 'apex', 'library', 'notice', 'event', 'complaint', 'emergency', 'fire',
+      'aiml', 'cyber', 'security', 'lounge', 'lounges', 'staff', 'teachers', 'cabin', 'cabins', 'office', 'offices', 'department', 'dept', 'me'
     ]);
 
     for (const fac of FACULTY_MSRIT_DATA) {
@@ -731,14 +776,19 @@ export function extractEntities(
   }
 
   // --- Department Entity Matching ---
-  const deptMatch = MSRIT_DEPARTMENTS_DATA.find((d) => {
-    const codeRegex = new RegExp(`\\b${d.code.toLowerCase()}\\b`, 'i');
-    return codeRegex.test(normQ) || normQ.includes(d.name.toLowerCase());
-  });
-  if (deptMatch) {
-    entities.matchedDepartment = deptMatch;
-    entities.departmentCode = deptMatch.code;
-    entities.departmentName = deptMatch.name;
+  if (!entities.departmentCode) {
+    const deptMatch = MSRIT_DEPARTMENTS_DATA.find((d) => {
+      const codeRegex = new RegExp(`\\b${d.code.toLowerCase()}\\b`, 'i');
+      return codeRegex.test(normQ) || normQ.includes(d.name.toLowerCase());
+    });
+    if (deptMatch) {
+      entities.matchedDepartment = deptMatch;
+      entities.departmentCode = deptMatch.code;
+      entities.departmentName = deptMatch.name;
+      if (!entities.departmentDisplayName) {
+        entities.departmentDisplayName = getDepartmentDisplayName(deptMatch.code);
+      }
+    }
   }
 
   // --- Verified Campus Block Matching ---
@@ -1151,54 +1201,193 @@ export function getRoomAnswer(
   normQ: string,
   rawQuery: string
 ): CampusAiResult | null {
-  const { matchedRoom, roomQuery } = entities;
+  const { matchedRoom, roomQuery, departmentCode, roomCategory, buildingKey } = entities;
 
-  // 1. Single Room Result (Strict, compact format requested in Section 5, 6, 9 & 15)
+  // 1. Single Room Result (via direct roomNumber or exact room name lookup)
   if (matchedRoom) {
-    const r = matchedRoom;
-    const isFloorQuery = /\b(kis\s*floor|which\s*floor|kaunsi\s*floor|kaun\s*sa\s*floor|floor\s*kya|iska\s*floor|ka\s*floor|kis\s*floor\s*pe|kis\s*floor\s*par)\b/i.test(normQ);
-    const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
-      ? 'Multipurpose Block'
-      : (r.building?.toLowerCase().includes('lhc') ? 'LHC Block' : `${r.building || 'Campus Facilities'} Block`);
+    // If a department constraint was specified, ensure matchedRoom satisfies it
+    const roomDepts = [
+      matchedRoom.department,
+      ...(matchedRoom.departments || [])
+    ].filter((d): d is string => typeof d === 'string' && d.length > 0).map(d => normalizeDepartmentCode(d) || d);
 
-    const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
+    const matchesDept = !departmentCode || roomDepts.some(d => d === departmentCode || d?.includes(departmentCode));
 
-    let responseText = '';
-    if (isFloorQuery) {
-      responseText = `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
-    } else {
-      const floorStr = r.floor ? ` · ${r.floor}` : '';
-      responseText = `**${r.roomNumber}${namePart}**\n📍 ${bldgDisplay}${floorStr}`;
+    if (matchesDept) {
+      const r = matchedRoom;
+      const isFloorQuery = /\b(kis\s*floor|which\s*floor|kaunsi\s*floor|kaun\s*sa\s*floor|floor\s*kya|iska\s*floor|ka\s*floor|kis\s*floor\s*pe|kis\s*floor\s*par)\b/i.test(normQ);
+      const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
+        ? 'Multipurpose Block'
+        : (r.building?.toLowerCase().includes('lhc') ? 'LHC Block' : `${r.building || 'Campus Facilities'} Block`);
+
+      const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
+      const deptPart = r.department && r.department !== '-' ? `${r.department} · ` : '';
+
+      let responseText = '';
+      if (isFloorQuery) {
+        responseText = `**${r.roomNumber}${namePart}**\n${deptPart}${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
+      } else {
+        const floorStr = r.floor ? `${r.floor} · ` : '';
+        responseText = `**${r.roomNumber}${namePart}**\n${deptPart}${floorStr}${bldgDisplay}`;
+      }
+
+      const bldgId = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
+        ? 'crd'
+        : r.building?.toLowerCase().includes('lhc')
+          ? 'block-lhc'
+          : r.building?.toLowerCase().includes('apex')
+            ? 'block-apex'
+            : r.building?.toLowerCase().includes('esb')
+              ? 'block-esb'
+              : r.building?.toLowerCase().includes('des')
+                ? 'block-des'
+                : r.building?.toLowerCase().includes('arch')
+                  ? 'block-architecture'
+                  : 'block-lhc';
+
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION'],
+        responseText,
+        subText: `Source: ${r.sourceTitle || 'Official MSRIT Verified Survey'} • Verified Room Registry.`,
+        matchedRoom: r,
+        actionTargetId: bldgId
+      };
+    }
+  }
+
+  // 2. Structured Multi-Constraint Query: Department + Room Category / Department Rooms
+  if (departmentCode && (roomCategory || normQ.includes('room') || normQ.includes('lab') || normQ.includes('lounge') || normQ.includes('kaha') || normQ.includes('kidhar') || normQ.includes('where'))) {
+    const deptDisplayName = getDepartmentDisplayName(departmentCode);
+    const bldgFilter = buildingKey || (['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch'].find((b) => normQ.includes(b)));
+
+    // Execute structured query with hard constraints against database
+    const matchingRooms = queryRooms({
+      department: departmentCode,
+      building: bldgFilter,
+      roomCategory: roomCategory || (normQ.includes('faculty') ? 'FACULTY_ROOM' : null)
+    });
+
+    const bldgDisplay = (bldgFilter === 'crd' || bldgFilter === 'multipurpose' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('crd')))
+      ? 'Multipurpose Block / CRD'
+      : (bldgFilter === 'lhc' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('lhc')))
+        ? 'LHC Block'
+        : `${bldgFilter ? bldgFilter.toUpperCase() : (matchingRooms.length > 0 ? matchingRooms[0].building : 'Campus')} Block`;
+
+    const actionId = (bldgFilter === 'crd' || bldgFilter === 'multipurpose' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('crd')))
+      ? 'crd'
+      : 'block-lhc';
+
+    if (matchingRooms.length === 1) {
+      const r = matchingRooms[0];
+      const deptPart = r.department && r.department !== '-' ? `${r.department} · ` : '';
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION'],
+        responseText: `**${r.roomNumber} — ${r.name || r.type}**\n${deptPart}${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`,
+        subText: "Grounded strictly in official MSRIT department & facility registry.",
+        matchedRoom: r,
+        actionTargetId: actionId
+      };
     }
 
-    const bldgId = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
-      ? 'crd'
-      : r.building?.toLowerCase().includes('lhc')
-        ? 'block-lhc'
-        : r.building?.toLowerCase().includes('apex')
-          ? 'block-apex'
-          : r.building?.toLowerCase().includes('esb')
-            ? 'block-esb'
-            : r.building?.toLowerCase().includes('des')
-              ? 'block-des'
-              : r.building?.toLowerCase().includes('arch')
-                ? 'block-architecture'
-                : 'block-lhc';
+    if (matchingRooms.length > 1) {
+      const displayRooms = matchingRooms.slice(0, 5);
+      const categoryTitle = roomCategory === 'FACULTY_ROOM' ? 'Faculty Rooms' : (roomCategory === 'LAB' ? 'Labs' : 'Rooms');
+      const lines = displayRooms.map((r) => `- **${r.roomNumber}** — ${r.name || r.type}${r.floor ? ` · ${r.floor}` : ''}`).join('\n');
+      const moreText = matchingRooms.length > 5 ? `\n\n...and ${matchingRooms.length - 5} more rooms.` : '';
 
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION', 'DEPARTMENT_ROOMS'],
+        responseText: `**${deptDisplayName} ${categoryTitle}**\n\n${lines}${moreText}\n\n📍 ${bldgDisplay}`,
+        subText: "Grounded strictly in official MSRIT department & facility registry.",
+        matchedRoomsList: matchingRooms,
+        actionTargetId: actionId
+      };
+    }
+
+    // Strict No-Hallucination response when department constraint produces 0 results
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['ROOM_LOCATION'],
-      responseText,
-      subText: `Source: ${r.sourceTitle || 'Official MSRIT Verified Survey'} • Verified Room Registry.`,
-      matchedRoom: r,
-      actionTargetId: bldgId
+      responseText: `I couldn't find a matching ${deptDisplayName} ${roomCategory === 'FACULTY_ROOM' ? 'faculty room' : 'room'} in Campus Pulse.`,
+      subText: "Strict No-Hallucination Policy: Verified against official MSRIT registry."
     };
   }
 
-  // 2. Building + Floor Query (e.g. "lhc ke 3rd floor rooms dikhao", "crd ke 3rd floor rooms", "lhc basement rooms")
+  // 3. Structured Building + Room Category (e.g. "faculty rooms in CRD", "faculty lounge in CRD", "LHC faculty room")
+  const bldgKey = buildingKey || (['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch'].find((b) => normQ.includes(b)));
+  if (bldgKey && roomCategory) {
+    const matchingRooms = queryRooms({
+      building: bldgKey,
+      roomCategory: roomCategory
+    });
+
+    const bldgDisplay = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'CRD / Multipurpose Block' : `${bldgKey.toUpperCase()} Block`;
+    const actionId = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'crd' : `block-${bldgKey}`;
+    const categoryTitle = roomCategory === 'FACULTY_ROOM' ? 'Faculty Rooms' : (roomCategory === 'LAB' ? 'Labs' : 'Rooms');
+
+    if (matchingRooms.length === 1) {
+      const r = matchingRooms[0];
+      const deptPart = r.department && r.department !== '-' ? `${r.department} · ` : '';
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION'],
+        responseText: `**${r.roomNumber} — ${r.name || r.type}**\n${deptPart}${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`,
+        subText: "Grounded strictly in official MSRIT department & facility registry.",
+        matchedRoom: r,
+        actionTargetId: actionId
+      };
+    }
+
+    if (matchingRooms.length > 1) {
+      const displayRooms = matchingRooms.slice(0, 5);
+      const lines = displayRooms.map((r) => `- **${r.roomNumber}** — ${r.name || r.type}${r.floor ? ` · ${r.floor}` : ''}`).join('\n');
+      const moreText = matchingRooms.length > 5 ? `\n\n...and ${matchingRooms.length - 5} more rooms.` : '';
+
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION', 'BUILDING_ROOMS'],
+        responseText: `**${bldgDisplay} — ${categoryTitle}**\n\n${lines}${moreText}\n\n📍 ${bldgDisplay}`,
+        subText: "Grounded strictly in official MSRIT department & facility registry.",
+        matchedRoomsList: matchingRooms,
+        actionTargetId: actionId
+      };
+    }
+  }
+
+  // 3b. Structured Generic Room Category (e.g. "faculty rooms kaha hain", "faculty lounge")
+  if (roomCategory && (normQ.includes('kaha') || normQ.includes('kidhar') || normQ.includes('where') || normQ.includes('list') || normQ.includes('dikhao') || normQ.includes('show'))) {
+    const matchingRooms = queryRooms({
+      roomCategory: roomCategory
+    });
+    if (matchingRooms.length > 0) {
+      const displayRooms = matchingRooms.slice(0, 6);
+      const categoryTitle = roomCategory === 'FACULTY_ROOM' ? 'Faculty Rooms & Lounges' : (roomCategory === 'LAB' ? 'Campus Labs' : 'Campus Rooms');
+      const lines = displayRooms.map((r) => `- **${r.roomNumber}** — ${r.name || r.type} · ${r.floor ? `${r.floor}, ` : ''}${r.building || 'Campus'}`).join('\n');
+      const moreText = matchingRooms.length > 6 ? `\n\n...and ${matchingRooms.length - 6} more rooms.` : '';
+
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION', 'ROOM_SEARCH'],
+        responseText: `**${categoryTitle}**\n\n${lines}${moreText}`,
+        subText: "Grounded strictly in official MSRIT verified survey & database.",
+        matchedRoomsList: matchingRooms,
+        actionTargetId: 'block-lhc'
+      };
+    }
+  }
+
+  // 4. Building + Floor Query (e.g. "lhc ke 3rd floor rooms dikhao", "crd ke 3rd floor rooms", "lhc basement rooms")
   const floorMatch = normQ.match(/\b(basement|ground\s*floor|ground|1st\s*floor|first\s*floor|1st|2nd\s*floor|second\s*floor|2nd|3rd\s*floor|third\s*floor|3rd|4th\s*floor|fourth\s*floor|4th|5th\s*floor|fifth\s*floor|5th)\b/i);
-  const bldgKey = ['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch', 'workshop'].find((b) => normQ.includes(b));
 
   if (bldgKey && floorMatch) {
     let rawFloor = floorMatch[1].toLowerCase();
@@ -1229,39 +1418,7 @@ export function getRoomAnswer(
     }
   }
 
-  // 3. Building + Department Query (e.g. "MLE ke rooms LHC me dikhao", "LHC me E&EE ke rooms", "CRD me AIML ke rooms", "CRD me cyber security ke rooms")
-  if (bldgKey && (normQ.includes('mle') || normQ.includes('medical') || normQ.includes('e&ee') || normQ.includes('eee') || normQ.includes('electrical') || normQ.includes('e&ie') || normQ.includes('eie') || normQ.includes('instrumentation') || normQ.includes('e&te') || normQ.includes('ete') || normQ.includes('telecommunication') || normQ.includes('aiml') || normQ.includes('ai') || normQ.includes('cyber') || normQ.includes('cy') || normQ.includes('cse') || normQ.includes('mca'))) {
-    let deptKey = '';
-    if (normQ.includes('mle') || normQ.includes('medical')) deptKey = 'MLE';
-    else if (normQ.includes('e&ee') || normQ.includes('eee') || normQ.includes('electrical')) deptKey = 'E&EE';
-    else if (normQ.includes('e&ie') || normQ.includes('eie') || normQ.includes('instrumentation')) deptKey = 'E&IE';
-    else if (normQ.includes('e&te') || normQ.includes('ete') || normQ.includes('telecommunication')) deptKey = 'E&TE';
-    else if (normQ.includes('aiml') || normQ.includes('ai & ml')) deptKey = 'AIML';
-    else if (normQ.includes('cyber') || normQ.includes('cy')) deptKey = 'Cyber Security';
-    else if (normQ.includes('cse')) deptKey = 'CSE';
-    else if (normQ.includes('mca')) deptKey = 'MCA';
-
-    const dRooms = getRoomsByDepartment(deptKey, bldgKey);
-    if (dRooms.length > 0) {
-      const displayRooms = dRooms.slice(0, 5);
-      const lines = displayRooms.map((r, i) => `${i + 1}. **${r.roomNumber}** — ${r.name || r.type}`).join('\n');
-      const moreText = dRooms.length > 5 ? `\n\n...and ${dRooms.length - 5} more rooms.` : '';
-      const bldgHeader = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'CRD' : bldgKey.toUpperCase();
-      const actionId = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'crd' : `block-${bldgKey}`;
-
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['DEPARTMENT_ROOMS'],
-        responseText: `**${bldgHeader} — ${deptKey} Rooms**\n\n${lines}${moreText}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
-        matchedRoomsList: dRooms,
-        actionTargetId: actionId
-      };
-    }
-  }
-
-  // 4. Building specific rooms query (e.g. "LHC rooms", "CRD rooms")
+  // 5. Building specific rooms query (e.g. "LHC rooms", "CRD rooms")
   if (bldgKey && (normQ.includes('room') || normQ.includes('classroom') || normQ.includes('lab') || normQ.includes('find') || normQ.includes('dikhao') || normQ.includes('show'))) {
     const bRooms = getRoomsByBuilding(bldgKey);
     if (bRooms.length > 0) {
@@ -1781,6 +1938,11 @@ export function maintainConversationContext(
   if (result.matchedDepartment) updatedContext.lastDepartment = result.matchedDepartment;
   if (result.matchedRoom) updatedContext.lastRoom = result.matchedRoom;
   if (result.intents) updatedContext.lastIntents = result.intents;
+
+  const entities = extractEntities(normalizeQuery(rawQuery), rawQuery, result.intents || [], context);
+  if (entities.departmentCode) updatedContext.lastDepartmentCode = entities.departmentCode;
+  if (entities.roomCategory) updatedContext.lastRoomCategory = entities.roomCategory;
+  if (entities.buildingKey) updatedContext.lastBuildingKey = entities.buildingKey;
 
   result.contextUpdated = updatedContext;
   return result;

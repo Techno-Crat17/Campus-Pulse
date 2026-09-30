@@ -186,6 +186,7 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     if (!text) return;
 
     setIsProcessing(true);
+    setActiveResult(null);
     setQuery(text);
     setErrorMessage(null);
 
