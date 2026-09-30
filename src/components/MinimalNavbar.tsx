@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowUpRight, Bell } from 'lucide-react';
-import { LOST_AND_FOUND_ENABLED } from '../config/features';
 import { ThemeToggle } from './ThemeToggle';
 
 interface MinimalNavbarProps {
@@ -70,10 +69,6 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
   ];
 
   const handleNavClick = (id: string) => {
-    if (id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED) {
-      setToastMessage('Lost & Found is coming soon');
-      return;
-    }
     setActiveSection(id);
     onNavigateSection(id);
     setMenuOpen(false);
@@ -136,7 +131,6 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
         {/* Minimal Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-7 text-[11px] tracking-wider text-[#666660] dark:text-[#9CA3AF]">
           {navItems.map((item) => {
-            const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
             const isActive = activeSection === item.id;
 
             return (
@@ -146,18 +140,10 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                 className={`transition-all duration-300 uppercase font-mono flex items-center gap-1.5 py-1 ${
                   isActive
                     ? 'text-[#DC2626] font-extrabold drop-shadow-[0_0_8px_rgba(220,38,38,0.55)] border-b-2 border-[#DC2626]'
-                    : isLfDisabled 
-                    ? 'text-[#888880] hover:text-[#DC2626] cursor-pointer' 
                     : 'text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626]'
                 }`}
-                title={isLfDisabled ? 'Lost & Found is coming soon' : undefined}
               >
                 <span>{item.label}</span>
-                {isLfDisabled && (
-                  <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase tracking-wider bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30">
-                    Coming Soon
-                  </span>
-                )}
               </button>
             );
           })}
@@ -191,7 +177,6 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
             </div>
             <div className="space-y-2 sm:space-y-3">
               {navItems.map((item) => {
-                const isLfDisabled = item.id === 'sec-lostfound' && !LOST_AND_FOUND_ENABLED;
                 const isActive = activeSection === item.id;
 
                 return (
@@ -203,22 +188,11 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
                     }`}
                   >
                     <div className="flex items-center gap-3 flex-wrap">
-                      <span className={isLfDisabled ? 'opacity-70' : ''}>{item.label}</span>
-                      {isLfDisabled && (
-                        <span className="text-xs sm:text-sm font-mono font-bold tracking-widest px-2.5 py-1 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 uppercase">
-                          COMING SOON
-                        </span>
-                      )}
+                      <span>{item.label}</span>
                     </div>
-                    {isLfDisabled ? (
-                      <span className="text-xs font-mono font-bold tracking-widest text-[#888880] group-hover:text-[#DC2626] uppercase">
-                        [TEMPORARILY UNAVAILABLE]
-                      </span>
-                    ) : (
-                      <ArrowUpRight className={`w-8 h-8 transition-all group-hover:translate-x-1 group-hover:-translate-y-1 ${
-                        isActive ? 'text-[#DC2626]' : 'text-[#666660] dark:text-[#9CA3AF] group-hover:text-[#DC2626]'
-                      }`} />
-                    )}
+                    <ArrowUpRight className={`w-8 h-8 transition-all group-hover:translate-x-1 group-hover:-translate-y-1 ${
+                      isActive ? 'text-[#DC2626]' : 'text-[#666660] dark:text-[#9CA3AF] group-hover:text-[#DC2626]'
+                    }`} />
                   </div>
                 );
               })}
