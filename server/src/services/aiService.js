@@ -99,31 +99,60 @@ export function resolveDepartment(input) {
   if (!input) return null;
   const s = input.trim().toLowerCase();
 
-  if (/\b(ise|information\s*science)\b/i.test(s)) {
+  // 1. CSE-AIML (Explicitly check CSE with AIML / AI&ML first so it is never confused with pure AI & ML)
+  if (
+    /\b(cse[- ]?aiml|cse\s*\(?aiml\)?|cse[- ]?ai[- ]?ml|cse\s*\(?ai\s*&?\s*ml\)?|cse\s*ai\s*ml|cse\s*ai\s*&\s*ml|cse\s*artificial\s*intelligence)\b/i.test(s) ||
+    (/\bcse\b/i.test(s) && /\b(aiml|ai\s*&?\s*ml|ai\s*and\s*ml)\b/i.test(s))
+  ) {
     return {
-      code: 'ISE',
-      name: 'Information Science & Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
-      matchFn: (f) => {
-        const d = (f.department || '').toLowerCase();
-        return d.includes('information science') || d.includes('ise');
-      }
-    };
-  }
-  if (/\b(cse\s*aiml|aiml|ai\s*&\s*ml|ai-ml|artificial\s*intelligence)\b/i.test(s)) {
-    return {
-      code: 'AIML',
-      name: 'Artificial Intelligence & Machine Learning',
+      code: 'CSE-AIML',
+      name: 'Computer Science & Engineering (AIML)',
       building: 'CRD',
       buildingId: 'block-crd',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('ai & ml') || d.includes('aiml') || d.includes('artificial intelligence');
+        return d.includes('cse-aiml') || (d.includes('cse') && d.includes('aiml'));
       }
     };
   }
-  if (/\b(cse\s*cy|cyber\s*security|cy)\b/i.test(s)) {
+
+  // 2. Pure AI & ML (Apex Block department, strictly non-CSE)
+  if (
+    /\b(aiml|ai\s*&\s*ml|ai[- ]ml|ai\s*and\s*ml|ai\s*ml|artificial\s*intelligence\s*&\s*machine\s*learning|artificial\s*intelligence\s*and\s*machine\s*learning|ai\s*machine\s*learning)\b/i.test(s)
+  ) {
+    return {
+      code: 'AI & ML',
+      name: 'Artificial Intelligence & Machine Learning',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return (d.includes('ai & ml') || d.includes('aiml') || d.includes('artificial intelligence')) && !d.includes('cse');
+      }
+    };
+  }
+
+  // 3. AI & DS (Apex Block department)
+  if (
+    /\b(ai\s*&\s*ds|ai[- ]ds|aids|ai\s*and\s*ds|ai\s*ds|artificial\s*intelligence\s*&\s*data\s*science|artificial\s*intelligence\s*and\s*data\s*science)\b/i.test(s)
+  ) {
+    return {
+      code: 'AI & DS',
+      name: 'Artificial Intelligence & Data Science',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('ai & ds') || d.includes('aids') || d.includes('data science');
+      }
+    };
+  }
+
+  // 4. CSE-CY (Cyber Security)
+  if (
+    /\b(cse[- ]?cy|cse\s*\(?cy\)?|cse\s*\(?cyber\s*security\)?|cyber\s*security|cybersecurity|cyber|cy)\b/i.test(s) ||
+    (/\bcse\b/i.test(s) && /\b(cy|cyber)\b/i.test(s))
+  ) {
     return {
       code: 'CY',
       name: 'Computer Science & Engineering (Cyber Security)',
@@ -135,7 +164,23 @@ export function resolveDepartment(input) {
       }
     };
   }
-  if (/\b(cse|computer\s*science)\b/i.test(s)) {
+
+  // 5. ISE (Information Science & Engineering - LHC Block)
+  if (/\b(ise|i\s*\.\s*s\s*\.\s*e|i\s*s\s*e|information\s*science|information\s*science\s*and\s*engineering|information\s*science\s*&\s*engineering|info\s*science|info\s*science\s*&\s*engineering)\b/i.test(s)) {
+    return {
+      code: 'ISE',
+      name: 'Information Science & Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('information science') || d.includes('ise');
+      }
+    };
+  }
+
+  // 6. Pure CSE (Computer Science & Engineering - LHC Block, strictly non-AIML / non-Cyber)
+  if (/\b(cse|c\s*\.\s*s\s*\.\s*e|c\s*s\s*e|computer\s*science|computer\s*science\s*and\s*engineering|comp\s*science|computer\s*science\s*dept)\b/i.test(s)) {
     return {
       code: 'CSE',
       name: 'Computer Science & Engineering',
@@ -147,7 +192,9 @@ export function resolveDepartment(input) {
       }
     };
   }
-  if (/\b(ece|electronics\s*&\s*communication)\b/i.test(s)) {
+
+  // 7. ECE / E&CE (Electronics & Communication - LHC / DES)
+  if (/\b(ece|e\s*\.\s*c\s*\.\s*e|e&ce|e\s*&\s*ce|electronics\s*&\s*communication|electronics\s*and\s*communication|electronics\s*communication)\b/i.test(s)) {
     return {
       code: 'ECE',
       name: 'Electronics & Communication Engineering',
@@ -155,11 +202,13 @@ export function resolveDepartment(input) {
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('electronics & communication') || d.includes('ece');
+        return d.includes('electronics & communication') || d.includes('ece') || d.includes('e&ce');
       }
     };
   }
-  if (/\b(et|telecom|telecommunication|electronics\s*&\s*telecommunication)\b/i.test(s)) {
+
+  // 8. ETE / E&TE (Electronics & Telecommunication - LHC / DES)
+  if (/\b(ete|e\s*\.\s*t\s*\.\s*e|e&te|e\s*&\s*te|telecom|telecommunication|electronics\s*&\s*telecommunication|electronics\s*and\s*telecommunication|telecommunication\s*engineering|electronics\s*telecommunication)\b/i.test(s)) {
     return {
       code: 'ET',
       name: 'Electronics & Telecommunication Engineering',
@@ -167,11 +216,13 @@ export function resolveDepartment(input) {
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('telecommunication') || d.includes('et');
+        return d.includes('telecommunication') || d.includes('et') || d.includes('ete');
       }
     };
   }
-  if (/\b(ei|instrumentation|electronics\s*&\s*instrumentation)\b/i.test(s)) {
+
+  // 9. EIE / E&IE (Electronics & Instrumentation - LHC / DES)
+  if (/\b(eie|e\s*\.\s*i\s*\.\s*e|e&ie|e\s*&\s*ie|instrumentation|electronics\s*&\s*instrumentation|electronics\s*and\s*instrumentation|instrumentation\s*engineering)\b/i.test(s)) {
     return {
       code: 'EI',
       name: 'Electronics & Instrumentation Engineering',
@@ -179,23 +230,92 @@ export function resolveDepartment(input) {
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('instrumentation') || d.includes('ei');
+        return d.includes('instrumentation') || d.includes('ei') || d.includes('eie');
       }
     };
   }
-  // IMPORTANT: ME = Medical Electronics. Do NOT interpret ME as Mechanical Engineering per Section 4 & 6.
-  if (/\b(me|medical\s*electronics)\b/i.test(s) && !/\bmechanical\b/i.test(s)) {
+
+  // 10. MLE (Medical Electronics - LHC / DES)
+  if (/\b(mle|medical\s*electronics|medical\s*electronics\s*engineering)\b/i.test(s) || (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))) {
     return {
-      code: 'ME',
+      code: 'MLE',
       name: 'Medical Electronics Engineering',
       building: 'LHC',
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('medical electronics');
+        return d.includes('medical electronics') || d.includes('mle');
       }
     };
   }
+
+  // 11. EEE / E&EE (Electrical & Electronics - LHC / DES)
+  if (/\b(eee|e\s*\.\s*e\s*\.\s*e|e&ee|e\s*&\s*ee|electrical|electrical\s*&\s*electronics|electrical\s*and\s*electronics|electrical\s*electronics)\b/i.test(s)) {
+    return {
+      code: 'E&EE',
+      name: 'Electrical & Electronics Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('electrical') || d.includes('e&ee') || d.includes('eee');
+      }
+    };
+  }
+
+  // 12. MCA (Master of Computer Applications - Apex Block)
+  if (/\b(mca|m\s*\.\s*c\s*\.\s*a|master\s*of\s*computer\s*applications)\b/i.test(s)) {
+    return {
+      code: 'MCA',
+      name: 'Master of Computer Applications',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('mca') || d.includes('computer applications');
+      }
+    };
+  }
+
+  // 13. Basic Sciences & Humanities (Apex Block)
+  if (/\b(physics|phy)\b/i.test(s)) {
+    return {
+      code: 'Physics',
+      name: 'Department of Physics',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('physics');
+      }
+    };
+  }
+  if (/\b(math|mathematics|maths)\b/i.test(s)) {
+    return {
+      code: 'Mathematics',
+      name: 'Department of Mathematics',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('math');
+      }
+    };
+  }
+  if (/\b(humanities|hum)\b/i.test(s)) {
+    return {
+      code: 'Humanities',
+      name: 'Department of Humanities',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('humanities');
+      }
+    };
+  }
+
+  // 14. Other Engineering Branches (ESB Block)
   if (/\b(cv|civil|civil\s*engineering)\b/i.test(s)) {
     return {
       code: 'CV',
@@ -208,7 +328,7 @@ export function resolveDepartment(input) {
       }
     };
   }
-  if (/\b(biotech|biotechnology)\b/i.test(s)) {
+  if (/\b(biotech|biotechnology|biotechnology\s*engineering)\b/i.test(s)) {
     return {
       code: 'BIOTECH',
       name: 'Biotechnology',
@@ -220,7 +340,7 @@ export function resolveDepartment(input) {
       }
     };
   }
-  if (/\b(ind|industrial|iem|industrial\s*engineering)\b/i.test(s)) {
+  if (/\b(ind|industrial|iem|industrial\s*engineering|industrial\s*engineering\s*&\s*management)\b/i.test(s)) {
     return {
       code: 'IND',
       name: 'Industrial Engineering & Management',
@@ -228,7 +348,7 @@ export function resolveDepartment(input) {
       buildingId: 'block-esb',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('industrial');
+        return d.includes('industrial') || d.includes('iem');
       }
     };
   }
@@ -247,10 +367,45 @@ export function normalizeQuery(query) {
     .trim();
 
   const replacements = [
-    [/\blibraray\b|\blibary\b|\blibray\b|\blibrari\b/g, 'library'],
-    [/\bfacutly\b|\bfaculity\b|\bfacuty\b|\bfaclty\b/g, 'faculty'],
+    // Typo corrections for common campus keywords
+    [/\blibraray\b|\blibary\b|\blibrery\b|\blibray\b|\blibrari\b/g, 'library'],
+    [/\bfacutly\b|\bfaculity\b|\bfacult\b|\bfacuty\b|\bfaclty\b/g, 'faculty'],
     [/\bprofesor\b|\bproffesor\b|\bprofessr\b/g, 'professor'],
-    [/\bdepartmnt\b|\bdepertment\b/g, 'department'],
+    [/\bdepartmnt\b|\bdepartement\b|\bdepertment\b/g, 'department'],
+    [/\bbuidling\b|\bbilding\b|\bbulding\b/g, 'building'],
+    [/\brom\b/g, 'room'],
+    [/\blabortory\b|\blaboratry\b|\blaboratery\b/g, 'laboratory'],
+    [/\benginnering\b|\bengeneering\b/g, 'engineering'],
+    [/\binformaton\b|\binfomation\b/g, 'information'],
+
+    // Spacing & formatting normalizations
+    [/\bcseaiml\b|\bcse_aiml\b/g, 'cse aiml'],
+    [/\bcse\s*-\s*aiml\b/g, 'cse aiml'],
+    [/\bcse\s*\(\s*aiml\s*\)/g, 'cse aiml'],
+    [/\bcse\s*\(\s*ai\s*&?\s*ml\s*\)/g, 'cse aiml'],
+    [/\bcse\s*ai\s*&?\s*ml\b/g, 'cse aiml'],
+    [/\bcse\s*-\s*cy\b/g, 'cse cy'],
+    [/\bcse\s*\(\s*cy\s*\)/g, 'cse cy'],
+    [/\bcse\s*\(\s*cyber\s*security\s*\)/g, 'cse cy'],
+
+    // Library variations
+    [/\besb\s*lib\b/g, 'esb library'],
+    [/\blhc\s*lib\b/g, 'lhc library'],
+    [/\bapex\s*lib\b|\bapex\s*first\s*year\s*lib\b/g, 'apex library'],
+    [/\b1st\s*yr\b|\b1styr\b|\bfirst\s*yr\b|\bfreshers\b|\bfresher\b/g, 'first year'],
+    [/\bapex\s*1st\s*year\s*library\b|\bapex\s*first\s*year\s*library\b|\bapex\s*block\s*library\b/g, 'apex library'],
+    [/\bfirst\s*year\s*library\b/g, 'apex library'],
+
+    // Department abbreviations
+    [/\be\s*&\s*te\b|\be\s*and\s*te\b|\be\s*\.\s*t\s*\.\s*e\b|\be\s*t\s*e\b/g, 'ete'],
+    [/\be\s*&\s*ie\b|\be\s*and\s*ie\b|\be\s*\.\s*i\s*\.\s*e\b|\be\s*i\s*e\b/g, 'eie'],
+    [/\be\s*&\s*ee\b|\be\s*and\s*ee\b|\be\s*\.\s*e\s*\.\s*e\b|\be\s*e\s*e\b/g, 'eee'],
+    [/\be\s*&\s*ce\b|\be\s*and\s*ce\b|\be\s*\.\s*c\s*\.\s*e\b|\be\s*c\s*e\b/g, 'ece'],
+    [/\bi\s*\.\s*s\s*\.\s*e\b|\bi\s*s\s*e\b/g, 'ise'],
+    [/\bc\s*\.\s*s\s*\.\s*e\b|\bc\s*s\s*e\b/g, 'cse'],
+    [/\bm\s*\.\s*c\s*\.\s*a\b|\bm\s*c\s*a\b/g, 'mca'],
+
+    // General terms
     [/\bdept\b/g, 'department'],
     [/\bschedul\b|\btimetabl\b/g, 'schedule'],
     [/\bavailble\b|\bavailibility\b|\bavaliable\b|\bavailabe\b/g, 'available'],
@@ -274,11 +429,11 @@ export function normalizeQuery(query) {
     q = q.replace(pattern, replacement);
   }
 
-  q = q.replace(/\b(lhc|esb|ab|arch)[- ]?(\d{3}[a-z]?)\b/gi, (match, p1, p2) => {
+  q = q.replace(/\b(lhc|esb|ab|arch|des|crd)[- ]?(\d{3}[a-z]?(?:\/[0-9a-z]+)*)\b/gi, (match, p1, p2) => {
     const prefix = p1.toUpperCase();
-    if (prefix === 'LHC') return `LHC${p2}`;
-    if (prefix === 'ARCH') return `ARCH${p2}`;
-    return `${prefix}-${p2}`;
+    if (prefix === 'LHC') return `LHC${p2.toUpperCase()}`;
+    if (prefix === 'ARCH') return `ARCH${p2.toUpperCase()}`;
+    return `${prefix}-${p2.toUpperCase()}`;
   });
 
   return q.replace(/\s+/g, ' ').trim();

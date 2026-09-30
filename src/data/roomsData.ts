@@ -226,6 +226,22 @@ export function findRoomsByName(query: string): MSRITRoomRecord[] {
     'computer lab', 'computer labs', 'classroom', 'classrooms', 'office', 'offices'
   ]);
 
+  // Special alias mappings for verified campus room entities
+  if (/\b(apex\s*library|apex\s*block\s*library|apex\s*first\s*year\s*library|first\s*year\s*library|1st\s*year\s*library|apex\s*1st\s*year\s*library|apex\s*first\s*year\s*lib|apex\s*library\s*&\s*information\s*center|library\s*&\s*information\s*center\s*\(first\s*year\))\b/i.test(q)) {
+    const ab714 = findRoomByNumber('AB-714');
+    if (ab714) return [ab714];
+  }
+
+  if (/\b(mca\s*library|mca\s*department\s*library|mca\s*dept\s*library|dept\s*of\s*mca\s*library)\b/i.test(q)) {
+    const ab401 = findRoomByNumber('AB-401');
+    if (ab401) return [ab401];
+  }
+
+  if (/\b(lhc\s*unit\s*2\s*library|lhc\s*unit\s*ii\s*library|lhc\s*library|unit\s*2\s*library|unit\s*ii\s*library|lhc-306\s*library|library\s*&\s*information\s*center\s*unit\s*[-–]\s*ii)\b/i.test(q)) {
+    const lhc306 = findRoomByNumber('LHC-306');
+    if (lhc306) return [lhc306];
+  }
+
   if (BUILDING_NAMES.has(qSearch) || BUILDING_NAMES.has(q) || GENERIC_CATEGORY_NAMES.has(qSearch) || GENERIC_CATEGORY_NAMES.has(q)) {
     return [];
   }
@@ -333,12 +349,37 @@ export function normalizeDepartmentCode(input: string): string | null {
   if (!input || typeof input !== 'string') return null;
   const s = input.trim().toLowerCase();
 
-  if (/\b(cse[- ]?aiml|aiml|ai\s*&\s*ml|ai[- ]ml|ai\s*ml|artificial\s*intelligence\s*&\s*machine\s*learning)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(ai|aiml)\b/i.test(s))) {
+  // 1. CSE-AIML (Explicitly check CSE with AIML / AI&ML first so it is never confused with pure AI & ML)
+  if (
+    /\b(cse[- ]?aiml|cse\s*\(?aiml\)?|cse[- ]?ai[- ]?ml|cse\s*\(?ai\s*&?\s*ml\)?|cse\s*ai\s*ml|cse\s*ai\s*&\s*ml|cse\s*artificial\s*intelligence)\b/i.test(s) ||
+    (/\bcse\b/i.test(s) && /\b(aiml|ai\s*&?\s*ml|ai\s*and\s*ml)\b/i.test(s))
+  ) {
+    return 'CSE-AIML';
+  }
+
+  // 2. Pure AI & ML (Apex Block department, strictly non-CSE)
+  if (
+    /\b(aiml|ai\s*&\s*ml|ai[- ]ml|ai\s*and\s*ml|ai\s*ml|artificial\s*intelligence\s*&\s*machine\s*learning|artificial\s*intelligence\s*and\s*machine\s*learning|ai\s*machine\s*learning)\b/i.test(s)
+  ) {
     return 'AI & ML';
   }
-  if (/\b(ai\s*&\s*ds|ai[- ]ds|aids|ai\s*ds|artificial\s*intelligence\s*&\s*data\s*science)\b/i.test(s)) {
+
+  // 3. AI & DS (Apex Block department)
+  if (
+    /\b(ai\s*&\s*ds|ai[- ]ds|aids|ai\s*and\s*ds|ai\s*ds|artificial\s*intelligence\s*&\s*data\s*science|artificial\s*intelligence\s*and\s*data\s*science)\b/i.test(s)
+  ) {
     return 'AI & DS';
   }
+
+  // 4. CSE-CY (Cyber Security)
+  if (
+    /\b(cse[- ]?cy|cse\s*\(?cy\)?|cse\s*\(?cyber\s*security\)?|cyber\s*security|cybersecurity|cyber|cy)\b/i.test(s) ||
+    (/\bcse\b/i.test(s) && /\b(cy|cyber)\b/i.test(s))
+  ) {
+    return 'CSE-CY';
+  }
+
+  // 5. Basic Sciences & Humanities (Apex Block)
   if (/\b(physics|phy)\b/i.test(s)) {
     return 'Physics';
   }
@@ -348,40 +389,58 @@ export function normalizeDepartmentCode(input: string): string | null {
   if (/\b(humanities|hum)\b/i.test(s)) {
     return 'Humanities';
   }
-  if (/\b(cse[- ]?cy|cyber\s*security|cybersecurity|cyber|cy)\b/i.test(s) || (/\bcse\b/i.test(s) && /\b(cy|cyber)\b/i.test(s))) {
-    return 'CSE-CY';
-  }
-  if (/\b(mle|medical\s*electronics|medical\s*software|medical\s*instrumentation|medical\s*lab|medical)\b/i.test(s) || (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))) {
+
+  // 6. MLE (Medical Electronics)
+  if (
+    /\b(mle|medical\s*electronics|medical\s*electronics\s*engineering|medical\s*software|medical\s*instrumentation|medical\s*lab)\b/i.test(s) ||
+    (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))
+  ) {
     return 'MLE';
   }
-  if (/\b(e&ee|eee|electrical|electrical\s*&\s*electronics)\b/i.test(s)) {
+
+  // 7. E&EE / EEE (Electrical & Electronics)
+  if (/\b(e&ee|e\s*&\s*ee|eee|e\s*\.\s*e\s*\.\s*e|electrical|electrical\s*&\s*electronics|electrical\s*and\s*electronics|electrical\s*electronics)\b/i.test(s)) {
     return 'E&EE';
   }
-  if (/\b(e&ie|eie|instrumentation|electronics\s*&\s*instrumentation)\b/i.test(s)) {
+
+  // 8. E&IE / EIE (Electronics & Instrumentation)
+  if (/\b(e&ie|e\s*&\s*ie|eie|e\s*\.\s*i\s*\.\s*e|instrumentation|electronics\s*&\s*instrumentation|electronics\s*and\s*instrumentation|instrumentation\s*engineering)\b/i.test(s)) {
     return 'E&IE';
   }
-  if (/\b(e&te|ete|telecom|telecommunication|electronics\s*&\s*telecommunication)\b/i.test(s)) {
+
+  // 9. E&TE / ETE (Electronics & Telecommunication)
+  if (/\b(e&te|e\s*&\s*te|ete|e\s*\.\s*t\s*\.\s*e|telecom|telecommunication|electronics\s*&\s*telecommunication|electronics\s*and\s*telecommunication|telecommunication\s*engineering|electronics\s*telecommunication)\b/i.test(s)) {
     return 'ETE';
   }
-  if (/\b(ise|information\s*science)\b/i.test(s)) {
+
+  // 10. ISE (Information Science)
+  if (/\b(ise|i\s*\.\s*s\s*\.\s*e|i\s*s\s*e|information\s*science|information\s*science\s*and\s*engineering|information\s*science\s*&\s*engineering|info\s*science|info\s*science\s*&\s*engineering)\b/i.test(s)) {
     return 'ISE';
   }
-  if (/\b(e&ce|ece|electronics\s*&\s*communication)\b/i.test(s)) {
+
+  // 11. ECE / E&CE (Electronics & Communication)
+  if (/\b(e&ce|e\s*&\s*ce|ece|e\s*\.\s*c\s*\.\s*e|electronics\s*&\s*communication|electronics\s*and\s*communication|electronics\s*communication)\b/i.test(s)) {
     return 'E&CE';
   }
+
+  // 12. MCA (Master of Computer Applications)
+  if (/\b(mca|m\s*\.\s*c\s*\.\s*a|master\s*of\s*computer\s*applications)\b/i.test(s)) {
+    return 'MCA';
+  }
+
+  // 13. Other Engineering Branches
   if (/\b(cv|civil|civil\s*engineering)\b/i.test(s)) {
     return 'CV';
   }
-  if (/\b(biotech|biotechnology)\b/i.test(s)) {
+  if (/\b(biotech|biotechnology|biotechnology\s*engineering)\b/i.test(s)) {
     return 'BIOTECH';
   }
-  if (/\b(ind|industrial|iem|industrial\s*engineering)\b/i.test(s)) {
+  if (/\b(ind|industrial|iem|industrial\s*engineering|industrial\s*engineering\s*&\s*management)\b/i.test(s)) {
     return 'IND';
   }
-  if (/\b(mca|master\s*of\s*computer\s*applications)\b/i.test(s)) {
-    return 'MCA';
-  }
-  if (/\b(cse|computer\s*science)\b/i.test(s)) {
+
+  // 14. Pure CSE (Computer Science & Engineering - LHC Block, strictly non-AIML / non-Cyber)
+  if (/\b(cse|c\s*\.\s*s\s*\.\s*e|c\s*s\s*e|computer\s*science|computer\s*science\s*and\s*engineering|comp\s*science|computer\s*science\s*dept)\b/i.test(s)) {
     return 'CSE';
   }
 
@@ -394,6 +453,7 @@ export function normalizeDepartmentCode(input: string): string | null {
 export function getDepartmentDisplayName(code: string): string {
   switch (code) {
     case 'CSE-AIML':
+      return 'CSE (AI & ML)';
     case 'AIML':
     case 'AI & ML':
       return 'AI & ML';
@@ -401,11 +461,11 @@ export function getDepartmentDisplayName(code: string): string {
     case 'AIDS':
       return 'AI & DS';
     case 'Physics':
-      return 'Physics';
+      return 'Department of Physics';
     case 'Mathematics':
-      return 'Mathematics';
+      return 'Department of Mathematics';
     case 'Humanities':
-      return 'Humanities';
+      return 'Department of Humanities';
     case 'CSE-CY':
     case 'CY':
       return 'CSE (Cyber Security)';
@@ -434,7 +494,7 @@ export function getDepartmentDisplayName(code: string): string {
     case 'IND':
       return 'Industrial Engineering & Management (IEM)';
     case 'MCA':
-      return 'MCA';
+      return 'Master of Computer Applications (MCA)';
     default:
       return code;
   }
@@ -447,10 +507,10 @@ export function extractRoomCategory(query: string): 'FACULTY_ROOM' | 'LAB' | 'LI
   if (!query) return null;
   const q = query.toLowerCase();
 
-  if (/\b(faculty\s*room|faculty\s*rooms|faculty\s*lounge|faculty\s*lounges|staff\s*room|staff\s*rooms|teachers?\s*room|teachers?\s*rooms|professors?\s*room|faculty\s*area|faculty\s*space|faculty\s*office|faculty\s*cabin|teachers\s*ka\s*room|teachers\s*ke\s*room|faculty\s*ka\s*room|faculty\s*ke\s*rooms?)\b/i.test(q)) {
+  if (/\b(faculty\s*room|faculty\s*rooms|faculty\s*lounge|faculty\s*lounges|staff\s*room|staff\s*rooms|staff\s*lounge|staff\s*lounges|teachers?\s*room|teachers?\s*rooms|teachers?\s*lounge|teachers?\s*lounges|professors?\s*room|faculty\s*area|faculty\s*space|faculty\s*office|faculty\s*cabin|teachers\s*ka\s*room|teachers\s*ke\s*room|faculty\s*ka\s*room|faculty\s*ke\s*rooms?)\b/i.test(q)) {
     return 'FACULTY_ROOM';
   }
-  if (/\b(lab|labs|laboratory|laboratories)\b/i.test(q)) {
+  if (/\b(lab|labs|laboratory|laboratories|lab\s*room|department\s*lab|dept\s*lab|computer\s*lab|faculty\s*lab|research\s*lab)\b/i.test(q)) {
     return 'LAB';
   }
   if (/\b(library|libraries|department\s*library|dept\s*library)\b/i.test(q)) {
@@ -459,10 +519,10 @@ export function extractRoomCategory(query: string): 'FACULTY_ROOM' | 'LAB' | 'LI
   if (/\b(seminar\s*hall|seminar\s*room|seminar\s*halls|auditorium|board\s*room)\b/i.test(q)) {
     return 'SEMINAR_HALL';
   }
-  if (/\b(office|admin\s*office|administrative\s*office)\b/i.test(q)) {
+  if (/\b(office|admin\s*office|administrative\s*office|department\s*office|dept\s*office|hod\s*office)\b/i.test(q)) {
     return 'OFFICE';
   }
-  if (/\b(classroom|classrooms|lecture\s*hall)\b/i.test(q)) {
+  if (/\b(classroom|classrooms|lecture\s*hall|lecture\s*room)\b/i.test(q)) {
     return 'CLASSROOM';
   }
 
@@ -520,15 +580,19 @@ export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[]
     });
   }
 
-  // 3. Department constraint (HARD FILTER)
+  // 3. Department constraint (HARD FILTER - Strict separation between AI&ML, CSE-AIML, and AI&DS)
   if (constraints.department) {
     const normDept = normalizeDepartmentCode(constraints.department) || constraints.department.toUpperCase();
     rooms = rooms.filter((r) => {
       const depts = (r.departments || []).map((x) => x.toUpperCase());
       const dStr = (r.department || '').toUpperCase();
+      const bCode = (r.buildingCode || '').toUpperCase();
 
-      if (normDept === 'CSE-AIML' || normDept === 'AIML' || normDept === 'AI & ML') {
-        return depts.includes('CSE-AIML') || depts.includes('AIML') || depts.includes('AI & ML') || dStr.includes('AIML') || dStr.includes('AI & ML') || dStr.includes('ARTIFICIAL INTELLIGENCE & MACHINE LEARNING') || dStr.includes('ARTIFICIAL INTELLIGENCE');
+      if (normDept === 'CSE-AIML') {
+        return depts.includes('CSE-AIML') || dStr.includes('CSE-AIML') || dStr.includes('CSE (AIML)') || (dStr.includes('AIML') && (dStr.includes('CSE') || bCode === 'CRD'));
+      }
+      if (normDept === 'AI & ML' || normDept === 'AIML') {
+        return (depts.includes('AIML') || depts.includes('AI & ML') || dStr.includes('AI & ML') || dStr.includes('ARTIFICIAL INTELLIGENCE & MACHINE LEARNING')) && !depts.includes('CSE-AIML') && !dStr.includes('CSE') && bCode !== 'CRD';
       }
       if (normDept === 'AI & DS' || normDept === 'AIDS') {
         return depts.includes('AI & DS') || depts.includes('AIDS') || dStr.includes('AI & DS') || dStr.includes('AIDS') || dStr.includes('ARTIFICIAL INTELLIGENCE & DATA SCIENCE');
@@ -555,10 +619,10 @@ export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[]
         return depts.includes('E&IE') || depts.includes('EIE') || dStr.includes('E&IE') || dStr.includes('EIE') || dStr.includes('INSTRUMENTATION');
       }
       if (normDept === 'E&TE' || normDept === 'ETE') {
-        return depts.includes('E&TE') || depts.includes('ETE') || dStr.includes('E&TE') || dStr.includes('ETE') || dStr.includes('TELECOMMUNICATION');
+        return depts.includes('E&TE') || depts.includes('ETE') || dStr.includes('E&TE') || dStr.includes('ETE') || dStr.includes('TELECOMMUNICATION') || dStr.includes('TELECOM');
       }
       if (normDept === 'CSE') {
-        return (depts.includes('CSE') || dStr === 'CSE' || dStr.includes('COMPUTER SCIENCE')) && !depts.includes('CSE-AIML') && !depts.includes('CSE-CY');
+        return (depts.includes('CSE') || dStr === 'CSE' || dStr.includes('COMPUTER SCIENCE')) && !depts.includes('CSE-AIML') && !depts.includes('CSE-CY') && !dStr.includes('AIML') && !dStr.includes('CYBER');
       }
       if (normDept === 'ISE') {
         return depts.includes('ISE') || dStr.includes('ISE') || dStr.includes('INFORMATION SCIENCE');
@@ -573,7 +637,7 @@ export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[]
         return depts.includes('BIOTECH') || dStr.includes('BIOTECH');
       }
       if (normDept === 'IND') {
-        return depts.includes('IND') || dStr.includes('IND');
+        return depts.includes('IND') || dStr.includes('IND') || dStr.includes('INDUSTRIAL');
       }
       if (normDept === 'MCA') {
         return depts.includes('MCA') || dStr.includes('MCA');
@@ -591,7 +655,7 @@ export function queryRooms(constraints: RoomQueryConstraints): MSRITRoomRecord[]
         const c = (r.category || '').toLowerCase();
         const t = (r.type || '').toLowerCase();
         const n = (r.name || '').toLowerCase();
-        return c.includes('faculty') || t === 'lounge' || n.includes('faculty') || n.includes('staff');
+        return c.includes('faculty') || t === 'lounge' || n.includes('faculty') || n.includes('staff') || n.includes('hod & staff');
       });
     } else if (cat === 'LAB') {
       rooms = rooms.filter((r) => {

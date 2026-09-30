@@ -238,31 +238,60 @@ export function resolveDepartment(input: string): {
   if (!input) return null;
   const s = input.trim().toLowerCase();
 
-  if (/\b(ise|information\s*science)\b/i.test(s)) {
+  // 1. CSE-AIML (Explicitly check CSE with AIML / AI&ML first so it is never confused with pure AI & ML)
+  if (
+    /\b(cse[- ]?aiml|cse\s*\(?aiml\)?|cse[- ]?ai[- ]?ml|cse\s*\(?ai\s*&?\s*ml\)?|cse\s*ai\s*ml|cse\s*ai\s*&\s*ml|cse\s*artificial\s*intelligence)\b/i.test(s) ||
+    (/\bcse\b/i.test(s) && /\b(aiml|ai\s*&?\s*ml|ai\s*and\s*ml)\b/i.test(s))
+  ) {
     return {
-      code: 'ISE',
-      name: 'Information Science & Engineering',
-      building: 'LHC',
-      buildingId: 'block-lhc',
-      matchFn: (f) => {
-        const d = (f.department || '').toLowerCase();
-        return d.includes('information science') || d.includes('ise');
-      }
-    };
-  }
-  if (/\b(cse\s*aiml|aiml|ai\s*&\s*ml|ai-ml|artificial\s*intelligence)\b/i.test(s)) {
-    return {
-      code: 'AIML',
-      name: 'Artificial Intelligence & Machine Learning',
+      code: 'CSE-AIML',
+      name: 'Computer Science & Engineering (AIML)',
       building: 'CRD',
       buildingId: 'block-crd',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('ai & ml') || d.includes('aiml') || d.includes('artificial intelligence');
+        return d.includes('cse-aiml') || (d.includes('cse') && d.includes('aiml'));
       }
     };
   }
-  if (/\b(cse\s*cy|cyber\s*security|cy)\b/i.test(s)) {
+
+  // 2. Pure AI & ML (Apex Block department, strictly non-CSE)
+  if (
+    /\b(aiml|ai\s*&\s*ml|ai[- ]ml|ai\s*and\s*ml|ai\s*ml|artificial\s*intelligence\s*&\s*machine\s*learning|artificial\s*intelligence\s*and\s*machine\s*learning|ai\s*machine\s*learning)\b/i.test(s)
+  ) {
+    return {
+      code: 'AI & ML',
+      name: 'Artificial Intelligence & Machine Learning',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return (d.includes('ai & ml') || d.includes('aiml') || d.includes('artificial intelligence')) && !d.includes('cse');
+      }
+    };
+  }
+
+  // 3. AI & DS (Apex Block department)
+  if (
+    /\b(ai\s*&\s*ds|ai[- ]ds|aids|ai\s*and\s*ds|ai\s*ds|artificial\s*intelligence\s*&\s*data\s*science|artificial\s*intelligence\s*and\s*data\s*science)\b/i.test(s)
+  ) {
+    return {
+      code: 'AI & DS',
+      name: 'Artificial Intelligence & Data Science',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('ai & ds') || d.includes('aids') || d.includes('data science');
+      }
+    };
+  }
+
+  // 4. CSE-CY (Cyber Security)
+  if (
+    /\b(cse[- ]?cy|cse\s*\(?cy\)?|cse\s*\(?cyber\s*security\)?|cyber\s*security|cybersecurity|cyber|cy)\b/i.test(s) ||
+    (/\bcse\b/i.test(s) && /\b(cy|cyber)\b/i.test(s))
+  ) {
     return {
       code: 'CY',
       name: 'Computer Science & Engineering (Cyber Security)',
@@ -274,7 +303,23 @@ export function resolveDepartment(input: string): {
       }
     };
   }
-  if (/\b(cse|computer\s*science)\b/i.test(s)) {
+
+  // 5. ISE (Information Science & Engineering - LHC Block)
+  if (/\b(ise|i\s*\.\s*s\s*\.\s*e|i\s*s\s*e|information\s*science|information\s*science\s*and\s*engineering|information\s*science\s*&\s*engineering|info\s*science|info\s*science\s*&\s*engineering)\b/i.test(s)) {
+    return {
+      code: 'ISE',
+      name: 'Information Science & Engineering',
+      building: 'LHC',
+      buildingId: 'block-lhc',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('information science') || d.includes('ise');
+      }
+    };
+  }
+
+  // 6. Pure CSE (Computer Science & Engineering - LHC Block, strictly non-AIML / non-Cyber)
+  if (/\b(cse|c\s*\.\s*s\s*\.\s*e|c\s*s\s*e|computer\s*science|computer\s*science\s*and\s*engineering|comp\s*science|computer\s*science\s*dept)\b/i.test(s)) {
     return {
       code: 'CSE',
       name: 'Computer Science & Engineering',
@@ -286,7 +331,9 @@ export function resolveDepartment(input: string): {
       }
     };
   }
-  if (/\b(ece|electronics\s*&\s*communication)\b/i.test(s)) {
+
+  // 7. ECE / E&CE (Electronics & Communication - LHC / DES)
+  if (/\b(ece|e\s*\.\s*c\s*\.\s*e|e&ce|e\s*&\s*ce|electronics\s*&\s*communication|electronics\s*and\s*communication|electronics\s*communication)\b/i.test(s)) {
     return {
       code: 'ECE',
       name: 'Electronics & Communication Engineering',
@@ -294,11 +341,13 @@ export function resolveDepartment(input: string): {
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('electronics & communication') || d.includes('ece');
+        return d.includes('electronics & communication') || d.includes('ece') || d.includes('e&ce');
       }
     };
   }
-  if (/\b(et|telecom|telecommunication|electronics\s*&\s*telecommunication)\b/i.test(s)) {
+
+  // 8. ETE / E&TE (Electronics & Telecommunication - LHC / DES)
+  if (/\b(ete|e\s*\.\s*t\s*\.\s*e|e&te|e\s*&\s*te|telecom|telecommunication|electronics\s*&\s*telecommunication|electronics\s*and\s*telecommunication|telecommunication\s*engineering|electronics\s*telecommunication)\b/i.test(s)) {
     return {
       code: 'ET',
       name: 'Electronics & Telecommunication Engineering',
@@ -306,11 +355,13 @@ export function resolveDepartment(input: string): {
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('telecommunication') || d.includes('et');
+        return d.includes('telecommunication') || d.includes('et') || d.includes('ete');
       }
     };
   }
-  if (/\b(ei|instrumentation|electronics\s*&\s*instrumentation)\b/i.test(s)) {
+
+  // 9. EIE / E&IE (Electronics & Instrumentation - LHC / DES)
+  if (/\b(eie|e\s*\.\s*i\s*\.\s*e|e&ie|e\s*&\s*ie|instrumentation|electronics\s*&\s*instrumentation|electronics\s*and\s*instrumentation|instrumentation\s*engineering)\b/i.test(s)) {
     return {
       code: 'EI',
       name: 'Electronics & Instrumentation Engineering',
@@ -318,12 +369,13 @@ export function resolveDepartment(input: string): {
       buildingId: 'block-lhc',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('instrumentation') || d.includes('ei');
+        return d.includes('instrumentation') || d.includes('ei') || d.includes('eie');
       }
     };
   }
-  // IMPORTANT: MLE / ME = Medical Electronics. Do NOT interpret ME as Mechanical Engineering per Section 4 & 6.
-  if (/\b(mle|me|medical\s*electronics)\b/i.test(s) && !/\bmechanical\b/i.test(s)) {
+
+  // 10. MLE (Medical Electronics - LHC / DES)
+  if (/\b(mle|medical\s*electronics|medical\s*electronics\s*engineering)\b/i.test(s) || (/\bme\s*(dept|department|wing)\b/i.test(s) && !/\bmechanical\b/i.test(s))) {
     return {
       code: 'MLE',
       name: 'Medical Electronics Engineering',
@@ -335,7 +387,9 @@ export function resolveDepartment(input: string): {
       }
     };
   }
-  if (/\b(e&ee|eee|electrical|electrical\s*&\s*electronics)\b/i.test(s)) {
+
+  // 11. EEE / E&EE (Electrical & Electronics - LHC / DES)
+  if (/\b(eee|e\s*\.\s*e\s*\.\s*e|e&ee|e\s*&\s*ee|electrical|electrical\s*&\s*electronics|electrical\s*and\s*electronics|electrical\s*electronics)\b/i.test(s)) {
     return {
       code: 'E&EE',
       name: 'Electrical & Electronics Engineering',
@@ -347,6 +401,60 @@ export function resolveDepartment(input: string): {
       }
     };
   }
+
+  // 12. MCA (Master of Computer Applications - Apex Block)
+  if (/\b(mca|m\s*\.\s*c\s*\.\s*a|master\s*of\s*computer\s*applications)\b/i.test(s)) {
+    return {
+      code: 'MCA',
+      name: 'Master of Computer Applications',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('mca') || d.includes('computer applications');
+      }
+    };
+  }
+
+  // 13. Basic Sciences & Humanities (Apex Block)
+  if (/\b(physics|phy)\b/i.test(s)) {
+    return {
+      code: 'Physics',
+      name: 'Department of Physics',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('physics');
+      }
+    };
+  }
+  if (/\b(math|mathematics|maths)\b/i.test(s)) {
+    return {
+      code: 'Mathematics',
+      name: 'Department of Mathematics',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('math');
+      }
+    };
+  }
+  if (/\b(humanities|hum)\b/i.test(s)) {
+    return {
+      code: 'Humanities',
+      name: 'Department of Humanities',
+      building: 'Apex',
+      buildingId: 'block-apex',
+      matchFn: (f) => {
+        const d = (f.department || '').toLowerCase();
+        return d.includes('humanities');
+      }
+    };
+  }
+
+  // 14. Other Engineering Branches (ESB Block)
   if (/\b(cv|civil|civil\s*engineering)\b/i.test(s)) {
     return {
       code: 'CV',
@@ -359,7 +467,7 @@ export function resolveDepartment(input: string): {
       }
     };
   }
-  if (/\b(biotech|biotechnology)\b/i.test(s)) {
+  if (/\b(biotech|biotechnology|biotechnology\s*engineering)\b/i.test(s)) {
     return {
       code: 'BIOTECH',
       name: 'Biotechnology',
@@ -371,7 +479,7 @@ export function resolveDepartment(input: string): {
       }
     };
   }
-  if (/\b(ind|industrial|iem|industrial\s*engineering)\b/i.test(s)) {
+  if (/\b(ind|industrial|iem|industrial\s*engineering|industrial\s*engineering\s*&\s*management)\b/i.test(s)) {
     return {
       code: 'IND',
       name: 'Industrial Engineering & Management',
@@ -379,7 +487,7 @@ export function resolveDepartment(input: string): {
       buildingId: 'block-esb',
       matchFn: (f) => {
         const d = (f.department || '').toLowerCase();
-        return d.includes('industrial');
+        return d.includes('industrial') || d.includes('iem');
       }
     };
   }
@@ -400,22 +508,53 @@ export function normalizeQuery(query: string): string {
     .replace(/\s+/g, ' ')
     .trim();
 
-  // Common typos, Hinglish & abbreviation normalizations
+  // Controlled typos, Hinglish & abbreviation normalizations
   const typoReplacements: Array<[RegExp, string]> = [
-    [/\blibraray\b|\blibary\b|\blibray\b|\blibrari\b/g, 'library'],
+    // Typo corrections for common campus keywords
+    [/\blibraray\b|\blibary\b|\blibrery\b|\blibray\b|\blibrari\b/g, 'library'],
+    [/\bfacutly\b|\bfaculity\b|\bfacult\b|\bfacuty\b|\bfaclty\b/g, 'faculty'],
+    [/\bprofesor\b|\bproffesor\b|\bprofessr\b/g, 'professor'],
+    [/\bdepartmnt\b|\bdepartement\b|\bdepertment\b/g, 'department'],
+    [/\bbuidling\b|\bbilding\b|\bbulding\b/g, 'building'],
+    [/\brom\b/g, 'room'],
+    [/\blabortory\b|\blaboratry\b|\blaboratery\b/g, 'laboratory'],
+    [/\benginnering\b|\bengeneering\b/g, 'engineering'],
+    [/\binformaton\b|\binfomation\b/g, 'information'],
+
+    // Spacing & formatting normalizations
+    [/\bcseaiml\b|\bcse_aiml\b/g, 'cse aiml'],
+    [/\bcse\s*-\s*aiml\b/g, 'cse aiml'],
+    [/\bcse\s*\(\s*aiml\s*\)/g, 'cse aiml'],
+    [/\bcse\s*\(\s*ai\s*&?\s*ml\s*\)/g, 'cse aiml'],
+    [/\bcse\s*ai\s*&?\s*ml\b/g, 'cse aiml'],
+    [/\bcse\s*-\s*cy\b/g, 'cse cy'],
+    [/\bcse\s*\(\s*cy\s*\)/g, 'cse cy'],
+    [/\bcse\s*\(\s*cyber\s*security\s*\)/g, 'cse cy'],
+
+    // Library variations
     [/\besb\s*lib\b/g, 'esb library'],
     [/\blhc\s*lib\b/g, 'lhc library'],
-    [/\bapex\s*lib\b/g, 'apex library'],
-    [/\bfacutly\b|\bfaculity\b|\bfacuty\b|\bfaclty\b/g, 'faculty'],
-    [/\bprofesor\b|\bproffesor\b|\bprofessr\b/g, 'professor'],
+    [/\bapex\s*lib\b|\bapex\s*first\s*year\s*lib\b/g, 'apex library'],
+    [/\b1st\s*yr\b|\b1styr\b|\bfirst\s*yr\b|\bfreshers\b|\bfresher\b/g, 'first year'],
+    [/\bapex\s*1st\s*year\s*library\b|\bapex\s*first\s*year\s*library\b|\bapex\s*block\s*library\b/g, 'apex library'],
+    [/\bfirst\s*year\s*library\b/g, 'apex library'],
+
+    // Department abbreviations
+    [/\be\s*&\s*te\b|\be\s*and\s*te\b|\be\s*\.\s*t\s*\.\s*e\b|\be\s*t\s*e\b/g, 'ete'],
+    [/\be\s*&\s*ie\b|\be\s*and\s*ie\b|\be\s*\.\s*i\s*\.\s*e\b|\be\s*i\s*e\b/g, 'eie'],
+    [/\be\s*&\s*ee\b|\be\s*and\s*ee\b|\be\s*\.\s*e\s*\.\s*e\b|\be\s*e\s*e\b/g, 'eee'],
+    [/\be\s*&\s*ce\b|\be\s*and\s*ce\b|\be\s*\.\s*c\s*\.\s*e\b|\be\s*c\s*e\b/g, 'ece'],
+    [/\bi\s*\.\s*s\s*\.\s*e\b|\bi\s*s\s*e\b/g, 'ise'],
+    [/\bc\s*\.\s*s\s*\.\s*e\b|\bc\s*s\s*e\b/g, 'cse'],
+    [/\bm\s*\.\s*c\s*\.\s*a\b|\bm\s*c\s*a\b/g, 'mca'],
+
+    // General terms
     [/\bhods\b/g, 'hod'],
-    [/\bdepartmnt\b|\bdepertment\b/g, 'department'],
     [/\bdept\b/g, 'department'],
     [/\bschedul\b|\btimetabl\b|\btime\s*table\b/g, 'schedule'],
     [/\bavailabl\b|\bavailibility\b|\bavaliable\b|\bavailabe\b/g, 'available'],
     [/\boccupenci\b|\boccupency\b/g, 'occupancy'],
     [/\bsumana\s*maradithya\b|\bsumana\s*maraditya\b/g, 'sumana maradithaya'],
-    [/\b1st\s*yr\b|\b1styr\b|\bfirst\s*yr\b|\bfreshers\b|\bfresher\b/g, 'first year'],
     [/\bwho\s*is\s*the\s*head\s*of\b/g, 'who is the hod of'],
     [/\bhead\s*of\s*department\b|\bhead\s*of\s*dept\b|\bdepartment\s*head\b/g, 'hod'],
     [/\bwhere['\s]*s\b/g, 'where is'],
@@ -437,12 +576,12 @@ export function normalizeQuery(query: string): string {
     q = q.replace(pattern, replacement);
   }
 
-  // Room normalization: LHC 204, LHC-204, LHC204 -> LHC204
-  q = q.replace(/\b(lhc|esb|ab|arch)[- ]?(\d{3}[a-z]?)\b/gi, (_match, p1, p2) => {
+  // Room normalization: LHC 204, LHC-204, LHC204 -> LHC204, AB 714 -> AB714, DES 101/102 -> DES-101/102
+  q = q.replace(/\b(lhc|esb|ab|arch|des|crd)[- ]?(\d{3}[a-z]?(?:\/[0-9a-z]+)*)\b/gi, (_match, p1, p2) => {
     const prefix = p1.toUpperCase();
-    if (prefix === 'LHC') return `LHC${p2}`;
-    if (prefix === 'ARCH') return `ARCH${p2}`;
-    return `${prefix}-${p2}`;
+    if (prefix === 'LHC') return `LHC${p2.toUpperCase()}`;
+    if (prefix === 'ARCH') return `ARCH${p2.toUpperCase()}`;
+    return `${prefix}-${p2.toUpperCase()}`;
   });
 
   return q.replace(/\s+/g, ' ').trim();
@@ -795,23 +934,37 @@ export function extractEntities(
 
   // --- Library Entity Matching ---
   const hasLibIntent = _intents.some((i) => i.startsWith('LIBRARY_'));
-  const hasExplicitLibWord = /\b(library|libraries|lib)\b/.test(normQ);
+  const hasExplicitLibWord = /\b(library|libraries|lib|padhne\s*ki\s*jagah)\b/.test(normQ);
 
   if (hasLibraryPronoun && context?.lastLibrary && !entities.matchedLibrary) {
     entities.matchedLibrary = context.lastLibrary;
     entities.isPronounLibrary = true;
-  } else if (hasExplicitLibWord || hasLibIntent) {
-    if (/\bmba(\s*library)?\b/.test(normQ)) {
+  } else if (hasExplicitLibWord || hasLibIntent || /\b(apex|mca|lhc|mba|arch)\s*(me\s*)?library\b/i.test(normQ)) {
+    if (/\bmba(\s*library)?\b/i.test(normQ)) {
       entities.matchedLibrary = LIBRARIES.find((l) => l.id === 'esb_mba_library');
-    } else if (/\bmca(\s*library)?\b/.test(normQ)) {
+    } else if (/\bmca(\s*(department|dept)?\s*library)?\b/i.test(normQ) || (normQ.includes('mca') && (normQ.includes('lib') || normQ.includes('library')))) {
       entities.matchedLibrary = LIBRARIES.find((l) => l.id === 'apex_mca_library');
-    } else if (/\b(arch|architecture)(\s*library)?\b/.test(normQ)) {
+      if (!entities.matchedRoom) {
+        entities.matchedRoom = findRoomByNumber('AB-401');
+      }
+    } else if (/\b(arch|architecture)(\s*library)?\b/i.test(normQ)) {
       entities.matchedLibrary = LIBRARIES.find((l) => l.id === 'arch_library');
-    } else if (/\b(lhc|unit\s*2|unit\s*ii|lhc-306|lhc\s*306)(\s*library)?\b/.test(normQ)) {
+    } else if (/\b(lhc|unit\s*2|unit\s*ii|lhc-306|lhc\s*306)(\s*library)?\b/i.test(normQ)) {
       entities.matchedLibrary = LIBRARIES.find((l) => l.id === 'lhc_unit_2_library' || l.id === 'lhc-library');
-    } else if (/\b(apex|unit\s*3|unit\s*iii)(\s*library)?\b/.test(normQ)) {
+      if (!entities.matchedRoom) {
+        entities.matchedRoom = findRoomByNumber('LHC-306');
+      }
+    } else if (
+      /\b(apex|first\s*year|1st\s*year|unit\s*3|unit\s*iii)(\s*library)?\b/i.test(normQ) ||
+      (normQ.includes('apex') && (normQ.includes('lib') || normQ.includes('library'))) ||
+      normQ.includes('first year library') ||
+      normQ.includes('1st year library')
+    ) {
       entities.matchedLibrary = LIBRARIES.find((l) => l.id === 'apex_unit_3_library' || l.id === 'apex-library');
-    } else if (/\b(esb\s*main|main\s*library|esb)(\s*library)?\b/.test(normQ)) {
+      if (!entities.matchedRoom) {
+        entities.matchedRoom = findRoomByNumber('AB-714');
+      }
+    } else if (/\b(esb\s*main|main\s*library|esb)(\s*library)?\b/i.test(normQ)) {
       entities.matchedLibrary = LIBRARIES.find((l) => l.id === 'esb_main_library' || l.id === 'esb-library');
     }
   }
@@ -1406,14 +1559,19 @@ export function getRoomAnswer(
 ): CampusAiResult | null {
   const { matchedRoom, roomQuery, departmentCode, roomCategory, buildingKey } = entities;
 
-  // Strictly prevent room handler from intercepting faculty, professor, HOD, or teacher queries
-  const isFacultyContext = !!(
-    entities.matchedFaculty ||
-    entities.facultyName ||
-    entities.multipleFaculty ||
-    _intents.some((i) => i.startsWith('FACULTY_') || i.startsWith('DEPARTMENT_HOD')) ||
-    /\b(faculty|professor|prof|teacher|sir|mam|hod|dr|kab\s*free|free\s*honge|when\s*free|free\s*kab)\b/i.test(normQ)
+  // Strictly prevent room handler from intercepting personal faculty inquiries (unless querying room/lounge/space)
+  const isPersonalFacultyQuery = !!(
+    (entities.matchedFaculty || entities.facultyName || entities.multipleFaculty) &&
+    !entities.roomCategory &&
+    !/\b(room|rooms|lounge|lounges|space|hall|lab|labs|cabin|cabins)\b/i.test(normQ)
   );
+
+  const isFacultyContext = isPersonalFacultyQuery || (
+    _intents.some((i) => i === 'FACULTY_SCHEDULE' || i === 'FACULTY_EMAIL' || i === 'FACULTY_DESIGNATION' || i.startsWith('DEPARTMENT_HOD')) &&
+    !entities.roomCategory &&
+    !/\b(room|rooms|lounge|lounges|space|hall|lab|labs)\b/i.test(normQ)
+  );
+
   if (isFacultyContext) {
     return null;
   }
@@ -1491,17 +1649,34 @@ export function getRoomAnswer(
     if (matchesDept) {
       const r = matchedRoom;
       const isFloorQuery = /\b(kis\s*floor|which\s*floor|kaunsi\s*floor|kaun\s*sa\s*floor|floor\s*kya|iska\s*floor|ka\s*floor|kis\s*floor\s*pe|kis\s*floor\s*par)\b/i.test(normQ);
+      const isDeptQuery = /\b(iska\s*dept|iska\s*department|department\s*kya|which\s*department|kiska\s*hai|kiska\s*room)\b/i.test(normQ);
       const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
         ? 'Multipurpose Block'
         : (r.building?.toLowerCase().includes('lhc')
           ? 'LHC Block'
-          : (r.building?.toLowerCase().endsWith('block') ? r.building : `${r.building || 'Campus Facilities'} Block`));
+          : (r.building?.toLowerCase().includes('apex')
+            ? 'Apex Block'
+            : (r.building?.toLowerCase().includes('des')
+              ? 'DES Block'
+              : (r.building?.toLowerCase().includes('esb')
+                ? 'ESB Block'
+                : (r.building?.toLowerCase().endsWith('block') ? r.building : `${r.building || 'Campus Facilities'} Block`)))));
 
       const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
       const deptPart = r.department && r.department !== '-' ? `${r.department} · ` : '';
 
       let responseText = '';
-      if (isFloorQuery) {
+      if (isDeptQuery) {
+        if (r.roomNumber === 'AB-714' || r.name?.toLowerCase().includes('first year')) {
+          responseText = `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}\nServing First Year Undergraduate Studies across all engineering branches.`;
+        } else if (r.roomNumber === 'AB-401' || r.department === 'MCA') {
+          responseText = `**${r.roomNumber}${namePart}**\nDepartment: Master of Computer Applications (MCA)\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
+        } else if (r.department) {
+          responseText = `**${r.roomNumber}${namePart}**\nDepartment: ${r.department}\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
+        } else {
+          responseText = `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
+        }
+      } else if (isFloorQuery) {
         responseText = `**${r.roomNumber}${namePart}**\n${deptPart}${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
       } else {
         const floorStr = r.floor ? `${r.floor} · ` : '';
@@ -1539,6 +1714,21 @@ export function getRoomAnswer(
     const deptDisplayName = getDepartmentDisplayName(departmentCode);
     const bldgFilter = buildingKey || (['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch'].find((b) => normQ.includes(b)));
 
+    // Special handling for ISE Faculty space (located in LHC 3rd Floor ISE Wing)
+    if (departmentCode === 'ISE' && (roomCategory === 'FACULTY_ROOM' || normQ.includes('faculty') || normQ.includes('staff') || normQ.includes('teacher') || normQ.includes('lounge') || normQ.includes('cabin'))) {
+      const whoIsThere = /\b(who\s*is\s*there|who\s*sits\s*there|kon\s*baithta\s*hai|kaun\s*baithta\s*hai|who\s*all\s*are\s*there|who\s*is\s*in)\b/i.test(normQ + ' ' + rawQuery);
+      const facultyListSnippet = whoIsThere ? '\n\n👥 ISE Faculty include Dr. Sumana M (HOD), Dr. Savita K, Dr. Yogish H K, Dr. Krishna Raj P M, Dr. Geetha V, and other ISE professors.' : '';
+
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_LOCATION', 'FACULTY_LOCATION'],
+        responseText: `**ISE Faculty Cubicles & Research Cabins**\nInformation Science & Engineering · 3rd Floor · LHC Block (ISE Wing)${facultyListSnippet}`,
+        subText: "Grounded strictly in official MSRIT department & faculty registry.",
+        actionTargetId: 'block-lhc'
+      };
+    }
+
     // Execute structured query with hard constraints against database
     const matchingRooms = queryRooms({
       department: departmentCode,
@@ -1550,11 +1740,23 @@ export function getRoomAnswer(
       ? 'Multipurpose Block / CRD'
       : (bldgFilter === 'lhc' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('lhc')))
         ? 'LHC Block'
-        : `${bldgFilter ? bldgFilter.toUpperCase() : (matchingRooms.length > 0 ? matchingRooms[0].building : 'Campus')} Block`;
+        : (bldgFilter === 'apex' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('apex')))
+          ? 'Apex Block'
+          : (bldgFilter === 'des' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('des')))
+            ? 'DES Block'
+            : (bldgFilter === 'esb' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('esb')))
+              ? 'ESB Block'
+              : `${bldgFilter ? bldgFilter.toUpperCase() : (matchingRooms.length > 0 ? matchingRooms[0].building : 'Campus')} Block`;
 
     const actionId = (bldgFilter === 'crd' || bldgFilter === 'multipurpose' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('crd')))
       ? 'crd'
-      : 'block-lhc';
+      : (bldgFilter === 'apex' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('apex')))
+        ? 'block-apex'
+        : (bldgFilter === 'des' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('des')))
+          ? 'block-des'
+          : (bldgFilter === 'esb' || (matchingRooms.length > 0 && matchingRooms[0].building?.toLowerCase().includes('esb')))
+            ? 'block-esb'
+            : 'block-lhc';
 
     if (matchingRooms.length === 1) {
       const r = matchingRooms[0];
@@ -1592,7 +1794,7 @@ export function getRoomAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['ROOM_LOCATION'],
-      responseText: `I couldn't find a matching ${deptDisplayName} ${roomCategory === 'FACULTY_ROOM' ? 'faculty room' : 'room'} in Campus Pulse.`,
+      responseText: `I couldn't find a verified ${deptDisplayName} ${roomCategory === 'FACULTY_ROOM' ? 'faculty room' : 'room'} in the campus data.`,
       subText: "Strict No-Hallucination Policy: Verified against official MSRIT registry."
     };
   }
@@ -1744,24 +1946,78 @@ export function getLibraryAnswer(
 ): CampusAiResult | null {
   const { rawQuery, matchedLibrary } = entities;
 
-  // 0. Specific Unit II / LHC Library / Room 306 queries
+  // 0a. Specific Unit III / Apex Library / First Year Library / Room AB-714 queries
   if (
-    normQ.includes('unit 2') ||
-    normQ.includes('unit-2') ||
-    normQ.includes('unit ii') ||
-    normQ.includes('lhc 306') ||
-    (normQ.includes('lhc') && normQ.includes('library'))
+    normQ.includes('apex library') ||
+    normQ.includes('first year library') ||
+    normQ.includes('1st year library') ||
+    normQ.includes('apex first year') ||
+    normQ.includes('ab-714') ||
+    normQ.includes('ab 714') ||
+    (normQ.includes('apex') && (normQ.includes('library') || normQ.includes('lib')))
   ) {
-    const lhcLib = LIBRARIES.find((l) => l.id === 'lhc_unit_2_library') || LIBRARIES[1];
-    const det = getLibraryOccupancyDetails(lhcLib, simulatedTime);
+    const apexLib = LIBRARIES.find((l) => l.id === 'apex_unit_3_library') || LIBRARIES[2];
+    const det = getLibraryOccupancyDetails(apexLib, simulatedTime);
+    const ab714 = findRoomByNumber('AB-714');
 
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['LIBRARY_SEARCH', 'LIBRARY_LOCATION'],
-      responseText: `**${lhcLib.name}**\nLibrary & Information Center Unit – II · 1st Floor (Room LHC-306)\n📍 LHC Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: ${lhcLib.primaryGroups.join(', ')}\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
+      responseText: `**Apex Library**\nLibrary & Information Center (First year) · 5th Floor (Room AB-714)\n📍 Apex Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: 1st Year UG Students (All Disciplines)\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
+      subText: "Verified Campus Pulse Apex Block library & room telemetry.",
+      matchedLibrary: apexLib,
+      matchedRoom: ab714,
+      actionTargetId: 'block-apex'
+    };
+  }
+
+  // 0b. Specific MCA Library / Room AB-401 queries
+  if (
+    normQ.includes('mca library') ||
+    normQ.includes('mca department library') ||
+    normQ.includes('mca dept library') ||
+    normQ.includes('ab-401') ||
+    normQ.includes('ab 401') ||
+    (normQ.includes('mca') && (normQ.includes('library') || normQ.includes('lib')))
+  ) {
+    const mcaLib = LIBRARIES.find((l) => l.id === 'apex_mca_library') || LIBRARIES[3];
+    const det = getLibraryOccupancyDetails(mcaLib, simulatedTime);
+    const ab401 = findRoomByNumber('AB-401');
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['LIBRARY_SEARCH', 'LIBRARY_LOCATION'],
+      responseText: `**MCA Library**\nDept of MCA Library · 2nd Floor (Room AB-401)\n📍 Apex Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: Master of Computer Applications (MCA)\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
+      subText: "Verified Campus Pulse MCA department library & room telemetry.",
+      matchedLibrary: mcaLib,
+      matchedRoom: ab401,
+      actionTargetId: 'block-apex'
+    };
+  }
+
+  // 0c. Specific Unit II / LHC Library / Room LHC-306 queries
+  if (
+    normQ.includes('unit 2') ||
+    normQ.includes('unit-2') ||
+    normQ.includes('unit ii') ||
+    normQ.includes('lhc 306') ||
+    normQ.includes('lhc-306') ||
+    (normQ.includes('lhc') && (normQ.includes('library') || normQ.includes('lib')))
+  ) {
+    const lhcLib = LIBRARIES.find((l) => l.id === 'lhc_unit_2_library') || LIBRARIES[1];
+    const det = getLibraryOccupancyDetails(lhcLib, simulatedTime);
+    const lhc306 = findRoomByNumber('LHC-306');
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['LIBRARY_SEARCH', 'LIBRARY_LOCATION'],
+      responseText: `**Unit II - Library (LHC Library)**\nLibrary & Information Center Unit – II · 1st Floor (Room LHC-306)\n📍 LHC Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: ${lhcLib.primaryGroups.join(', ')}\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
       subText: "Grounded strictly in official MSRIT Unit-II library telemetry.",
       matchedLibrary: lhcLib,
+      matchedRoom: lhc306,
       actionTargetId: 'block-lhc'
     };
   }
@@ -1875,6 +2131,17 @@ export function getBuildingAnswer(
   normQ: string
 ): CampusAiResult | null {
   const { rawQuery, matchedBlock, matchedLocation } = entities;
+
+  if (normQ === 'building' || normQ === 'buildings' || normQ === 'campus buildings' || normQ === 'blocks' || normQ === 'campus blocks') {
+    const lines = VERIFIED_CAMPUS_BLOCKS.map((b) => `• **${b.displayName}** — ${b.name}`).join('\n');
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['BUILDING_LOCATION'],
+      responseText: `**Verified Campus Blocks & Buildings:**\n\n${lines}`,
+      subText: "Verified 4-corner coordinates on Google Maps Satellite base."
+    };
+  }
 
   if (_intents.includes('EVENT_SEARCH') && !normQ.includes('kaha') && !normQ.includes('kidhar') && !normQ.includes('where') && !normQ.includes('location') && !normQ.includes('block')) {
     return null;
