@@ -1172,7 +1172,7 @@ export function getFacultyAnswer(
   if (wantsSchedule || /\b(schedule|timetable|teaching|when\s*is\s*.*teaching|classes|class\s*timing)\b/i.test(normQ + ' ' + rawQuery)) {
     const facDisplayName = fac.name.replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i, '');
     type DayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
-    const daysMap: Record<string, DayKey> = {
+    const specificDaysMap: Record<string, DayKey> = {
       monday: 'Monday',
       mon: 'Monday',
       somwar: 'Monday',
@@ -1193,69 +1193,46 @@ export function getFacultyAnswer(
       shaniwar: 'Saturday'
     };
 
-    let targetDay: DayKey | null = null;
-    let targetDayLabel = '';
+    let requestedSpecificDay: DayKey | null = null;
+    let requestedDayLabel = '';
 
-    for (const [key, val] of Object.entries(daysMap)) {
+    for (const [key, val] of Object.entries(specificDaysMap)) {
       const regex = new RegExp(`\\b${key}\\b`, 'i');
       if (regex.test(normQ + ' ' + rawQuery)) {
-        targetDay = val;
-        targetDayLabel = val;
+        requestedSpecificDay = val;
+        requestedDayLabel = val;
         break;
       }
     }
 
-    if (/\b(today|aaj)\b/i.test(normQ + ' ' + rawQuery)) {
-      const dayIdx = simulatedTime?.dayOfWeek ?? new Date().getDay();
-      const dayKeys: DayKey[] = [
-        'Monday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
-      ];
-      if (dayIdx >= 1 && dayIdx <= 6) {
-        targetDay = dayKeys[dayIdx];
-        targetDayLabel = targetDay;
-      }
-    }
+    const dayIdx = simulatedTime?.dayOfWeek ?? new Date().getDay();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const currentDayName = dayNames[dayIdx];
 
     const weekly = fac.weeklySchedule;
     let responseText = '';
 
-    if (targetDay && weekly) {
-      const daySessions: FacultyDayScheduleItem[] = (weekly[targetDay] as FacultyDayScheduleItem[]) || [];
+    if (requestedSpecificDay && weekly) {
+      const daySessions: FacultyDayScheduleItem[] = (weekly[requestedSpecificDay] as FacultyDayScheduleItem[]) || [];
       if (daySessions.length > 0) {
         const sessionLines = daySessions.map((s) => `${s.time}\n${s.subject}`).join('\n\n');
-        responseText = `${facDisplayName} — ${targetDayLabel}\n\n${sessionLines}`;
+        responseText = `${facDisplayName} — ${requestedDayLabel}\n\n${sessionLines}`;
       } else {
-        responseText = `${facDisplayName} — ${targetDayLabel}\n\nNo scheduled activities for ${targetDayLabel}.`;
+        responseText = `${facDisplayName} — ${requestedDayLabel}\n\nNO SCHEDULED CLASSES TODAY`;
       }
-    } else if (weekly) {
-      const allDays: { key: DayKey; label: string }[] = [
-        { key: 'Monday', label: 'MONDAY' },
-        { key: 'Tuesday', label: 'TUESDAY' },
-        { key: 'Wednesday', label: 'WEDNESDAY' },
-        { key: 'Thursday', label: 'THURSDAY' },
-        { key: 'Friday', label: 'FRIDAY' },
-        { key: 'Saturday', label: 'SATURDAY' }
-      ];
-
-      const activeDayBlocks: string[] = [];
-      for (const d of allDays) {
-        const list: FacultyDayScheduleItem[] = (weekly[d.key] as FacultyDayScheduleItem[]) || [];
-        if (list.length > 0) {
-          const listStr = list.map((s) => `${s.time}\n${s.subject}`).join('\n\n');
-          activeDayBlocks.push(`${d.label}\n\n${listStr}`);
+    } else {
+      // Default: Prioritize Today's schedule
+      if (currentDayName === 'Sunday' || !weekly) {
+        responseText = `${facDisplayName} — Today's Schedule\n\nNO SCHEDULED CLASSES TODAY`;
+      } else {
+        const todaySessions: FacultyDayScheduleItem[] = (weekly[currentDayName as DayKey] as FacultyDayScheduleItem[]) || [];
+        if (todaySessions.length > 0) {
+          const sessionLines = todaySessions.map((s) => `${s.time}\n${s.subject}`).join('\n\n');
+          responseText = `${facDisplayName} — Today's Schedule\n\n${sessionLines}`;
+        } else {
+          responseText = `${facDisplayName} — Today's Schedule\n\nNO SCHEDULED CLASSES TODAY`;
         }
       }
-
-      if (activeDayBlocks.length > 0) {
-        responseText = `${facDisplayName} — Schedule\n\n${activeDayBlocks.join('\n\n---\n\n')}`;
-      } else {
-        responseText = `${facDisplayName}\n\nNo scheduled timetable activities.`;
-      }
-    } else if (fac.todaySchedule && fac.todaySchedule.length > 0) {
-      const schedList = fac.todaySchedule.map((s) => `${s.time}\n${s.event}`).join('\n\n');
-      responseText = `${facDisplayName} — Schedule\n\n${schedList}`;
-    } else {
-      responseText = `${facDisplayName} has no scheduled timetable activities.`;
     }
 
     return {

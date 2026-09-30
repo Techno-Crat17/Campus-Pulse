@@ -11,9 +11,6 @@ import type { MSRITFacultyRecord } from '../data/facultyData';
 import { getFacultyDynamicStatus, getCurrentCampusTime } from '../data/statusEngine';
 import { useTimeContext } from '../context/TimeContext';
 
-type ScheduleDayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
-const SCHEDULE_DAYS: ScheduleDayKey[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
 interface EditorialFacultyProps {
   onSelectFacultyForMap?: (nodeId: string) => void;
 }
@@ -31,9 +28,6 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
   // Compact by default; scrolling NEVER expands cards.
   const [expandedFacultyIds, setExpandedFacultyIds] = useState<Set<string>>(new Set());
 
-  // Active schedule tab day per faculty card
-  const [facultyScheduleDay, setFacultyScheduleDay] = useState<Record<string, ScheduleDayKey>>({});
-
   const { simulatedTime } = useTimeContext();
 
   // Periodic 30-second interval to refresh dynamic faculty statuses locally without excessive API calls
@@ -45,9 +39,10 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     return () => clearInterval(timer);
   }, []);
 
-  const defaultDayOfWeek = useMemo<ScheduleDayKey>(() => {
-    const dayIdx = simulatedTime?.dayOfWeek ?? clockTick.getDay();
-    const dayMap: Record<number, ScheduleDayKey> = {
+  const currentDayName = useMemo<string>(() => {
+    const dayIdx = simulatedTime?.dayOfWeek ?? clockTick.getDay(); // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+    const dayMap: Record<number, string> = {
+      0: 'Sunday',
       1: 'Monday',
       2: 'Tuesday',
       3: 'Wednesday',
@@ -55,7 +50,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
       5: 'Friday',
       6: 'Saturday'
     };
-    return dayMap[dayIdx] || 'Monday';
+    return dayMap[dayIdx] || 'Sunday';
   }, [simulatedTime, clockTick]);
 
   // Single authoritative faculty dataset loaded dynamically from faculty_msrit_dynamic.json
@@ -288,101 +283,48 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   </div>
                 </div>
 
-                {/* Faculty Schedule Section */}
-                {fac.weeklySchedule ? (
-                  <div className="space-y-3 font-mono text-xs">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#111111]/10 pb-2 gap-2">
-                      <div className="text-[#DC2626] uppercase font-bold tracking-wider text-[11px] flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>FACULTY SCHEDULE</span>
+                {/* Faculty Schedule Section (Current Day Only in Asia/Kolkata) */}
+                {(() => {
+                  const todaySessions = fac.weeklySchedule && currentDayName !== 'Sunday'
+                    ? (fac.weeklySchedule[currentDayName as keyof typeof fac.weeklySchedule] || [])
+                    : (fac.todaySchedule?.map((s) => ({ time: s.time, subject: s.event })) || []);
+
+                  return (
+                    <div className="space-y-2.5 font-mono text-xs">
+                      <div className="flex items-center justify-between border-b border-[#111111]/10 pb-2">
+                        <div className="text-[#DC2626] uppercase font-bold tracking-wider text-[11px] flex items-center gap-2">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>TODAY — {currentDayName.toUpperCase()}</span>
+                        </div>
+                        {todaySessions.length > 0 && (
+                          <span className="text-[10px] text-[#666660] font-bold uppercase">
+                            {todaySessions.length} {todaySessions.length === 1 ? 'SESSION' : 'SESSIONS'}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Day Tabs */}
-                      <div className="flex flex-wrap gap-1">
-                        {SCHEDULE_DAYS.map((dayName) => {
-                          const activeDay = facultyScheduleDay[fac.id] || defaultDayOfWeek;
-                          const isSelected = activeDay === dayName;
-                          const daySessions = fac.weeklySchedule?.[dayName] || [];
-                          const shortDay = dayName.slice(0, 3).toUpperCase();
-                          return (
-                            <button
-                              key={dayName}
-                              type="button"
-                              onClick={() => setFacultyScheduleDay((prev) => ({ ...prev, [fac.id]: dayName }))}
-                              className={`px-2.5 py-1 border text-[10px] font-bold font-mono uppercase transition-all cursor-pointer ${
-                                isSelected
-                                  ? 'bg-[#111111] text-white border-[#DC2626]'
-                                  : 'bg-white text-[#666660] border-[#111111]/15 hover:text-[#DC2626] hover:border-[#DC2626]'
-                              }`}
-                            >
-                              <span>{shortDay}</span>
-                              {daySessions.length > 0 && (
-                                <span className={`ml-1 text-[9px] ${isSelected ? 'text-red-300' : 'text-[#DC2626]'}`}>
-                                  ({daySessions.length})
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Schedule Sessions for Active Day */}
-                    {(() => {
-                      const activeDay = facultyScheduleDay[fac.id] || defaultDayOfWeek;
-                      const sessions = fac.weeklySchedule[activeDay] || [];
-                      if (sessions.length === 0) {
-                        return (
-                          <div className="p-4 bg-white border border-[#111111]/10 text-center text-xs text-[#666660] font-mono">
-                            No scheduled teaching sessions on {activeDay}. Available in cabin.
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <div className="space-y-2">
-                          <div className="text-[11px] text-[#111111] font-bold uppercase">
-                            {activeDay.toUpperCase()} ({sessions.length} SESSIONS):
-                          </div>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                            {sessions.map((sch, sIdx) => (
-                              <div key={sIdx} className="p-3 bg-white border border-[#111111]/15 space-y-1.5 shadow-xs">
-                                <div className="text-[#DC2626] font-mono font-bold text-[11px] flex items-center gap-1">
-                                  <Clock className="w-3.5 h-3.5" />
-                                  <span>{sch.time}</span>
-                                </div>
-                                <div className="font-syne font-bold text-[#111111] text-sm uppercase">
-                                  {sch.subject}
-                                </div>
+                      {todaySessions.length === 0 ? (
+                        <div className="p-3.5 bg-[#111111]/5 border border-[#111111]/10 text-center text-xs text-[#666660] font-mono font-bold tracking-wider uppercase">
+                          NO SCHEDULED CLASSES TODAY
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                          {todaySessions.map((sch, sIdx) => (
+                            <div key={sIdx} className="p-3 bg-white border border-[#111111]/15 space-y-1.5 shadow-xs">
+                              <div className="text-[#DC2626] font-mono font-bold text-[11px] flex items-center gap-1">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span>{sch.time}</span>
                               </div>
-                            ))}
-                          </div>
+                              <div className="font-syne font-bold text-[#111111] text-sm uppercase">
+                                {sch.subject}
+                              </div>
+                            </div>
+                          ))}
                         </div>
-                      );
-                    })()}
-                  </div>
-                ) : fac.todaySchedule && fac.todaySchedule.length > 0 ? (
-                  <div className="space-y-2 font-mono text-xs">
-                    <div className="text-[#DC2626] uppercase font-bold tracking-wider text-[11px] flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>TODAY&apos;S SCHEDULE ({fac.todaySchedule.length} SESSIONS):</span>
+                      )}
                     </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                      {fac.todaySchedule.map((sch, sIdx) => (
-                        <div key={sIdx} className="p-3 bg-white border border-[#111111]/15 space-y-1 shadow-xs">
-                          <div className="text-[#DC2626] font-bold text-[11px] flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            <span>{sch.time}</span>
-                          </div>
-                          <div className="font-syne font-bold text-[#111111] text-sm uppercase">
-                            {sch.event}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
+                  );
+                })()}
 
               </div>
             </motion.div>

@@ -660,74 +660,53 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
 
     if (wantsSchedule) {
       const facDisplayName = fac.name.replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i, '');
-      const daysMap = {
-        monday: 'monday', mon: 'monday', somwar: 'monday',
-        tuesday: 'tuesday', tue: 'tuesday', mangalwar: 'tuesday',
-        wednesday: 'wednesday', wed: 'wednesday', budhwar: 'wednesday',
-        thursday: 'thursday', thu: 'thursday', guruwar: 'thursday',
-        friday: 'friday', fri: 'friday', shukrawar: 'friday',
-        saturday: 'saturday', sat: 'saturday', shaniwar: 'saturday'
+      const specificDaysMap = {
+        monday: 'Monday', mon: 'Monday', somwar: 'Monday',
+        tuesday: 'Tuesday', tue: 'Tuesday', mangalwar: 'Tuesday',
+        wednesday: 'Wednesday', wed: 'Wednesday', budhwar: 'Wednesday',
+        thursday: 'Thursday', thu: 'Thursday', guruwar: 'Thursday',
+        friday: 'Friday', fri: 'Friday', shukrawar: 'Friday',
+        saturday: 'Saturday', sat: 'Saturday', shaniwar: 'Saturday'
       };
 
-      let targetDay = null;
-      let targetDayLabel = '';
-      for (const [key, val] of Object.entries(daysMap)) {
+      let requestedSpecificDay = null;
+      let requestedDayLabel = '';
+      for (const [key, val] of Object.entries(specificDaysMap)) {
         if (new RegExp(`\\b${key}\\b`, 'i').test(rawQuery + ' ' + normQuery)) {
-          targetDay = val;
-          targetDayLabel = val.charAt(0).toUpperCase() + val.slice(1);
+          requestedSpecificDay = val;
+          requestedDayLabel = val;
           break;
         }
       }
 
-      if (/\b(today|aaj)\b/i.test(rawQuery + ' ' + normQuery)) {
-        const dayIdx = new Date().getDay();
-        const dayKeys = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        if (dayIdx >= 1 && dayIdx <= 6) {
-          targetDay = dayKeys[dayIdx];
-          targetDayLabel = targetDay.charAt(0).toUpperCase() + targetDay.slice(1);
-        }
-      }
+      const dayIdx = new Date().getDay();
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const currentDayName = dayNames[dayIdx];
 
       const weekly = fac.weeklySchedule;
       let ans = '';
 
-      if (targetDay && weekly) {
-        const daySessions = weekly[targetDay] || [];
+      if (requestedSpecificDay && weekly) {
+        const daySessions = weekly[requestedSpecificDay] || [];
         if (daySessions.length > 0) {
-          const sessionLines = daySessions.map(s => `${s.startTime}–${s.endTime}\n${s.subject}`).join('\n\n');
-          ans = `${facDisplayName} — ${targetDayLabel}\n\n${sessionLines}`;
+          const sessionLines = daySessions.map(s => `${s.time}\n${s.subject}`).join('\n\n');
+          ans = `${facDisplayName} — ${requestedDayLabel}\n\n${sessionLines}`;
         } else {
-          ans = `${facDisplayName} — ${targetDayLabel}\n\nNo scheduled activities for ${targetDayLabel}.`;
+          ans = `${facDisplayName} — ${requestedDayLabel}\n\nNO SCHEDULED CLASSES TODAY`;
         }
-      } else if (weekly) {
-        const allDays = [
-          { key: 'monday', label: 'MONDAY' },
-          { key: 'tuesday', label: 'TUESDAY' },
-          { key: 'wednesday', label: 'WEDNESDAY' },
-          { key: 'thursday', label: 'THURSDAY' },
-          { key: 'friday', label: 'FRIDAY' },
-          { key: 'saturday', label: 'SATURDAY' }
-        ];
-
-        const activeDayBlocks = [];
-        for (const d of allDays) {
-          const list = weekly[d.key] || [];
-          if (list.length > 0) {
-            const listStr = list.map(s => `${s.startTime}–${s.endTime}\n${s.subject}`).join('\n\n');
-            activeDayBlocks.push(`${d.label}\n\n${listStr}`);
+      } else {
+        // Default: Prioritize Today's schedule
+        if (currentDayName === 'Sunday' || !weekly) {
+          ans = `${facDisplayName} — Today's Schedule\n\nNO SCHEDULED CLASSES TODAY`;
+        } else {
+          const todaySessions = weekly[currentDayName] || [];
+          if (todaySessions.length > 0) {
+            const sessionLines = todaySessions.map(s => `${s.time}\n${s.subject}`).join('\n\n');
+            ans = `${facDisplayName} — Today's Schedule\n\n${sessionLines}`;
+          } else {
+            ans = `${facDisplayName} — Today's Schedule\n\nNO SCHEDULED CLASSES TODAY`;
           }
         }
-
-        if (activeDayBlocks.length > 0) {
-          ans = `${facDisplayName} — Schedule\n\n${activeDayBlocks.join('\n\n---\n\n')}`;
-        } else {
-          ans = `${facDisplayName}\n\nNo scheduled timetable activities.`;
-        }
-      } else if (fac.todaySchedule && fac.todaySchedule.length > 0) {
-        const schedList = fac.todaySchedule.map(s => `${s.time}\n${s.event}`).join('\n\n');
-        ans = `${facDisplayName} — Schedule\n\n${schedList}`;
-      } else {
-        ans = `${facDisplayName} has no scheduled timetable activities.`;
       }
 
       return {

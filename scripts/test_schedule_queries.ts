@@ -2,17 +2,16 @@ import { processCampusAiQuery } from '../src/data/campusAiEngine';
 
 async function test() {
   const queries = [
-    'Yogish sir ka schedule kya hai?',
+    'Yogish sir ka aaj schedule kya hai?',
     'YHK schedule',
     'Yogish sir Monday schedule',
     'When is Yogish teaching?',
     'Savita K Monday schedule',
-    'Geetha V Friday schedule',
+    'Savita K schedule',
     'Shruti G schedule',
     'Zeenat schedule',
-    'Pratima Tuesday schedule',
-    'ED schedule',
-    'SS schedule'
+    'Pratima schedule',
+    'ED schedule'
   ];
 
   for (const q of queries) {
