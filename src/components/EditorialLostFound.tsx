@@ -151,7 +151,7 @@ export const EditorialLostFound: React.FC = () => {
                       <div className="pt-2 border-t border-[#111111]/10 font-mono text-[11px] text-[#888880] space-y-1">
                         <div className="flex items-center gap-1.5 text-[#111111]">
                           <MapPin className="w-3.5 h-3.5 text-[#DC2626] shrink-0" />
-                          <span className="truncate">DROP: {item.contactLocation}</span>
+                          <span className="truncate"><strong>FOUND AT:</strong> {item.location}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3 h-3 text-[#888880] shrink-0" />
@@ -234,7 +234,7 @@ export const EditorialLostFound: React.FC = () => {
                     </div>
 
                     <div className="space-y-2 text-xs text-[#666660] bg-white/60 p-4 border border-[#111111]/15">
-                      <div>LOCATION RECORDED: <strong className="text-[#111111]">{selectedItem.location}</strong></div>
+                      <div>FOUND AT: <strong className="text-[#111111]">{selectedItem.location}</strong></div>
                       <div>DATE REPORTED: <strong className="text-[#111111]">{selectedItem.date}</strong></div>
                       <div>SECURED AT: <strong className="text-[#DC2626]">{selectedItem.contactLocation}</strong></div>
                     </div>

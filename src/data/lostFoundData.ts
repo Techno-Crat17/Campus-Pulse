@@ -1,5 +1,5 @@
 // Central Single Source of Truth for Lost & Found Items
-// Verified records corresponding to the 6 uploaded custom images
+// Verified records corresponding to the 6 uploaded custom images with approved locations
 
 export interface LostFoundItem {
   id: number | string;
@@ -23,7 +23,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     id: 1,
     itemName: "Metallic Blue Wristwatch",
     type: "found",
-    location: "Campus Facilities",
+    location: "ISE Lab 3",
     date: "2026-09-30",
     description: "Analog wristwatch with metallic blue chain strap.",
     image: `${BASE_URL}assets/lost-found/blue-watch.jpeg`,
@@ -35,7 +35,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     id: 2,
     itemName: "Wireless Bluetooth Mouse",
     type: "found",
-    location: "Campus Facilities",
+    location: "CSE Lab 2",
     date: "2026-09-30",
     description: "Black optical wireless mouse with LED illumination.",
     image: `${BASE_URL}assets/lost-found/wireless-mouse.jpeg`,
@@ -47,7 +47,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     id: 3,
     itemName: "Laptop Power Adapter",
     type: "found",
-    location: "Campus Facilities",
+    location: "CRD 508",
     date: "2026-09-30",
     description: "White USB-C laptop power adapter with braided charging cable.",
     image: `${BASE_URL}assets/lost-found/laptop-charger.jpeg`,
@@ -59,7 +59,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     id: 4,
     itemName: "boAt Wireless Earbuds",
     type: "found",
-    location: "Campus Facilities",
+    location: "ISE Lab 1",
     date: "2026-09-30",
     description: "boAt TWS wireless earbuds in transparent charging case.",
     image: `${BASE_URL}assets/lost-found/boat-earbuds.jpeg`,
@@ -71,7 +71,7 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
     id: 5,
     itemName: "Stainless Steel Water Bottle",
     type: "found",
-    location: "Campus Facilities",
+    location: "CSE Lab 4",
     date: "2026-09-30",
     description: "Silver stainless steel water bottle with black sipper cap.",
     image: `${BASE_URL}assets/lost-found/stainless-steel-bottle.jpeg`,
@@ -82,13 +82,13 @@ export const SAMPLE_LOST_FOUND_ITEMS: LostFoundItem[] = [
   {
     id: 6,
     itemName: "Android Smartphone",
-    type: "lost",
-    location: "Campus Facilities",
+    type: "found",
+    location: "ISE Lab 3",
     date: "2026-09-30",
     description: "Smartphone in blue protective casing.",
     image: `${BASE_URL}assets/lost-found/android-smartphone.jpeg`,
     category: "Electronics",
     contactLocation: "Security Enquiry Desk",
-    statusLabel: "REPORTED LOST"
+    statusLabel: "FOUND & SECURED"
   }
 ];
