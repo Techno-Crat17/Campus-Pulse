@@ -993,6 +993,23 @@
       "sourceYear": 2026
     },
     {
+      "roomNumber": "LHC-204",
+      "roomNumberNormalized": "LHC204",
+      "name": "Classroom",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Ground Floor",
+      "department": "-",
+      "departments": [],
+      "type": "Classroom",
+      "category": "Classroom",
+      "description": "LHC Block ground floor lecture classroom.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
       "roomNumber": "LHC-205",
       "roomNumberNormalized": "LHC205",
       "name": "HOD & Faculty Room",

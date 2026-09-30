@@ -340,7 +340,7 @@ export async function seedDatabase() {
       if (roomJson.rooms && Array.isArray(roomJson.rooms)) {
         // Clean up conflicting legacy records if present
         await Room.deleteMany({
-          roomNumber: { $in: ['LHC Seminar Hall 1', 'LHC Seminar Hall 2', 'LHC204', 'LHC-217'] }
+          roomNumber: { $in: ['LHC Seminar Hall 1', 'LHC Seminar Hall 2', 'LHC-217'] }
         });
 
         const roomOps = roomJson.rooms.map((room) => ({

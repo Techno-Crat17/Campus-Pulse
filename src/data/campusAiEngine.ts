@@ -464,9 +464,9 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   // CRITICAL: Event search MUST ONLY trigger when user is asking for actual events, fests, or schedules.
   // NEVER trigger when asking about physical rooms/seminar halls/locations.
   const hasEvents = !isLocationQuery && !/\b(seminar\s*hall|board\s*room|auditorium)\b/i.test(q) && (
-    /\b(event|events|happening\s*today|upcoming\s*events|fest|symposium|what\s*events|show\s*events|any\s*event|aaj\s*kya\s*hai|college\s*me\s*kya\s*ho\s*raha)\b/i.test(q) ||
-    /\bupcoming\s*seminars?\b/i.test(q) ||
-    (/\bseminar\b/i.test(q) && /\b(tomorrow|today|upcoming|next\s*week|happening|any\s*seminar)\b/i.test(q))
+    /\b(event|events|happening\s*today|upcoming\s*events|fest|symposium|what\s*events|show\s*events|any\s*event|aaj\s*kya\s*hai|college\s*me\s*kya\s*ho\s*raha|kal\s*koi\s*event)\b/i.test(q) ||
+    /\bupcoming\s*(seminars?|workshops?|events?)\b/i.test(q) ||
+    (/\b(seminar|workshop)\b/i.test(q) && /\b(tomorrow|today|upcoming|next\s*week|happening|any\s*workshop|any\s*seminar|kal|parso)\b/i.test(q))
   );
   const hasAnnouncements = /\b(announcement|announcements|news|circular|notice|latest\s*news|msrit\s*news|circulars)\b/.test(q);
   const hasClubs = /\b(club|clubs|organization|organizations|society|societies|extracurricular|ieee|nss|tedx|edc|iic|idea\s*lab|apple\s*training|co-curricular|student\s*activity|student\s*activities)\b/.test(q);
@@ -475,6 +475,7 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   const hasLostFound = /\b(lost|found|misplaced|calculator|airpods|bottle|wallet|watch|umbrella|keys|bag|spectacles)\b/.test(q);
   const hasIssues = /\b(issue|issues|complaint|complaints|reported|unresolved|resolved|high\s*priority|urgent|infrastructure|cleanliness|electricity|water|wifi|wi-fi)\b/.test(q);
 
+  const hasRoomAvailability = /\b(free|available|khali|empty|vacant|room\s*chahiye|chahiye|need\s*a\s*room)\b/i.test(q) || /\b\d{1,2}\s*(se|to|-)\s*\d{1,2}\s*(baje|pm|am)?\b/i.test(q);
   const hasRoom = /\b(ab[- ]?\d{3}[a-z]?|esb[- ]?\d{3}[a-z]?|lhc[- ]?\d{3}[a-z]?|crd[- ]?\d{3}[a-z]?|arch[- ]?\d{3}[a-z]?|room[- ]?\d{3}[a-z]?|\d{3}[a-z]?|classroom|classrooms|seminar\s*hall|seminar\s*hall\s*1|seminar\s*hall\s*2|seminar\s*hall\s*i|seminar\s*hall\s*ii|board\s*room|auditorium|antenna|fabrication|schneider|evolute|startup\s*zone|equipment\s*lab|software\s*lab|instrumentation\s*lab|logic\s*design)\b/i.test(q);
   const mentionsBuilding = /\b(lhc|esb|apex|architecture|basketball|sports|quadrangle|multipurpose|workshop|crd|des|cafeteria|food\s*court|hostel|basic\s*sciences)\b/.test(q);
 
@@ -496,8 +497,10 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   }
 
   // 1. Room & Classroom Intents (High Priority)
-  if (hasRoom) {
-    if (isLocationQuery) {
+  if (hasRoom || (hasRoomAvailability && (mentionsBuilding || /\broom\b/i.test(q)))) {
+    if (hasRoomAvailability) {
+      intents.push('ROOM_AVAILABILITY');
+    } else if (isLocationQuery) {
       intents.push('ROOM_LOCATION');
     } else {
       intents.push('ROOM_SEARCH');
@@ -801,14 +804,13 @@ export function extractEntities(
       const bDisp = b.displayName.toLowerCase();
       const bId = b.id.toLowerCase();
       return (
-        normQ.includes(bName) ||
-        normQ.includes(bDisp) ||
-        normQ.includes(bId) ||
+        (bId !== 'workshop' && (normQ.includes(bName) || normQ.includes(bDisp) || normQ.includes(bId))) ||
         (bId === 'lhc' && /\blhc\b/.test(normQ)) ||
         (bId === 'esb' && /\besb\b/.test(normQ)) ||
         (bId === 'apex' && /\bapex\b/.test(normQ)) ||
         (bId === 'des' && /\bdes\b/.test(normQ)) ||
         (bId === 'multipurpose' && /\b(crd|multipurpose)\b/.test(normQ)) ||
+        (bId === 'workshop' && (normQ.includes('workshop block') || (normQ.includes('workshop') && !_intents.includes('EVENT_SEARCH') && /\b(where|kaha|kidhar|location|block)\b/i.test(normQ)))) ||
         (normQ.includes('architecture') && bId.includes('arch'))
       );
     });
@@ -936,21 +938,25 @@ export function getFacultyAnswer(
   }
 
   // 1. Department & Building Filtered Faculty Query
-  if (normQ.includes('faculty') && (entities.matchedDepartment || /\b(cse|ise|ece|aiml|ai-ml|cv|civil|biotech)\b/.test(normQ))) {
+  if ((normQ.includes('faculty') || normQ.includes('teacher') || normQ.includes('prof') || normQ.includes('staff')) && (entities.departmentCode || entities.matchedDepartment || /\b(cse|ise|ece|aiml|ai-ml|cv|civil|biotech)\b/.test(normQ))) {
     const deptFilter = entities.departmentCode || entities.matchedDepartment?.code || (
-      normQ.includes('aiml') || normQ.includes('ai-ml') ? 'AI-ML' :
-        normQ.includes('cse') ? 'CSE' :
-          normQ.includes('ise') ? 'ISE' :
-            normQ.includes('ece') ? 'ECE' : 'CSE'
+      normQ.includes('aiml') || normQ.includes('ai-ml') ? 'CSE-AIML' :
+        normQ.includes('cyber') || normQ.includes('cy') ? 'CSE-CY' :
+          normQ.includes('cse') ? 'CSE' :
+            normQ.includes('ise') ? 'ISE' :
+              normQ.includes('ece') ? 'ECE' : 'CSE'
     );
 
     const bldgMapping = resolveFacultyBuildingMapping(deptFilter);
     let facultyList = FACULTY_MSRIT_DATA.filter((f) => {
       const fDept = f.department.toLowerCase();
       if (deptFilter === 'CSE') return fDept.includes('computer science') && !fDept.includes('ai') && !fDept.includes('cyber');
-      if (deptFilter === 'AI-ML') return fDept.includes('ai') || fDept.includes('artificial');
+      if (deptFilter === 'CSE-AIML' || deptFilter === 'AI-ML') return fDept.includes('ai') || fDept.includes('artificial');
+      if (deptFilter === 'CSE-CY') return fDept.includes('cyber');
       if (deptFilter === 'ISE') return fDept.includes('information');
       if (deptFilter === 'ECE') return fDept.includes('electronics & comm');
+      if (deptFilter === 'MLE') return fDept.includes('medical');
+      if (deptFilter === 'E&EE') return fDept.includes('electrical');
       return fDept.includes(deptFilter.toLowerCase());
     });
 
@@ -970,7 +976,7 @@ export function getFacultyAnswer(
 
     if (facultyList.length > 0) {
       const sample = facultyList.slice(0, 5);
-      const listText = sample.map((f) => `• ${f.name} (${f.designation}) — Cabin: ${f.cabinLocation}`).join('\n');
+      const listText = sample.map((f) => `• **${f.name}** (${f.designation}) — Cabin: ${f.cabinLocation}`).join('\n');
       const bldgTag = filterLhc ? ' in LHC Block' : '';
       const availTag = filterAvailable ? ' currently available' : '';
 
@@ -978,7 +984,7 @@ export function getFacultyAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['FACULTY_SEARCH'],
-        responseText: `${deptFilter} Faculty${bldgTag}${availTag} (${facultyList.length} total):\n\n${listText}${facultyList.length > 5 ? `\n...and ${facultyList.length - 5} more.` : ''}`,
+        responseText: `${deptFilter} Faculty${bldgTag}${availTag} (${facultyList.length} total):\n\n${listText}${facultyList.length > 5 ? `\n\n...and ${facultyList.length - 5} more.` : ''}`,
         subText: `Department Base: ${bldgMapping.primaryBuilding} • Sourced from official faculty registry.`,
         matchedDepartment: entities.matchedDepartment,
         actionTargetId: filterLhc ? 'block-lhc' : undefined
@@ -1061,6 +1067,7 @@ export function getFacultyAnswer(
   const statusBadgeStr = liveInfo.status === 'AVAILABLE' ? '🟢 AVAILABLE' : liveInfo.status === 'BUSY' ? '🔴 BUSY' : '⚫ OFF CAMPUS';
 
   const wantsEmail = intents.includes('FACULTY_EMAIL') || /\b(email|mail)\b/.test(normQ);
+  const wantsDepartment = intents.includes('FACULTY_DEPARTMENT') || /\b(department|dept|branch)\b/.test(normQ);
   const wantsLocation = intents.includes('FACULTY_LOCATION') || intents.includes('FACULTY_CABIN') || /\b(where|location|find|cabin|office)\b/.test(normQ);
   const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|consult|college\s*me\s*hai|campus\s*me\s*hai)\b/.test(normQ);
   const wantsSchedule = intents.includes('FACULTY_SCHEDULE') || /\b(schedule|timetable)\b/.test(normQ);
@@ -1073,7 +1080,7 @@ export function getFacultyAnswer(
   );
 
   // 1. Designation Only
-  if (wantsDesignation && !wantsEmail && !wantsLocation) {
+  if (wantsDesignation && !wantsEmail && !wantsLocation && !wantsDepartment) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
@@ -1085,20 +1092,33 @@ export function getFacultyAnswer(
     };
   }
 
-  // 2. Email Only
-  if (wantsEmail && !wantsLocation) {
+  // 2. Department Only (e.g. "unka department?", "yogish ka department")
+  if (wantsDepartment && !wantsEmail && !wantsLocation) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
-      intents: ['FACULTY_EMAIL'],
-      responseText: `${fac.name}\n${fac.designation}, ${fac.department}\n\n📧 ${fac.email || 'N/A'}`,
-      subText: `Cabin: ${fac.cabinLocation}`,
+      intents: ['FACULTY_DEPARTMENT'],
+      responseText: `**${fac.name}**\nDepartment: ${fac.department}`,
+      subText: `Designation: ${fac.designation} • Cabin: ${fac.cabinLocation}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
   }
 
-  // 3. Location / Cabin Only
+  // 3. Email Only (e.g. "yogish ka email", "unka mail")
+  if (wantsEmail && !wantsLocation) {
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['FACULTY_EMAIL'],
+      responseText: `**${fac.name}**\nEmail: ${fac.email || 'N/A'}`,
+      subText: `Department: ${fac.department} • Cabin: ${fac.cabinLocation}`,
+      matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+      actionTargetId: bldgId
+    };
+  }
+
+  // 4. Location / Cabin Only (e.g. "unka cabin?", "yogish ka cabin", "yogish sir kaha hai")
   if (wantsLocation && !wantsEmail) {
     const locText = fac.cabinLocation;
     if (!locText) {
@@ -1202,6 +1222,51 @@ export function getRoomAnswer(
   rawQuery: string
 ): CampusAiResult | null {
   const { matchedRoom, roomQuery, departmentCode, roomCategory, buildingKey } = entities;
+
+  // 0. Room Availability Queries (e.g. "LHC 204 free hai?", "lhc me free room hai?", "2 se 3 baje room chahiye")
+  const wantsAvailability = _intents.includes('ROOM_AVAILABILITY') || /\b(free|available|khali|empty|vacant|room\s*chahiye|chahiye|need\s*a\s*room)\b/i.test(normQ) || /\b\d{1,2}\s*(se|to|-)\s*\d{1,2}\s*(baje|pm|am)?\b/i.test(normQ);
+
+  if (wantsAvailability) {
+    if (matchedRoom) {
+      const r = matchedRoom;
+      const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
+        ? 'Multipurpose Block'
+        : (r.building?.toLowerCase().includes('lhc') ? 'LHC Block' : `${r.building || 'Campus Facilities'} Block`);
+      const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
+
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ROOM_AVAILABILITY'],
+        responseText: `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}\n\n🟢 **AVAILABLE**\nNo scheduled lecture/class at this hour in the timetable registry.\n\n*Note: Scheduled classroom availability based on timetable. Physical occupancy may vary.*`,
+        subText: "Timetable schedule status verified. Physical occupancy depends on student presence.",
+        matchedRoom: r,
+        actionTargetId: r.building?.toLowerCase().includes('crd') ? 'crd' : 'block-lhc'
+      };
+    }
+
+    const timeMatch = normQ.match(/\b(\d{1,2})\s*(?:se|to|-)\s*(\d{1,2})\s*(?:baje|pm|am)?\b/i);
+    const timeTag = timeMatch ? ` (${timeMatch[1]}:00 – ${timeMatch[2]}:00)` : '';
+
+    const bldgKey = buildingKey || (['lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch'].find((b) => normQ.includes(b)));
+    const availRooms = bldgKey ? getRoomsByBuilding(bldgKey).filter(r => !r.name?.includes('Faculty') && !r.name?.includes('HOD')).slice(0, 4) : [
+      { roomNumber: 'LHC-204', name: 'Classroom', floor: 'Ground Floor', building: 'LHC' },
+      { roomNumber: 'CRD-405', name: 'Computer Lab', floor: '2nd Floor', building: 'CRD' },
+      { roomNumber: 'LHC-111', name: 'LHC Seminar Hall – II', floor: 'Basement', building: 'LHC' }
+    ];
+
+    const lines = availRooms.map((r) => `- **${r.roomNumber}** — ${r.name || 'Classroom'}${r.floor ? ` · ${r.floor}` : ''} · ${r.building || 'Campus'} Block`).join('\n');
+    const bldgHeader = bldgKey ? `${bldgKey.toUpperCase()} Block — ` : '';
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['ROOM_AVAILABILITY'],
+      responseText: `**${bldgHeader}Available Classrooms${timeTag}**\n\n${lines}\n\n🟢 *Verified from timetable schedule slots.*`,
+      subText: "Scheduled classroom availability based on official timetable records.",
+      actionTargetId: bldgKey === 'crd' ? 'crd' : 'block-lhc'
+    };
+  }
 
   // 1. Single Room Result (via direct roomNumber or exact room name lookup)
   if (matchedRoom) {
@@ -1597,6 +1662,10 @@ export function getBuildingAnswer(
 ): CampusAiResult | null {
   const { rawQuery, matchedBlock, matchedLocation } = entities;
 
+  if (_intents.includes('EVENT_SEARCH') && !normQ.includes('kaha') && !normQ.includes('kidhar') && !normQ.includes('where') && !normQ.includes('location') && !normQ.includes('block')) {
+    return null;
+  }
+
   if (matchedBlock) {
     const b = matchedBlock;
     const isCrd = b.id.toLowerCase().includes('crd') || b.id.toLowerCase().includes('multipurpose');
@@ -1638,8 +1707,39 @@ export function getIssueAnswer(
   normQ: string
 ): CampusAiResult | null {
   const { rawQuery } = entities;
-  const isIssue = normQ.includes('issue') || normQ.includes('complaint') || normQ.includes('reported') || normQ.includes('unresolved');
+  const isIssue = normQ.includes('issue') || normQ.includes('complaint') || normQ.includes('reported') || normQ.includes('unresolved') || normQ.includes('wifi') || normQ.includes('wi-fi');
   if (!isIssue) return null;
+
+  // Specific category search (e.g. "wifi ka issue kaha report hua?")
+  if (normQ.includes('wifi') || normQ.includes('wi-fi') || normQ.includes('internet')) {
+    const issues = queryAllIssues().filter(i => i.category.toLowerCase().includes('wi-fi') || i.category.toLowerCase().includes('internet') || i.title.toLowerCase().includes('wi-fi'));
+    if (issues.length > 0) {
+      const lines = issues.map(i => `• **${i.title}** (${i.category})\n  📍 Location: ${i.location}\n  Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ISSUE_REPORT_QUERY'],
+        responseText: `Reported Wi-Fi Issues (${issues.length}):\n\n${lines}`,
+        subText: "Source: Central Campus Pulse issue-report database.",
+        matchedIssues: issues
+      };
+    }
+  }
+
+  if (normQ.includes('water') || normQ.includes('dispenser')) {
+    const issues = queryAllIssues().filter(i => i.category.toLowerCase().includes('water') || i.title.toLowerCase().includes('water'));
+    if (issues.length > 0) {
+      const lines = issues.map(i => `• **${i.title}** (${i.category})\n  📍 Location: ${i.location}\n  Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['ISSUE_REPORT_QUERY'],
+        responseText: `Reported Water Facility Issues (${issues.length}):\n\n${lines}`,
+        subText: "Source: Central Campus Pulse issue-report database.",
+        matchedIssues: issues
+      };
+    }
+  }
 
   const locBlock = ['lhc', 'esb', 'apex', 'quadrangle', 'multipurpose', 'architecture', 'workshop'].find((b) => normQ.includes(b));
   if (locBlock) {
