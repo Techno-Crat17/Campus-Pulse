@@ -1,14 +1,29 @@
 import facultyMsritDynamicData from './faculty_msrit_dynamic.json';
 
+export interface FacultyDayScheduleItem {
+  time: string;
+  subject: string;
+}
+
+export interface WeeklySchedule {
+  Monday: FacultyDayScheduleItem[];
+  Tuesday: FacultyDayScheduleItem[];
+  Wednesday: FacultyDayScheduleItem[];
+  Thursday: FacultyDayScheduleItem[];
+  Friday: FacultyDayScheduleItem[];
+  Saturday: FacultyDayScheduleItem[];
+}
+
 export interface TodayScheduleItem {
   time: string;
   event: string;
-  room: string;
+  room?: string;
 }
 
 export interface MSRITFacultyRecord {
   id: string;
   name: string;
+  shortCode?: string;
   designation: string;
   department: string;
   email: string;
@@ -17,7 +32,8 @@ export interface MSRITFacultyRecord {
   status: string;
   currentLocation: string | null;
   nextAvailableTime: string | null;
-  todaySchedule: TodayScheduleItem[];
+  todaySchedule?: TodayScheduleItem[];
+  weeklySchedule?: WeeklySchedule;
   avatarUrl?: string;
   building?: string;
   primaryBuilding?: string;

@@ -472,6 +472,14 @@ export async function extractEntities(normQuery, rawQuery, context) {
     }
   }
 
+  // Faculty Short Code Matching
+  if (!entities.faculty && localFacultyData.length > 0) {
+    const scMatch = localFacultyData.find(f => f.shortCode && new RegExp(`\\b${f.shortCode}\\b`, 'i').test(rawQuery + ' ' + normQuery));
+    if (scMatch) {
+      entities.faculty = scMatch;
+    }
+  }
+
   const isNonFacultyTarget = /\b(room|classroom|library|building|block|event|notice|circular|emergency|fire|ambulance|wifi|complaint|issue|map|kaise jana)\b/i.test(fullText);
   const hasExplicitFacultyTitle = /\b(dr\.|dr|prof\.|prof|professor|teacher|teachers|faculty|cabin|email|mail|yogish|sumana)\b/i.test(fullText);
 
@@ -648,6 +656,88 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     const wantsLocation = intents.includes('FACULTY_LOCATION') || intents.includes('FACULTY_CABIN') || /\b(kaha|kahan|kidhar|where|location|cabin|sitting|milenge|milega)\b/i.test(rawQuery + ' ' + normQuery);
     const wantsDept = intents.includes('FACULTY_DEPARTMENT') || /\b(dept|department)\b/i.test(rawQuery + ' ' + normQuery);
     const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai)\b/i.test(rawQuery + ' ' + normQuery);
+    const wantsSchedule = intents.includes('FACULTY_SCHEDULE') || /\b(schedule|timetable|classes\s*today|routine|teaching|when\s*is\s*.*teaching|class\s*timing|lecture\s*schedule)\b/i.test(rawQuery + ' ' + normQuery);
+
+    if (wantsSchedule) {
+      const facDisplayName = fac.name.replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i, '');
+      const daysMap = {
+        monday: 'monday', mon: 'monday', somwar: 'monday',
+        tuesday: 'tuesday', tue: 'tuesday', mangalwar: 'tuesday',
+        wednesday: 'wednesday', wed: 'wednesday', budhwar: 'wednesday',
+        thursday: 'thursday', thu: 'thursday', guruwar: 'thursday',
+        friday: 'friday', fri: 'friday', shukrawar: 'friday',
+        saturday: 'saturday', sat: 'saturday', shaniwar: 'saturday'
+      };
+
+      let targetDay = null;
+      let targetDayLabel = '';
+      for (const [key, val] of Object.entries(daysMap)) {
+        if (new RegExp(`\\b${key}\\b`, 'i').test(rawQuery + ' ' + normQuery)) {
+          targetDay = val;
+          targetDayLabel = val.charAt(0).toUpperCase() + val.slice(1);
+          break;
+        }
+      }
+
+      if (/\b(today|aaj)\b/i.test(rawQuery + ' ' + normQuery)) {
+        const dayIdx = new Date().getDay();
+        const dayKeys = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        if (dayIdx >= 1 && dayIdx <= 6) {
+          targetDay = dayKeys[dayIdx];
+          targetDayLabel = targetDay.charAt(0).toUpperCase() + targetDay.slice(1);
+        }
+      }
+
+      const weekly = fac.weeklySchedule;
+      let ans = '';
+
+      if (targetDay && weekly) {
+        const daySessions = weekly[targetDay] || [];
+        if (daySessions.length > 0) {
+          const sessionLines = daySessions.map(s => `${s.startTime}–${s.endTime}\n${s.subject}`).join('\n\n');
+          ans = `${facDisplayName} — ${targetDayLabel}\n\n${sessionLines}`;
+        } else {
+          ans = `${facDisplayName} — ${targetDayLabel}\n\nNo scheduled activities for ${targetDayLabel}.`;
+        }
+      } else if (weekly) {
+        const allDays = [
+          { key: 'monday', label: 'MONDAY' },
+          { key: 'tuesday', label: 'TUESDAY' },
+          { key: 'wednesday', label: 'WEDNESDAY' },
+          { key: 'thursday', label: 'THURSDAY' },
+          { key: 'friday', label: 'FRIDAY' },
+          { key: 'saturday', label: 'SATURDAY' }
+        ];
+
+        const activeDayBlocks = [];
+        for (const d of allDays) {
+          const list = weekly[d.key] || [];
+          if (list.length > 0) {
+            const listStr = list.map(s => `${s.startTime}–${s.endTime}\n${s.subject}`).join('\n\n');
+            activeDayBlocks.push(`${d.label}\n\n${listStr}`);
+          }
+        }
+
+        if (activeDayBlocks.length > 0) {
+          ans = `${facDisplayName} — Schedule\n\n${activeDayBlocks.join('\n\n---\n\n')}`;
+        } else {
+          ans = `${facDisplayName}\n\nNo scheduled timetable activities.`;
+        }
+      } else if (fac.todaySchedule && fac.todaySchedule.length > 0) {
+        const schedList = fac.todaySchedule.map(s => `${s.time}\n${s.event}`).join('\n\n');
+        ans = `${facDisplayName} — Schedule\n\n${schedList}`;
+      } else {
+        ans = `${facDisplayName} has no scheduled timetable activities.`;
+      }
+
+      return {
+        success: true,
+        intent: 'FACULTY_SCHEDULE',
+        answer: ans,
+        data: { facultyId: fac.id, name: fac.name, weeklySchedule: fac.weeklySchedule },
+        actions: [{ type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }]
+      };
+    }
 
     if (wantsLocation && wantsEmail) {
       const locText = dynStatus.currentEvent ? `${dynStatus.currentLocation} (${dynStatus.currentEvent})` : dynStatus.currentLocation;

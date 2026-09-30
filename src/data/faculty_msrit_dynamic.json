@@ -14,7 +14,53 @@
     "avatarUrl": "https://i.ibb.co/1vtRPcp/Picture4.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SM",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "OOP"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OOP LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "OOP LAB2"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "ML"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "ML"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "ML"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_2",
@@ -37,7 +83,56 @@
     "avatarUrl": "https://i.ibb.co/YQXSnkC/yhk.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "YHK",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DCO"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "AI"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "IDT Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "IDT Lab2"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "AI"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO LAB3"
+        }
+      ],
+      "Thursday": [],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DCO"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "AI"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_3",
@@ -65,7 +160,57 @@
     "avatarUrl": "https://i.ibb.co/HfCTfk9k/Whats-App-Image-2025-10-13-at-1-25-07-PM.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "PMK",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "RMIPR"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "SDS"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "RMIPR"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DV LAB"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DV LAB"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "RMIPR"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "SDS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SDS"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "SDS"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_4",
@@ -93,7 +238,81 @@
     "avatarUrl": "https://i.ibb.co/BLCcmrr/Picture5.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "GV",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "RMIPR"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "IS"
+        },
+        {
+          "time": "15:35–16:30",
+          "subject": "EVS"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "12:00–12:55",
+          "subject": "IS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "ML LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML LAB3"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "RMIPR"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "IDT lab1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "IDT lab1"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "12:00–12:55",
+          "subject": "RMIPR"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "IS"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_5",
@@ -121,7 +340,81 @@
     "avatarUrl": "https://i.ibb.co/RbNnwvB/Picture6.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "LMM",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "Prg in C"
+        },
+        {
+          "time": "15:35–16:30",
+          "subject": "EVS"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DS"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS LAB2"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Prg in C"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "Prg in C"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_6",
@@ -149,7 +442,89 @@
     "avatarUrl": "https://i.ibb.co/vkvmRy4/Picture1.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "PMN",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "NPTEL2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS LAB2"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "ST"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "NPTEL2"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "ST"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "SE"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ST"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO LAB3"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_7",
@@ -166,7 +541,77 @@
     "avatarUrl": "https://i.ibb.co/1TfVDMg/Picture8.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SRM",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OE-CC"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OE-CC"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DV LAB"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DV LAB"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OE-CC"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "TOC"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "EE"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_8",
@@ -189,7 +634,77 @@
     "avatarUrl": "https://i.ibb.co/pht8zbY/Picture9.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SKS",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DM"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "NPTEL1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DM"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "NPTEL1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML LAB3"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "12:00–12:55",
+          "subject": "DCO"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DM"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DCO"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DM"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_9",
@@ -217,7 +732,69 @@
     "avatarUrl": "https://i.ibb.co/6NDD2KD/Picture17.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "AP",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DCO"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "RMIPR"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab1"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DCO"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "RMIPR"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DCO"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO LAB3"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "ReactJS"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_10",
@@ -245,7 +822,73 @@
     "avatarUrl": "https://i.ibb.co/31S0GSB/Picture12.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "DJS",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CC"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CC"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "CC"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "AI"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "AI"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "AI"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "EE"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_11",
@@ -273,7 +916,89 @@
     "avatarUrl": "https://i.ibb.co/vZRrmf8/Picture11.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "PSR",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DMS"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DMS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab1"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DMS"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DC"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO LAB3"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DC"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "BD LAB"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "BD LAB"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_12",
@@ -301,7 +1026,89 @@
     "avatarUrl": "https://image.ibb.co/feBkOy/PRA.png",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "PRA",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DMS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "IDT Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "IDT Lab2"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "AI"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DMS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "IDT lab1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "IDT lab1"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "AI"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DMS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "AI"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "G-IT"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_13",
@@ -318,7 +1125,81 @@
     "avatarUrl": "https://image.ibb.co/jJjiAd/SKR_Photo.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SKR",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "CN"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "CN"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "CN"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "IDT Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "IDT Lab2"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "CN"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "CN"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "IDT lab1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "IDT lab1"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "CN"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "12:00–12:55",
+          "subject": "CN"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_14",
@@ -341,7 +1222,98 @@
     "avatarUrl": "https://i.ibb.co/WvW6Hrt/Picture14.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SG",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "ML"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "15:35–16:30",
+          "subject": "EVS"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "ML LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML LAB3"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Prg in C"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "Prg in C"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "ML"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        }
+      ],
+      "Saturday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "Prg in C"
+        }
+      ]
+    }
   },
   {
     "id": "fac_15",
@@ -369,7 +1341,93 @@
     "avatarUrl": "https://i.ibb.co/WFHC58G/Picture15.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "ED",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "IS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OOP LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "OOP LAB2"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "IS"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "IS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OOP"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "OOP"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "OOP"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_16",
@@ -397,7 +1455,85 @@
     "avatarUrl": "https://i.ibb.co/PzxbTNS/Picture18.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "DM",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "UHV"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab2"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "SE"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SE"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "UHV"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_17",
@@ -425,7 +1561,93 @@
     "avatarUrl": "https://i.ibb.co/Dk04ggP/Image.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "KS",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OE-CC"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OE-CC"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OE-CC"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DS LAB2"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DS"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_18",
@@ -453,7 +1675,101 @@
     "avatarUrl": "https://i.ibb.co/vk4ts2x/Picture20.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SS",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "MATHS"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "Intro C"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "MATHS"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "Intro C"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_19",
@@ -470,7 +1786,94 @@
     "avatarUrl": "https://i.ibb.co/R0gsMNW/Picture21.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SJR",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OOP LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "OOP LAB2"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab1"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "TOC"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "ReactJS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Saturday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C Lab1"
+        }
+      ]
+    }
   },
   {
     "id": "fac_20",
@@ -493,7 +1896,81 @@
     "avatarUrl": "https://i.ibb.co/n7KTXH2/Picture22.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "KKS",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "ST"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "ML"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "UHV"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab2"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "12:00–12:55",
+          "subject": "ST"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "UHV"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_21",
@@ -521,7 +1998,89 @@
     "avatarUrl": "https://i.ibb.co/5s7sSvD/Picture23.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "CV",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DMS"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "CN"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DMS"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "CN"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DMS"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "CN"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "CN LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "CN LAB1"
+        }
+      ],
+      "Saturday": []
+    }
   },
   {
     "id": "fac_22",
@@ -549,7 +2108,90 @@
     "avatarUrl": "https://i.ibb.co/hCbddXC/Shanmuga-Priya.jpg",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SP",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "BD LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OOP LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "OOP LAB2"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "Intro C"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "OOP"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "Intro C"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO LAB3"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "BD LAB"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "BD LAB"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "OOP"
+        }
+      ],
+      "Saturday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C Lab1"
+        }
+      ]
+    }
   },
   {
     "id": "fac_23",
@@ -577,7 +2219,110 @@
     "avatarUrl": "https://i.ibb.co/sJz4P1xz/423e283f-fd16-45a8-85c8-a9e0f09188f0.webp",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SB",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SE"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "SE"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "GEN AI LAB1"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "GEN AI LAB2"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DCO LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DCO LAB3"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Saturday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C Lab1"
+        }
+      ]
+    }
   },
   {
     "id": "fac_24",
@@ -605,7 +2350,94 @@
     "avatarUrl": "https://i.ibb.co/1J0zkRLv/5c8b9a2d-fab6-49d1-a6f8-7e20d999e89a.webp",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "SK",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "12:00–12:55",
+          "subject": "DC"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "SE LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "SE LAB3"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab1"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "DC LAB3"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "DS LAB2"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "09:55–10:50",
+          "subject": "DC"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DS LAB2"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "EE"
+        }
+      ],
+      "Saturday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C Lab1"
+        }
+      ]
+    }
   },
   {
     "id": "fac_25",
@@ -622,7 +2454,118 @@
     "avatarUrl": "https://i.ibb.co/8g3DRZxS/4f092b2e-3fb1-4ab2-8798-20ac85866d32.webp",
     "building": "LHC",
     "primaryBuilding": "LHC Block",
-    "homeBuilding": "LHC Block"
+    "homeBuilding": "LHC Block",
+    "shortCode": "ZT",
+    "weeklySchedule": {
+      "Monday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "ML LAB1"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "OOP LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "OOP LAB2"
+        }
+      ],
+      "Tuesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "TOC Tut"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "ML LAB3"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "ML LAB3"
+        }
+      ],
+      "Wednesday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "11:05–12:00",
+          "subject": "Intro C Lab2"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "Intro C Lab2"
+        }
+      ],
+      "Thursday": [
+        {
+          "time": "11:05–12:00",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "12:00–12:55",
+          "subject": "OOP LAB1"
+        },
+        {
+          "time": "13:45–14:40",
+          "subject": "DS LAB2"
+        },
+        {
+          "time": "14:40–15:35",
+          "subject": "DS LAB2"
+        }
+      ],
+      "Friday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "C Prg LAB2"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "C Prg LAB2"
+        }
+      ],
+      "Saturday": [
+        {
+          "time": "09:00–09:55",
+          "subject": "Intro C Lab1"
+        },
+        {
+          "time": "09:55–10:50",
+          "subject": "Intro C Lab1"
+        }
+      ]
+    }
   },
   {
     "id": "fac_26",

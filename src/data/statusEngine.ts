@@ -235,6 +235,35 @@ export function getStatusTypeFromStatus(status: string): 'available' | 'busy' | 
   return 'busy';
 }
 
+const DAY_INDEX_NAME: Record<number, 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday'> = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday'
+};
+
+export function getTodayFacultySchedule(
+  faculty: MSRITFacultyRecord,
+  currentDateTime?: Date | SimulatedTimeState | null
+): Array<{ time: string; event: string; room?: string }> {
+  const { day } = parseCurrentTime(currentDateTime);
+  const dayName = DAY_INDEX_NAME[day];
+  if (dayName && faculty.weeklySchedule && faculty.weeklySchedule[dayName]) {
+    return faculty.weeklySchedule[dayName].map(s => ({
+      time: s.time,
+      event: s.subject,
+      room: ''
+    }));
+  }
+  return (faculty.todaySchedule || []).map(s => ({
+    time: s.time,
+    event: s.event,
+    room: s.room || ''
+  }));
+}
+
 /**
  * Primary status evaluation function:
  * Returns ONLY "AVAILABLE", "BUSY", or "OFF_CAMPUS".
@@ -270,7 +299,7 @@ export function getFacultyStatus(
   }
 
   // Priority 3: Active schedule event currently in progress -> BUSY
-  const schedule = faculty.todaySchedule || [];
+  const schedule = getTodayFacultySchedule(faculty, currentDateTime);
   for (const item of schedule) {
     const interval = parseScheduleInterval(item.time);
     if (interval && currentTotalMins >= interval.startMin && currentTotalMins < interval.endMin) {
@@ -337,7 +366,7 @@ export function getFacultyStatusDetails(
   }
 
   // Check today's schedule for active events
-  const schedule = faculty.todaySchedule || [];
+  const schedule = getTodayFacultySchedule(faculty, currentDateTime);
   let activeEvent: { event: string; room?: string; time: string } | null = null;
   let activeInterval: { startMin: number; endMin: number; startFormatted: string; endFormatted: string } | null = null;
 
@@ -351,7 +380,7 @@ export function getFacultyStatusDetails(
   }
 
   if (primaryStatus === 'BUSY' && activeEvent && activeInterval) {
-    const location = activeEvent.room || faculty.cabinLocation || 'Faculty Cabin';
+    const location = faculty.cabinLocation || 'Faculty Cabin';
 
     // Calculate next available time: walk forward through contiguous back-to-back schedules
     let chainEndMin = activeInterval.endMin;
@@ -378,7 +407,7 @@ export function getFacultyStatusDetails(
       liveLocation: location,
       liveNextAvailableTime: chainEndFormatted,
       activeEvent: activeEvent.event,
-      activeRoom: activeEvent.room || null
+      activeRoom: null
     };
   }
 

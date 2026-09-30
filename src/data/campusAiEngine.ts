@@ -16,7 +16,7 @@ import {
   FACULTY_MSRIT_DATA,
   resolveFacultyBuildingMapping
 } from './facultyData';
-import type { MSRITFacultyRecord, CampusNode } from './facultyData';
+import type { MSRITFacultyRecord, CampusNode, FacultyDayScheduleItem } from './facultyData';
 
 import {
   LIBRARIES,
@@ -428,6 +428,8 @@ export function normalizeQuery(query: string): string {
     [/\baaj\s*kya\s*hai\b|\bcollege\s*me\s*kya\s*ho\s*raha\b|\bcollege\s*me\s*kya\s*h\b/g, 'events today'],
     [/\bmeri\s*complaint\b|\bproblem\s*report\b|\bissue\s*status\b/g, 'issue status'],
     [/\bki\s*mail\s*id\b|\bka\s*mail\b|\bmail\s*id\b|\bemail\s*id\b/g, 'email'],
+    [/\bpratima\b/g, 'prathima'],
+    [/\bshruti\b/g, 'shruthi'],
     [/\bkiske\s*liye\b/g, 'for whom']
   ];
 
@@ -463,7 +465,7 @@ export function detectIntents(normalizedQuery: string, context?: CampusAiContext
   const hasEmail = /\b(email|e-mail|mail\s*id|email\s*id|mail\s*address|email\s*address|mail|contact\s*email)\b/.test(q);
   const hasCabin = /\b(cabin|office|which\s*cabin|find\s*cabin|sitting|sit)\b/.test(q);
   const hasAvailability = /\b(available|availability|free|busy|in\s*lecture|in\s*class|can\s*i\s*meet|who\s*can\s*i\s*meet|who\s*is\s*free|who\s*is\s*available|which\s*faculty\s*are\s*available|when\s*free|vacant)\b/.test(q);
-  const hasSchedule = /\b(schedule|timetable|classes\s*today|routine)\b/.test(q);
+  const hasSchedule = /\b(schedule|timetable|classes\s*today|routine|teaching|when\s*is\s*.*teaching|class\s*timing|lecture\s*schedule)\b/i.test(q);
   const hasLocation = isLocationQuery;
 
   const hasOccupancy = /\b(occupancy|how\s*crowded|crowded|busy|rush|empty|least\s*crowded|less\s*crowded|seats|full)\b/.test(q);
@@ -743,6 +745,17 @@ export function extractEntities(
     ]);
 
     for (const fac of FACULTY_MSRIT_DATA) {
+      // 1. Exact Short Code match (SM, SKS, YHK, PMK, GV, LMM, PMN, SRM, AP, DJS, PRA, SKR, SG, SJR, ED, DM, KS, SS, KKS, CV, SP, SB, SK, ZT, PSR)
+      if (fac.shortCode) {
+        const scRegex = new RegExp(`\\b${fac.shortCode}\\b`, 'i');
+        if (scRegex.test(rawQuery) || scRegex.test(normQ)) {
+          if (!candidates.some((c) => c.id === fac.id)) {
+            candidates.push(fac);
+          }
+          continue;
+        }
+      }
+
       const fClean = cleanFacultyName(fac.name);
       const nameParts = fClean.split(' ').filter((p) => p.length >= 3 && !FACULTY_STOP_WORDS.has(p));
 
@@ -765,11 +778,17 @@ export function extractEntities(
     if (candidates.length === 1) {
       entities.matchedFaculty = candidates[0];
     } else if (candidates.length > 1) {
-      const exact = candidates.find((c) => normQ.includes(cleanFacultyName(c.name)));
-      if (exact) {
-        entities.matchedFaculty = exact;
+      // Priority 1: Exact short code match
+      const scMatch = candidates.find((c) => c.shortCode && new RegExp(`\\b${c.shortCode}\\b`, 'i').test(rawQuery + ' ' + normQ));
+      if (scMatch) {
+        entities.matchedFaculty = scMatch;
       } else {
-        entities.multipleFaculty = candidates;
+        const exact = candidates.find((c) => normQ.includes(cleanFacultyName(c.name)));
+        if (exact) {
+          entities.matchedFaculty = exact;
+        } else {
+          entities.multipleFaculty = candidates;
+        }
       }
     }
   }
@@ -1149,7 +1168,108 @@ export function getFacultyAnswer(
         fac.primaryBuilding?.toLowerCase().includes('apex') ? 'block-apex' : 'block-lhc'
   );
 
-  // 1. Designation Only
+  // 1. Schedule Query (e.g. "Yogish sir ka schedule kya hai?", "YHK schedule", "Yogish sir Monday schedule", "When is Yogish teaching?")
+  if (wantsSchedule || /\b(schedule|timetable|teaching|when\s*is\s*.*teaching|classes|class\s*timing)\b/i.test(normQ + ' ' + rawQuery)) {
+    const facDisplayName = fac.name.replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i, '');
+    type DayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
+    const daysMap: Record<string, DayKey> = {
+      monday: 'Monday',
+      mon: 'Monday',
+      somwar: 'Monday',
+      tuesday: 'Tuesday',
+      tue: 'Tuesday',
+      mangalwar: 'Tuesday',
+      wednesday: 'Wednesday',
+      wed: 'Wednesday',
+      budhwar: 'Wednesday',
+      thursday: 'Thursday',
+      thu: 'Thursday',
+      guruwar: 'Thursday',
+      friday: 'Friday',
+      fri: 'Friday',
+      shukrawar: 'Friday',
+      saturday: 'Saturday',
+      sat: 'Saturday',
+      shaniwar: 'Saturday'
+    };
+
+    let targetDay: DayKey | null = null;
+    let targetDayLabel = '';
+
+    for (const [key, val] of Object.entries(daysMap)) {
+      const regex = new RegExp(`\\b${key}\\b`, 'i');
+      if (regex.test(normQ + ' ' + rawQuery)) {
+        targetDay = val;
+        targetDayLabel = val;
+        break;
+      }
+    }
+
+    if (/\b(today|aaj)\b/i.test(normQ + ' ' + rawQuery)) {
+      const dayIdx = simulatedTime?.dayOfWeek ?? new Date().getDay();
+      const dayKeys: DayKey[] = [
+        'Monday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+      ];
+      if (dayIdx >= 1 && dayIdx <= 6) {
+        targetDay = dayKeys[dayIdx];
+        targetDayLabel = targetDay;
+      }
+    }
+
+    const weekly = fac.weeklySchedule;
+    let responseText = '';
+
+    if (targetDay && weekly) {
+      const daySessions: FacultyDayScheduleItem[] = (weekly[targetDay] as FacultyDayScheduleItem[]) || [];
+      if (daySessions.length > 0) {
+        const sessionLines = daySessions.map((s) => `${s.time}\n${s.subject}`).join('\n\n');
+        responseText = `${facDisplayName} — ${targetDayLabel}\n\n${sessionLines}`;
+      } else {
+        responseText = `${facDisplayName} — ${targetDayLabel}\n\nNo scheduled activities for ${targetDayLabel}.`;
+      }
+    } else if (weekly) {
+      const allDays: { key: DayKey; label: string }[] = [
+        { key: 'Monday', label: 'MONDAY' },
+        { key: 'Tuesday', label: 'TUESDAY' },
+        { key: 'Wednesday', label: 'WEDNESDAY' },
+        { key: 'Thursday', label: 'THURSDAY' },
+        { key: 'Friday', label: 'FRIDAY' },
+        { key: 'Saturday', label: 'SATURDAY' }
+      ];
+
+      const activeDayBlocks: string[] = [];
+      for (const d of allDays) {
+        const list: FacultyDayScheduleItem[] = (weekly[d.key] as FacultyDayScheduleItem[]) || [];
+        if (list.length > 0) {
+          const listStr = list.map((s) => `${s.time}\n${s.subject}`).join('\n\n');
+          activeDayBlocks.push(`${d.label}\n\n${listStr}`);
+        }
+      }
+
+      if (activeDayBlocks.length > 0) {
+        responseText = `${facDisplayName} — Schedule\n\n${activeDayBlocks.join('\n\n---\n\n')}`;
+      } else {
+        responseText = `${facDisplayName}\n\nNo scheduled timetable activities.`;
+      }
+    } else if (fac.todaySchedule && fac.todaySchedule.length > 0) {
+      const schedList = fac.todaySchedule.map((s) => `${s.time}\n${s.event}`).join('\n\n');
+      responseText = `${facDisplayName} — Schedule\n\n${schedList}`;
+    } else {
+      responseText = `${facDisplayName} has no scheduled timetable activities.`;
+    }
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['FACULTY_SCHEDULE'],
+      responseText,
+      subText: `Department: ${fac.department} • Cabin: ${fac.cabinLocation}`,
+      matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+      actionTargetId: bldgId
+    };
+  }
+
+  // 2. Designation Only
   if (wantsDesignation && !wantsEmail && !wantsLocation && !wantsDepartment && !wantsCabin) {
     return {
       queryText: rawQuery,
@@ -1162,7 +1282,7 @@ export function getFacultyAnswer(
     };
   }
 
-  // 2. Department Only (e.g. "unka department?", "yogish ka department")
+  // 3. Department Only (e.g. "unka department?", "yogish ka department")
   if (wantsDepartment && !wantsEmail && !wantsLocation && !wantsCabin) {
     return {
       queryText: rawQuery,
@@ -1175,7 +1295,7 @@ export function getFacultyAnswer(
     };
   }
 
-  // 3. Email Only (e.g. "yogish ka email", "unka mail")
+  // 4. Email Only (e.g. "yogish ka email", "unka mail")
   if (wantsEmail && !wantsLocation && !wantsCabin) {
     return {
       queryText: rawQuery,
@@ -1188,7 +1308,7 @@ export function getFacultyAnswer(
     };
   }
 
-  // 4. Cabin Query specifically (e.g. "Yogish sir ka cabin kaha hai?", "unka cabin?")
+  // 5. Cabin Query specifically (e.g. "Yogish sir ka cabin kaha hai?", "unka cabin?")
   if (wantsCabin && !wantsEmail) {
     const statusLabel = liveInfo.status === 'AVAILABLE'
       ? '🟢 AVAILABLE (On campus · No active scheduled commitment)'
@@ -1207,7 +1327,7 @@ export function getFacultyAnswer(
     };
   }
 
-  // 5. Location / Presence Query (e.g. "yogish sir kaha hai?", "where is Dr Yogish")
+  // 6. Location / Presence Query (e.g. "yogish sir kaha hai?", "where is Dr Yogish")
   if (wantsLocation && !wantsEmail && !wantsCabin) {
     if (liveInfo.status === 'AVAILABLE') {
       return {
@@ -1245,7 +1365,7 @@ export function getFacultyAnswer(
     };
   }
 
-  // 6. Availability / Busy / Follow-up Query ("yogish available hai?", "yogish busy hai?", "kab free honge?")
+  // 7. Availability / Busy / Follow-up Query ("yogish available hai?", "yogish busy hai?", "kab free honge?")
   if (wantsAvailability || /\b(kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai|kab free|when free)\b/i.test(normQ)) {
     if (liveInfo.status === 'AVAILABLE') {
       return {
@@ -1279,23 +1399,6 @@ export function getFacultyAnswer(
       intents: ['FACULTY_AVAILABILITY'],
       responseText: `**${fac.name} — OFF CAMPUS**\n${liveInfo.statusReason || 'Faculty campus hours ended at 4:30 PM.'}\nNext available: ${liveInfo.nextAvailableTime}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
       subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
-      matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
-      actionTargetId: bldgId
-    };
-  }
-
-  // 7. Schedule Only
-  if (wantsSchedule) {
-    const schedList = (fac.todaySchedule && fac.todaySchedule.length > 0)
-      ? fac.todaySchedule.map((s) => `• ${s.time}: ${s.event} (${s.room})`).join('\n')
-      : 'No lecture sessions scheduled today. Available in cabin.';
-
-    return {
-      queryText: rawQuery,
-      normalizedQuery: normQ,
-      intents: ['FACULTY_SCHEDULE'],
-      responseText: `Today's Schedule for ${fac.name}:\n\n${schedList}`,
-      subText: `Status: ${liveInfo.status} | Cabin: ${fac.cabinLocation}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
