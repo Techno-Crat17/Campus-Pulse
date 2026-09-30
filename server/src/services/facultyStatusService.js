@@ -106,11 +106,18 @@ function minutesToFormatted(totalMins) {
   return `${hours}:${minsStr} ${ampm}`;
 }
 
-export function getFacultyDynamicStatus(facultyRecord, dateObj) {
+export function getFacultyStatus(facultyRecord, dateObj) {
   const targetDate = dateObj instanceof Date ? dateObj : getCurrentCampusTime();
-  const day = targetDate.getDay(); // 0 = Sun, 1 = Mon, ... 6 = Sat
+  const day = targetDate.getDay();
   const currentMinutes = targetDate.getHours() * 60 + targetDate.getMinutes();
 
+  // Priority 1: Explicit reliable OFF_CAMPUS
+  const rawStatus = (facultyRecord.status || '').toUpperCase().trim();
+  if (rawStatus === 'OFF_CAMPUS' || rawStatus === 'OFF CAMPUS' || rawStatus === 'OFF-CAMPUS') {
+    return 'OFF_CAMPUS';
+  }
+
+  // Priority 2: Outside faculty working hours
   const isSunday = day === 0;
   const isSaturday = day === 6;
 
@@ -118,24 +125,55 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
   if (isSunday) {
     isWorkingHours = false;
   } else if (isSaturday) {
-    isWorkingHours = currentMinutes >= (9 * 60) && currentMinutes < (13 * 60 + 30); // 09:00 - 13:30
+    isWorkingHours = currentMinutes >= (9 * 60) && currentMinutes < (13 * 60 + 30);
   } else {
-    isWorkingHours = currentMinutes >= (9 * 60) && currentMinutes < (17 * 60); // 09:00 - 17:00
+    isWorkingHours = currentMinutes >= (9 * 60) && currentMinutes < (17 * 60);
   }
+
+  if (!isWorkingHours) {
+    return 'OFF_CAMPUS';
+  }
+
+  // Priority 3: Active schedule event -> BUSY
+  const schedule = facultyRecord.todaySchedule || [];
+  for (const item of schedule) {
+    const range = parseScheduleTime(item.time);
+    if (range && currentMinutes >= range.start && currentMinutes < range.end) {
+      return 'BUSY';
+    }
+  }
+
+  // Priority 4: No active schedule during working hours -> AVAILABLE
+  return 'AVAILABLE';
+}
+
+export function getFacultyDynamicStatus(facultyRecord, dateObj) {
+  const targetDate = dateObj instanceof Date ? dateObj : getCurrentCampusTime();
+  const day = targetDate.getDay();
+  const currentMinutes = targetDate.getHours() * 60 + targetDate.getMinutes();
+
+  const status = getFacultyStatus(facultyRecord, dateObj);
+  const statusType = status === 'AVAILABLE' ? 'available' : status === 'BUSY' ? 'busy' : 'off_campus';
 
   const cabin = facultyRecord.cabinLocation || 'AVAILABLE';
 
-  if (!isWorkingHours) {
-    const nextAvailableTime = isSunday || (isSaturday && currentMinutes >= 13 * 60 + 30)
+  if (status === 'OFF_CAMPUS') {
+    const isSunday = day === 0;
+    const isSaturdayAfternoon = day === 6 && currentMinutes >= 13 * 60 + 30;
+    const nextAvailableTime = (isSunday || isSaturdayAfternoon)
       ? 'Monday at 09:00 AM'
       : 'Next Working Day at 09:00 AM';
 
+    const location = (facultyRecord.currentLocation && facultyRecord.currentLocation !== 'Faculty Cabin' && facultyRecord.currentLocation !== 'AVAILABLE')
+      ? facultyRecord.currentLocation
+      : 'Off-Campus';
+
     return {
-      status: 'COLLEGE CLOSED',
-      statusType: 'closed',
-      liveStatus: 'COLLEGE CLOSED',
-      liveLocation: 'Off-Campus',
-      currentLocation: 'Off-Campus',
+      status: 'OFF_CAMPUS',
+      statusType: 'off_campus',
+      liveStatus: 'OFF_CAMPUS',
+      liveLocation: location,
+      currentLocation: location,
       currentEvent: null,
       nextAvailableTime,
       liveNextAvailableTime: nextAvailableTime,
@@ -159,9 +197,7 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
     }
   }
 
-  if (activeEvent && activeRange) {
-    const statusText = deriveStatusFromEvent(activeEvent.event);
-    const statusType = getStatusTypeFromStatus(statusText);
+  if (status === 'BUSY' && activeEvent && activeRange) {
     const locationText = activeEvent.room ? activeEvent.room : cabin;
 
     // Next available time: chain contiguous events
@@ -176,9 +212,9 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
     const nextAvail = minutesToFormatted(chainEndMin);
 
     return {
-      status: statusText,
-      statusType,
-      liveStatus: statusText,
+      status: 'BUSY',
+      statusType: 'busy',
+      liveStatus: 'BUSY',
       liveLocation: locationText,
       currentLocation: locationText,
       currentEvent: activeEvent.event,
@@ -192,7 +228,7 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
     };
   }
 
-  // No active schedule during working hours -> AVAILABLE IN CABIN
+  // AVAILABLE
   let nextUpcoming = null;
   for (const item of schedule) {
     const range = parseScheduleTime(item.time);
@@ -206,9 +242,9 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
   const nextAvailStr = nextUpcoming ? `Available until ${minutesToFormatted(nextUpcoming.start)}` : 'Available Now';
 
   return {
-    status: 'AVAILABLE IN CABIN',
-    statusType: 'cabin',
-    liveStatus: 'AVAILABLE IN CABIN',
+    status: 'AVAILABLE',
+    statusType: 'available',
+    liveStatus: 'AVAILABLE',
     liveLocation: cabin,
     currentLocation: cabin,
     currentEvent: null,
@@ -221,3 +257,4 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
 }
 
 export const calculateFacultyDynamicStatus = getFacultyDynamicStatus;
+export const getFacultyStatusDetails = getFacultyDynamicStatus;

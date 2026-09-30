@@ -18,6 +18,7 @@ interface EditorialFacultyProps {
 export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacultyForMap }) => {
   const [search, setSearch] = useState('');
   const [selectedDept, setSelectedDept] = useState<string>('ALL');
+  const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   
   // Pagination State: Show only 10 cards initially, reveal next 10 on "Load More"
   // Infinite scroll is strictly disabled.
@@ -54,15 +55,35 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     return counts;
   }, [facultyData]);
 
-  // Reset pagination to first 10 when search query or department changes
+  // Reset pagination to first 10 when search query, department, or status filter changes
   useEffect(() => {
     setVisibleCount(10);
-  }, [search, selectedDept]);
+  }, [search, selectedDept, selectedStatus]);
 
-  // Filter faculty by department and search query across complete dataset
+  // Filter faculty by department, search query, and status across complete dataset
   const filteredFaculty = useMemo(() => {
-    return searchFaculty(search, selectedDept, facultyData);
-  }, [search, selectedDept, facultyData]);
+    let list = searchFaculty(search, selectedDept, facultyData);
+    if (selectedStatus !== 'ALL') {
+      list = list.filter((f) => {
+        const st = getFacultyDynamicStatus(f, simulatedTime || clockTick).status;
+        return st === selectedStatus;
+      });
+    }
+    return list;
+  }, [search, selectedDept, selectedStatus, facultyData, simulatedTime, clockTick]);
+
+  // Dynamic status counts calculated from current faculty statuses
+  const statusCounts = useMemo(() => {
+    const baseList = searchFaculty(search, selectedDept, facultyData);
+    const counts = { AVAILABLE: 0, BUSY: 0, OFF_CAMPUS: 0 };
+    baseList.forEach((f) => {
+      const st = getFacultyDynamicStatus(f, simulatedTime || clockTick).status;
+      if (st in counts) {
+        counts[st as keyof typeof counts]++;
+      }
+    });
+    return counts;
+  }, [search, selectedDept, facultyData, simulatedTime, clockTick]);
 
   // Paginated visible slice of matching faculty (10 per page)
   const visibleFaculty = useMemo(() => {
@@ -92,33 +113,41 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
 
   const getStatusBadgeStyle = (status: string) => {
     const s = (status || '').toUpperCase();
-    if (s.includes('CLASS') || s.includes('LECTURE')) {
-      return 'border-red-600 bg-red-500/10 text-red-700 font-bold';
-    }
-    if (s.includes('LAB')) {
-      return 'border-orange-500 bg-orange-500/10 text-orange-700 font-bold';
-    }
-    if (s.includes('MEETING')) {
-      return 'border-purple-600 bg-purple-500/10 text-purple-700 font-bold';
-    }
-    if (s.includes('PROJECT REVIEW') || s.includes('PROJECT')) {
-      return 'border-blue-600 bg-blue-500/10 text-blue-700 font-bold';
-    }
-    if (s.includes('CONSULTATION') || s.includes('CABIN') || s.includes('AVAILABLE')) {
+    if (s === 'AVAILABLE') {
       return 'border-emerald-600 bg-emerald-500/10 text-emerald-700 font-bold';
     }
-    if (s.includes('CLOSED')) {
-      return 'border-gray-400 bg-gray-500/10 text-gray-600 font-bold';
+    if (s === 'BUSY') {
+      return 'border-red-600 bg-red-500/10 text-red-700 font-bold';
     }
-    if (s.includes('SEMINAR') || s.includes('WORKSHOP') || s.includes('BUSY')) {
-      return 'border-amber-600 bg-amber-500/10 text-amber-700 font-bold';
+    if (s === 'OFF_CAMPUS' || s === 'OFF CAMPUS') {
+      return 'border-gray-500 bg-gray-500/10 text-gray-700 font-bold';
     }
-    return 'border-[#111111]/20 bg-[#111111]/5 text-[#666660]';
+    return 'border-gray-400 bg-gray-500/10 text-gray-600 font-bold';
+  };
+
+  const formatStatusText = (status: string) => {
+    return status === 'OFF_CAMPUS' ? 'OFF CAMPUS' : status;
   };
 
   const renderFacultyCard = (fac: MSRITFacultyRecord, idx: number) => {
     const dynamicState = getFacultyDynamicStatus(fac, simulatedTime || clockTick);
     const isExpanded = expandedFacultyIds.has(fac.id);
+
+    // Dynamic location display logic per Section 9:
+    // - AVAILABLE: show cabin location if exists
+    // - BUSY: show active event room if present
+    // - OFF_CAMPUS: do not show fake campus room
+    const displayLocation = (() => {
+      if (dynamicState.status === 'BUSY') {
+        return dynamicState.currentLocation && !dynamicState.currentLocation.toUpperCase().includes('OFF')
+          ? dynamicState.currentLocation
+          : null;
+      }
+      if (dynamicState.status === 'AVAILABLE') {
+        return fac.cabinLocation ? fac.cabinLocation : null;
+      }
+      return null;
+    })();
 
     return (
       <div
@@ -162,11 +191,11 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   {fac.name}
                 </h3>
                 <span className={`inline-block px-2 py-0.5 border text-[10px] font-mono uppercase ${getStatusBadgeStyle(dynamicState.status)}`}>
-                  ● {dynamicState.status}
+                  ● {formatStatusText(dynamicState.status)}
                 </span>
-                {dynamicState.currentLocation && (
+                {displayLocation && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-[#111111]/20 bg-white text-[10px] font-mono uppercase text-[#111111] font-semibold">
-                    📍 {dynamicState.currentLocation}
+                    📍 {displayLocation}
                   </span>
                 )}
               </div>
@@ -242,7 +271,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                   <div>
                     <span className="text-[#666660] text-[10px] uppercase block font-bold">AVAILABILITY / STATUS</span>
                     <span className={`inline-block px-2.5 py-0.5 border text-xs uppercase mt-0.5 ${getStatusBadgeStyle(dynamicState.status)}`}>
-                      ● {dynamicState.status}
+                      ● {formatStatusText(dynamicState.status)}
                     </span>
                   </div>
                   <div>
@@ -310,7 +339,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
           <span>SECTION 05 // DYNAMIC FACULTY TELEMETRY</span>
         </div>
 
-        {/* Section Heading & Search / Department Filters */}
+        {/* Section Heading & Search / Department / Status Filters */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-end">
           <div className="lg:col-span-6">
             <h2 className="text-subgiant font-syne text-[#111111] uppercase tracking-tighter leading-none">
@@ -341,23 +370,39 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
               </div>
             </div>
 
-            {/* Department Filter Select */}
+            {/* Department & Status Filters */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono text-xs">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Filter className="w-3.5 h-3.5 text-[#DC2626]" />
-                <span className="text-[#666660] uppercase font-bold">DEPARTMENT:</span>
-                <select
-                  value={selectedDept}
-                  onChange={(e) => setSelectedDept(e.target.value)}
-                  className="bg-white border border-[#111111]/30 px-3 py-1.5 text-xs font-mono text-[#111111] uppercase focus:outline-none focus:border-[#DC2626] cursor-pointer"
-                >
-                  <option value="ALL">ALL DEPARTMENTS ({availableDepartments.length})</option>
-                  {availableDepartments.map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept} ({deptCounts[dept] || 0} FACULTY)
-                    </option>
-                  ))}
-                </select>
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-1.5">
+                  <Filter className="w-3.5 h-3.5 text-[#DC2626]" />
+                  <span className="text-[#666660] uppercase font-bold">DEPT:</span>
+                  <select
+                    value={selectedDept}
+                    onChange={(e) => setSelectedDept(e.target.value)}
+                    className="bg-white border border-[#111111]/30 px-2.5 py-1.5 text-xs font-mono text-[#111111] uppercase focus:outline-none focus:border-[#DC2626] cursor-pointer"
+                  >
+                    <option value="ALL">ALL DEPARTMENTS ({availableDepartments.length})</option>
+                    {availableDepartments.map((dept) => (
+                      <option key={dept} value={dept}>
+                        {dept} ({deptCounts[dept] || 0} FACULTY)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[#666660] uppercase font-bold">STATUS:</span>
+                  <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="bg-white border border-[#111111]/30 px-2.5 py-1.5 text-xs font-mono text-[#111111] uppercase focus:outline-none focus:border-[#DC2626] cursor-pointer"
+                  >
+                    <option value="ALL">ALL STATUSES ({statusCounts.AVAILABLE + statusCounts.BUSY + statusCounts.OFF_CAMPUS})</option>
+                    <option value="AVAILABLE">🟢 AVAILABLE ({statusCounts.AVAILABLE})</option>
+                    <option value="BUSY">🔴 BUSY ({statusCounts.BUSY})</option>
+                    <option value="OFF_CAMPUS">⚫ OFF CAMPUS ({statusCounts.OFF_CAMPUS})</option>
+                  </select>
+                </div>
               </div>
 
               <div className="text-[10px] text-[#666660] tracking-wider uppercase">
