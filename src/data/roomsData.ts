@@ -143,6 +143,29 @@ export function findRoomByNumber(query: string): MSRITRoomRecord | undefined {
 }
 
 /**
+ * Normalizes a room name for robust search matching:
+ * - Roman numerals (I, II, III, IV, V) <-> Arabic numerals (1, 2, 3, 4, 5)
+ * - Em/En dashes, hyphens, and punctuation converted to spaces
+ * - & <-> and
+ */
+export function normalizeRoomNameForSearch(name: string): string {
+  if (!name || typeof name !== 'string') return '';
+  return name
+    .toLowerCase()
+    .replace(/[’‘`'"]/g, '')
+    .replace(/[–—_–-]/g, ' ')
+    .replace(/\b(ii|2)\b/gi, '2')
+    .replace(/\b(i|1)\b/gi, '1')
+    .replace(/\b(iii|3)\b/gi, '3')
+    .replace(/\b(iv|4)\b/gi, '4')
+    .replace(/\b(v|5)\b/gi, '5')
+    .replace(/\b(vi|6)\b/gi, '6')
+    .replace(/&/g, 'and')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
  * Looks up room by its descriptive name or title
  */
 export function findRoomsByName(query: string): MSRITRoomRecord[] {
@@ -150,22 +173,59 @@ export function findRoomsByName(query: string): MSRITRoomRecord[] {
   const q = query.toLowerCase().trim();
   if (q.length < 2) return [];
 
-  const qNorm = q.replace(/&/g, 'and').replace(/–|-/g, ' ').replace(/\s+/g, ' ').trim();
+  const qSearch = normalizeRoomNameForSearch(q);
 
-  return MSRIT_ROOMS.filter((r) => {
-    const name = (r.name || '').toLowerCase().trim();
-    const num = (r.roomNumber || '').toLowerCase().trim();
-    const desc = (r.description || '').toLowerCase().trim();
-    const cat = (r.category || '').toLowerCase().trim();
-    const nameNorm = name.replace(/&/g, 'and').replace(/–|-/g, ' ').replace(/\s+/g, ' ').trim();
+  const BUILDING_NAMES = new Set([
+    'lhc', 'crd', 'multipurpose', 'apex', 'esb', 'des', 'arch', 'architecture', 'workshop', 'quadrangle',
+    'lhc block', 'crd block', 'apex block', 'esb block', 'des block', 'arch block', 'multipurpose block'
+  ]);
+  if (BUILDING_NAMES.has(qSearch) || BUILDING_NAMES.has(q)) {
+    return [];
+  }
 
-    if (name && (name.includes(q) || (name.length >= 3 && q.includes(name)))) return true;
-    if (nameNorm && (nameNorm.includes(qNorm) || (nameNorm.length >= 3 && qNorm.includes(nameNorm)))) return true;
-    if (num && (num.includes(q) || q.includes(num))) return true;
-    if (desc && desc.includes(q)) return true;
-    if (cat && cat.length >= 4 && cat.includes(q)) return true;
+  // 1. Exact or substring match on normalized name or room number
+  const exactMatches = MSRIT_ROOMS.filter((r) => {
+    const name = r.name || '';
+    const num = r.roomNumber || '';
+    const desc = r.description || '';
+    const cat = r.category || '';
+
+    const nameSearch = normalizeRoomNameForSearch(name);
+    const numSearch = normalizeRoomNameForSearch(num);
+
+    if (nameSearch && (nameSearch === qSearch || nameSearch.includes(qSearch) || (qSearch.length >= 4 && qSearch.includes(nameSearch)))) {
+      return true;
+    }
+    if (numSearch && (numSearch === qSearch || (/\d/.test(qSearch) && numSearch.includes(qSearch)))) {
+      return true;
+    }
+    if (desc && desc.toLowerCase().includes(q) && !BUILDING_NAMES.has(q)) return true;
+    if (cat && cat.length >= 4 && cat.toLowerCase().includes(q)) return true;
     return false;
   });
+
+  if (exactMatches.length > 0) return exactMatches;
+
+  // 2. Token overlap search (for queries like "seminar hall 2 lhc" or "lhc 2 seminar hall")
+  const stopWords = new Set(['where', 'is', 'kaha', 'kahan', 'kidhar', 'what', 'the', 'ka', 'ke', 'ki', 'in', 'at', 'on', 'room', 'block', 'building']);
+  const tokens = qSearch.split(' ').filter((t) => t.length >= 2 && !stopWords.has(t));
+  if (tokens.length >= 2) {
+    const scored = MSRIT_ROOMS.map((r) => {
+      const nameSearch = normalizeRoomNameForSearch(r.name || '');
+      const numSearch = normalizeRoomNameForSearch(r.roomNumber || '');
+      const bldgSearch = (r.building || '').toLowerCase();
+      const combined = `${numSearch} ${nameSearch} ${bldgSearch}`;
+      const count = tokens.filter((t) => combined.includes(t)).length;
+      return { room: r, count };
+    }).filter((item) => item.count >= Math.min(tokens.length, 2));
+
+    scored.sort((a, b) => b.count - a.count);
+    if (scored.length > 0) {
+      return scored.map((s) => s.room);
+    }
+  }
+
+  return [];
 }
 
 /**

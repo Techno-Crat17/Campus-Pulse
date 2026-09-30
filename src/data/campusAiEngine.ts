@@ -427,12 +427,15 @@ export function normalizeQuery(query: string): string {
 }
 
 // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // 2. Intent Detection Pipeline (Multi-Intent Support)
 // ----------------------------------------------------------------------------
 
 export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   const q = normalizedQuery;
   const intents: CampusAiIntent[] = [];
+
+  const isLocationQuery = /\b(where\s*is|where\s*are|where\s*can\s*i\s*find|where\s*do\s*i\s*find|where['\s]*s|kaha\s*hai|kahan\s*hai|kidhar\s*hai|kaha\s*h|kidhar\s*h|kahan\s*h|kaha\s*milega|kaha\s*milenge|location|location\s*batao|location\s*btao|find|locate|address\s*of|which\s*building|which\s*block|which\s*floor|kis\s*building\s*me|kis\s*block\s*me|kis\s*floor\s*pe|kis\s*floor\s*par|kaunsi\s*floor|konsa\s*block|room\s*kaha\s*hai|room\s*kidhar\s*hai|kaun\s*sa\s*room\s*hai|kaun\s*sa\s*room|kya\s*hai)\b/i.test(q);
 
   const isHod = /\b(hod|head\s*of\s*department|head\s*of\s*the\s*department|dept\s*head|department\s*head)\b/i.test(q)
     || (/\bhead\b/i.test(q) && /\b(ise|cse|ece|et|ei|me|aiml|cy|cv|biotech|ind|department|dept)\b/i.test(q));
@@ -441,14 +444,20 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   const hasCabin = /\b(cabin|office|which\s*cabin|find\s*cabin|sitting|sit)\b/.test(q);
   const hasAvailability = /\b(available|availability|free|busy|in\s*lecture|in\s*class|can\s*i\s*meet|who\s*can\s*i\s*meet|who\s*is\s*free|who\s*is\s*available|which\s*faculty\s*are\s*available|when\s*free|vacant)\b/.test(q);
   const hasSchedule = /\b(schedule|timetable|classes\s*today|routine)\b/.test(q);
-  const hasLocation = /\b(where\s*is|where\s*can\s*i\s*find|where\s*are|where\s*to\s*find|location|floor|which\s*floor|which\s*block|which\s*building|take\s*me\s*to|show\s*on\s*map|view\s*on\s*map|nearest)\b/.test(q);
+  const hasLocation = isLocationQuery;
 
   const hasOccupancy = /\b(occupancy|how\s*crowded|crowded|busy|rush|empty|least\s*crowded|less\s*crowded|seats|full)\b/.test(q);
   const hasLibraryUsers = /\b(who\s*uses|primary\s*users|for\s*cse|for\s*electronics|for\s*first\s*year|which\s*library\s*should|best\s*library|where\s*can\s*.*study)\b/.test(q);
   const hasLibraryHours = /\b(library\s*open|library\s*close|library\s*hours|library\s*timing|is\s*.*library\s*open)\b/.test(q);
-  const mentionsExplicitLibrary = /\b(library|libraries|esb\s*library|lhc\s*library|apex\s*library)\b/.test(q);
+  const mentionsExplicitLibrary = /\b(library|libraries|esb\s*library|lhc\s*library|apex\s*library|unit\s*2|unit\s*ii|unit\s*3|unit\s*iii|lhc\s*306)\b/.test(q);
 
-  const hasEvents = /\b(event|events|happening\s*today|upcoming\s*events|fest|symposium|seminar|workshop)\b/.test(q);
+  // CRITICAL: Event search MUST ONLY trigger when user is asking for actual events, fests, or schedules.
+  // NEVER trigger when asking about physical rooms/seminar halls/locations.
+  const hasEvents = !isLocationQuery && !/\b(seminar\s*hall|board\s*room|auditorium)\b/i.test(q) && (
+    /\b(event|events|happening\s*today|upcoming\s*events|fest|symposium|what\s*events|show\s*events|any\s*event|aaj\s*kya\s*hai|college\s*me\s*kya\s*ho\s*raha)\b/i.test(q) ||
+    /\bupcoming\s*seminars?\b/i.test(q) ||
+    (/\bseminar\b/i.test(q) && /\b(tomorrow|today|upcoming|next\s*week|happening|any\s*seminar)\b/i.test(q))
+  );
   const hasAnnouncements = /\b(announcement|announcements|news|circular|notice|latest\s*news|msrit\s*news|circulars)\b/.test(q);
   const hasClubs = /\b(club|clubs|organization|organizations|society|societies|extracurricular|ieee|nss|tedx|edc|iic|idea\s*lab|apple\s*training|co-curricular|student\s*activity|student\s*activities)\b/.test(q);
   const hasEmergency = /\b(emergency|contact|phone|ambulance|fire|registrar\s*phone|administration\s*phone|helpline|anti[- ]ragging)\b/.test(q);
@@ -456,7 +465,7 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   const hasLostFound = /\b(lost|found|misplaced|calculator|airpods|bottle|wallet|watch|umbrella|keys|bag|spectacles)\b/.test(q);
   const hasIssues = /\b(issue|issues|complaint|complaints|reported|unresolved|resolved|high\s*priority|urgent|infrastructure|cleanliness|electricity|water|wifi|wi-fi)\b/.test(q);
 
-  const hasRoom = /\b(ab[- ]?\d{3}[a-z]?|esb[- ]?\d{3}[a-z]?|lhc[- ]?\d{3}[a-z]?|arch[- ]?\d{3}[a-z]?|room[- ]?\d{3}[a-z]?|classroom|classrooms|seminar\s*hall|board\s*room|auditorium)\b/i.test(q);
+  const hasRoom = /\b(ab[- ]?\d{3}[a-z]?|esb[- ]?\d{3}[a-z]?|lhc[- ]?\d{3}[a-z]?|crd[- ]?\d{3}[a-z]?|arch[- ]?\d{3}[a-z]?|room[- ]?\d{3}[a-z]?|\d{3}[a-z]?|classroom|classrooms|seminar\s*hall|seminar\s*hall\s*1|seminar\s*hall\s*2|seminar\s*hall\s*i|seminar\s*hall\s*ii|board\s*room|auditorium|antenna|fabrication|schneider|evolute|startup\s*zone|equipment\s*lab|software\s*lab|instrumentation\s*lab|logic\s*design)\b/i.test(q);
   const mentionsBuilding = /\b(lhc|esb|apex|architecture|basketball|sports|quadrangle|multipurpose|workshop|crd|des|cafeteria|food\s*court|hostel|basic\s*sciences)\b/.test(q);
 
   // HOD Intents (Part 2: DEPARTMENT_HOD, DEPARTMENT_HOD_EMAIL, DEPARTMENT_HOD_LOCATION, DEPARTMENT_HOD_DESIGNATION)
@@ -476,35 +485,17 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
     }
   }
 
-  // 1. Events & Announcements
-  if (hasEvents) intents.push('EVENT_SEARCH');
-  if (hasAnnouncements) intents.push('ANNOUNCEMENT_SEARCH');
-
-  // 2. Clubs & Student Activities
-  if (hasClubs) intents.push('CLUB_SEARCH');
-
-  // 3. Emergency Contacts
-  if (hasEmergency && (q.includes('emergency') || q.includes('number') || q.includes('phone') || q.includes('contact') || q.includes('ambulance') || q.includes('fire'))) {
-    intents.push('EMERGENCY_CONTACT');
-  }
-
-  // 4. Room & Classroom Intents
+  // 1. Room & Classroom Intents (High Priority)
   if (hasRoom) {
-    intents.push('ROOM_SEARCH');
+    if (isLocationQuery) {
+      intents.push('ROOM_LOCATION');
+    } else {
+      intents.push('ROOM_SEARCH');
+    }
     if (q.includes('classroom')) intents.push('CLASSROOM_QUERY');
   }
 
-  // 5. Lost & Found
-  if (hasLostFound && (q.includes('lost') || q.includes('found') || q.includes('item') || q.includes('where was'))) {
-    intents.push('LOST_FOUND_QUERY');
-  }
-
-  // 6. Issue reports (Takes precedence over location matching for queries like "What issues are reported in LHC?")
-  if (hasIssues && (q.includes('issue') || q.includes('reported') || q.includes('unresolved') || q.includes('resolved') || q.includes('priority'))) {
-    intents.push('ISSUE_REPORT_QUERY');
-  }
-
-  // 7. Library specific
+  // 2. Library specific
   if ((mentionsExplicitLibrary || (mentionsBuilding && (hasOccupancy || hasLibraryUsers))) && !hasIssues) {
     if (hasOccupancy) intents.push('LIBRARY_OCCUPANCY');
     if (hasLibraryUsers) intents.push('LIBRARY_USERS');
@@ -513,15 +504,37 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
     if (intents.length === 0) intents.push('LIBRARY_SEARCH');
   }
 
-  // 8. Building & Department locations (Takes precedence when asking "Where is LHC?")
+  // 3. Building & Department locations
   if (mentionsBuilding && hasLocation && !mentionsExplicitLibrary && !hasRoom && !hasIssues && !isHod) intents.push('BUILDING_LOCATION');
 
-  // 9. Faculty specific
+  // 4. Faculty specific
   if (hasEmail && !isHod) intents.push('FACULTY_EMAIL');
   if (hasCabin && !isHod) intents.push('FACULTY_CABIN');
   if (hasLocation && !mentionsExplicitLibrary && !mentionsBuilding && !hasRoom && !hasIssues && !isHod) intents.push('FACULTY_LOCATION');
   if (hasAvailability) intents.push('FACULTY_AVAILABILITY');
   if (hasSchedule) intents.push('FACULTY_SCHEDULE');
+
+  // 5. Issue reports
+  if (hasIssues && (q.includes('issue') || q.includes('reported') || q.includes('unresolved') || q.includes('resolved') || q.includes('priority'))) {
+    intents.push('ISSUE_REPORT_QUERY');
+  }
+
+  // 6. Lost & Found
+  if (hasLostFound && (q.includes('lost') || q.includes('found') || q.includes('item') || q.includes('where was'))) {
+    intents.push('LOST_FOUND_QUERY');
+  }
+
+  // 7. Events & Announcements
+  if (hasEvents) intents.push('EVENT_SEARCH');
+  if (hasAnnouncements) intents.push('ANNOUNCEMENT_SEARCH');
+
+  // 8. Clubs & Student Activities
+  if (hasClubs) intents.push('CLUB_SEARCH');
+
+  // 9. Emergency Contacts
+  if (hasEmergency && (q.includes('emergency') || q.includes('number') || q.includes('phone') || q.includes('contact') || q.includes('ambulance') || q.includes('fire'))) {
+    intents.push('EMERGENCY_CONTACT');
+  }
 
   if (intents.length === 0) {
     if (hasOccupancy) intents.push('OCCUPANCY_QUERY');
@@ -593,21 +606,34 @@ export function extractEntities(
     }
   }
 
-  // Handle Room Name lookups (e.g. "Antenna Fabrication Unit", "D & T Equipment Lab", "Medical Electronics Lab", "Ramaiah Evolute", "Schneider Centre", "International Relations")
-  if (!entities.matchedRoom) {
-    const qTrim = normQ
-      .replace(/\b(where is|what is|kaha hai|kahan hai|kidhar hai|kaun sa room hai|kya hai|room|lab|office|centre|center|lounge|hall)\b/g, ' ')
+  // Handle Room Name lookups (e.g. "LHC Seminar Hall – II", "Antenna Fabrication Unit", "D & T Equipment Lab", "Medical Electronics Lab", "Ramaiah Evolute", "Schneider Centre", "International Relations")
+  const isDeptRoomSearch = (normQ.includes('mle') || normQ.includes('medical') || normQ.includes('e&ee') || normQ.includes('eee') || normQ.includes('e&ie') || normQ.includes('eie') || normQ.includes('e&te') || normQ.includes('ete') || normQ.includes('aiml') || normQ.includes('cyber') || normQ.includes('cse') || normQ.includes('mca')) &&
+    (normQ.includes('lhc') || normQ.includes('crd') || normQ.includes('multipurpose') || normQ.includes('esb') || normQ.includes('apex')) &&
+    /\b(room|rooms|lab|labs|kaha|kidhar|list|dikhao|show)\b/i.test(normQ) &&
+    !/\b\d{3}\b/.test(normQ);
+
+  if (!entities.matchedRoom && !isDeptRoomSearch) {
+    const qClean = normQ
+      .replace(/\b(where is|where are|where can i find|where do i find|where's|find|locate|show me|address of|kaha hai|kahan hai|kidhar hai|kaha h|kidhar h|kahan h|kaha milega|kaha milenge|location batao|location btao|kaun sa room hai|kya hai|kis floor pe|kis floor par|kis block me|kis building me|batao|btao|hai|h)\b/gi, ' ')
       .replace(/\s+/g, ' ')
       .trim();
 
-    if (qTrim.length >= 3) {
-      const nameMatches = findRoomsByName(qTrim);
+    if (qClean.length >= 2) {
+      const nameMatches = findRoomsByName(qClean);
       if (nameMatches.length > 0) {
         entities.matchedRoom = nameMatches[0];
         if (nameMatches.length > 1) {
           entities.matchedRoomsList = nameMatches;
         }
       }
+    }
+  }
+
+  // Handle room follow-up context (e.g. "iska floor?", "floor kya hai?", "kis floor pe hai")
+  if (!entities.matchedRoom && context?.lastRoom) {
+    const isFloorFollowup = /\b(iska\s*floor|floor\s*kya|kis\s*floor|floor)\b/i.test(normQ) && !normQ.includes('lhc') && !normQ.includes('crd') && !normQ.includes('esb') && !normQ.includes('apex') && !/\d{3}/.test(normQ);
+    if (isFloorFollowup) {
+      entities.matchedRoom = context.lastRoom;
     }
   }
 
@@ -732,6 +758,7 @@ export function extractEntities(
         (bId === 'esb' && /\besb\b/.test(normQ)) ||
         (bId === 'apex' && /\bapex\b/.test(normQ)) ||
         (bId === 'des' && /\bdes\b/.test(normQ)) ||
+        (bId === 'multipurpose' && /\b(crd|multipurpose)\b/.test(normQ)) ||
         (normQ.includes('architecture') && bId.includes('arch'))
       );
     });
@@ -1023,18 +1050,25 @@ export function getFacultyAnswer(
 
   // 3. Location / Cabin Only
   if (wantsLocation && !wantsEmail) {
-    const locText = liveInfo.status === 'BUSY'
-      ? `${liveInfo.currentLocation}${liveInfo.activeEvent ? ` (${liveInfo.activeEvent})` : ''}`
-      : liveInfo.status === 'AVAILABLE'
-      ? fac.cabinLocation
-      : 'Off-Campus';
+    const locText = fac.cabinLocation;
+    if (!locText) {
+      return {
+        queryText: rawQuery,
+        normalizedQuery: normQ,
+        intents: ['FACULTY_LOCATION'],
+        responseText: `**${fac.name}**\nLocation information is currently unavailable.`,
+        subText: `Department: ${fac.department}`,
+        matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
+        actionTargetId: bldgId
+      };
+    }
 
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_LOCATION'],
-      responseText: `${fac.name}\n${statusBadgeStr}${locText !== 'Off-Campus' ? `\n📍 ${locText}` : ''}`,
-      subText: `Building: ${fac.primaryBuilding || 'LHC Block'} • Next Available: ${liveInfo.nextAvailableTime}`,
+      responseText: `**${fac.name}**\n📍 ${locText}`,
+      subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
@@ -1119,15 +1153,23 @@ export function getRoomAnswer(
 ): CampusAiResult | null {
   const { matchedRoom, roomQuery } = entities;
 
-  // 1. Single Room Result (Strict, compact format requested in Section 9 & 17)
+  // 1. Single Room Result (Strict, compact format requested in Section 5, 6, 9 & 15)
   if (matchedRoom) {
     const r = matchedRoom;
-    const deptPart = r.department && r.department !== '-' ? ` · ${r.department}` : '';
-    const floorPart = r.floor ? ` · ${r.floor}` : '';
-    const namePart = r.name ? r.name : r.type;
+    const isFloorQuery = /\b(kis\s*floor|which\s*floor|kaunsi\s*floor|kaun\s*sa\s*floor|floor\s*kya|iska\s*floor|ka\s*floor|kis\s*floor\s*pe|kis\s*floor\s*par)\b/i.test(normQ);
     const bldgDisplay = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
-      ? 'CRD / Multipurpose Block'
-      : `${r.building || 'Campus Facilities'} Block`;
+      ? 'Multipurpose Block'
+      : (r.building?.toLowerCase().includes('lhc') ? 'LHC Block' : `${r.building || 'Campus Facilities'} Block`);
+
+    const namePart = r.name ? ` — ${r.name}` : (r.type ? ` — ${r.type}` : '');
+
+    let responseText = '';
+    if (isFloorQuery) {
+      responseText = `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`;
+    } else {
+      const floorStr = r.floor ? ` · ${r.floor}` : '';
+      responseText = `**${r.roomNumber}${namePart}**\n📍 ${bldgDisplay}${floorStr}`;
+    }
 
     const bldgId = r.building?.toLowerCase().includes('crd') || r.building?.toLowerCase().includes('multipurpose')
       ? 'crd'
@@ -1146,8 +1188,8 @@ export function getRoomAnswer(
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
-      intents: ['ROOM_SEARCH'],
-      responseText: `**${r.roomNumber}**\n${namePart}${deptPart}${floorPart}\n📍 ${bldgDisplay}`,
+      intents: ['ROOM_LOCATION'],
+      responseText,
       subText: `Source: ${r.sourceTitle || 'Official MSRIT Verified Survey'} • Verified Room Registry.`,
       matchedRoom: r,
       actionTargetId: bldgId
@@ -1202,16 +1244,16 @@ export function getRoomAnswer(
     const dRooms = getRoomsByDepartment(deptKey, bldgKey);
     if (dRooms.length > 0) {
       const displayRooms = dRooms.slice(0, 5);
-      const lines = displayRooms.map((r) => `• **${r.roomNumber}** — ${r.name || r.type} (${r.floor})`).join('\n');
+      const lines = displayRooms.map((r, i) => `${i + 1}. **${r.roomNumber}** — ${r.name || r.type}`).join('\n');
       const moreText = dRooms.length > 5 ? `\n\n...and ${dRooms.length - 5} more rooms.` : '';
-      const bldgDisplay = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'CRD / Multipurpose Block' : `${bldgKey.toUpperCase()} Block`;
+      const bldgHeader = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'CRD' : bldgKey.toUpperCase();
       const actionId = (bldgKey === 'crd' || bldgKey === 'multipurpose') ? 'crd' : `block-${bldgKey}`;
 
       return {
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['DEPARTMENT_ROOMS'],
-        responseText: `**${deptKey} Rooms in ${bldgDisplay} (${dRooms.length} total):**\n\n${lines}${moreText}`,
+        responseText: `**${bldgHeader} — ${deptKey} Rooms**\n\n${lines}${moreText}`,
         subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoomsList: dRooms,
         actionTargetId: actionId
@@ -1400,14 +1442,18 @@ export function getBuildingAnswer(
 
   if (matchedBlock) {
     const b = matchedBlock;
+    const isCrd = b.id.toLowerCase().includes('crd') || b.id.toLowerCase().includes('multipurpose');
+    const title = isCrd ? 'Multipurpose Block (CRD)' : (b.id.toLowerCase() === 'lhc' ? 'LHC Block' : (b.displayName.includes('Block') ? b.displayName : `${b.displayName} Block`));
+    const locLine = isCrd ? '📍 Multipurpose Building' : `📍 Ground Block · ${b.name}`;
+
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['BUILDING_LOCATION'],
-      responseText: `${b.displayName} (${b.name})\n📍 Location: Ground Block\n\n${b.description}\nDepartments: ${b.departments.join(', ')}`,
+      responseText: `**${title}**\n${locLine}\n\n${b.description}${b.departments.length > 0 ? `\nDepartments: ${b.departments.join(', ')}` : ''}`,
       subText: "Verified 4-corner coordinates on Google Maps Satellite base.",
       matchedBlock: b,
-      actionTargetId: `block-${b.id}`
+      actionTargetId: isCrd ? 'crd' : `block-${b.id}`
     };
   }
 
@@ -1416,7 +1462,7 @@ export function getBuildingAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['BUILDING_LOCATION'],
-      responseText: `${matchedLocation.name}\n📍 Location: ${matchedLocation.building} (${matchedLocation.floor})\nCategory: ${matchedLocation.category}`,
+      responseText: `**${matchedLocation.name}**\n📍 Location: ${matchedLocation.building} (${matchedLocation.floor})\nCategory: ${matchedLocation.category}\n\n${matchedLocation.description}`,
       subText: `${matchedLocation.description}`,
       matchedLocation,
       actionTargetId: matchedLocation.id
@@ -1541,8 +1587,14 @@ export async function getEventsAndAnnouncementsAnswer(
   normQ: string,
   rawQuery: string
 ): Promise<CampusAiResult | null> {
-  const isEvent = intents.includes('EVENT_SEARCH') || normQ.includes('event') || normQ.includes('happening today');
-  const isAnnouncement = intents.includes('ANNOUNCEMENT_SEARCH') || normQ.includes('announcement') || normQ.includes('news') || normQ.includes('circular');
+  const isLocationQuery = /\b(where\s*is|where\s*are|where\s*can\s*i\s*find|where\s*do\s*i\s*find|where['\s]*s|kaha\s*hai|kahan\s*hai|kidhar\s*hai|kaha\s*h|kidhar\s*h|kahan\s*h|kaha\s*milega|kaha\s*milenge|location|location\s*batao|location\s*btao|find|locate|address\s*of|which\s*building|which\s*block|which\s*floor|kis\s*building\s*me|kis\s*block\s*me|kis\s*floor\s*pe|kis\s*floor\s*par|kaunsi\s*floor|konsa\s*block|room\s*kaha\s*hai|room\s*kidhar\s*hai|kaun\s*sa\s*room\s*hai|kaun\s*sa\s*room)\b/i.test(normQ);
+
+  if (isLocationQuery || normQ.includes('seminar hall') || normQ.includes('board room') || normQ.includes('auditorium')) {
+    return null;
+  }
+
+  const isEvent = intents.includes('EVENT_SEARCH');
+  const isAnnouncement = intents.includes('ANNOUNCEMENT_SEARCH');
 
   if (isEvent) {
     try {
@@ -1762,57 +1814,57 @@ export async function processCampusAiQuery(
   // Step 3: Extract Entities
   const entities = extractEntities(normQ, rawQuery, intents, context);
 
-  // Step 4: Search Relevant Data & Generate Grounded Response
+  // Step 4: Search Relevant Data & Generate Grounded Response (Deterministic Pipeline Priority Order)
 
-  // 4A. Emergency Contacts
+  // 1. Emergency Contacts
   const emergencyAns = getEmergencyContactsAnswer(normQ, rawQuery);
   if (emergencyAns) {
     return maintainConversationContext(emergencyAns, rawQuery, context);
   }
 
-  // 4B. Events & Announcements
-  const eventAns = await getEventsAndAnnouncementsAnswer(intents, normQ, rawQuery);
-  if (eventAns) {
-    return maintainConversationContext(eventAns, rawQuery, context);
-  }
-
-  // 4C. Clubs & Activities
-  const clubAns = await getClubsAnswer(intents, normQ, rawQuery);
-  if (clubAns) {
-    return maintainConversationContext(clubAns, rawQuery, context);
-  }
-
-  // 4D. Issue Reports Handler
-  const issueAns = getIssueAnswer(entities, normQ);
-  if (issueAns) {
-    return maintainConversationContext(issueAns, rawQuery, context);
-  }
-
-  // 4E. Faculty Handler (Includes faculty ambiguity guard)
-  const facultyAns = getFacultyAnswer(entities, intents, simulatedTime);
-  if (facultyAns) {
-    return maintainConversationContext(facultyAns, rawQuery, context);
-  }
-
-  // 4F. Room & Building Handler
+  // 2. Exact Room / Location Handler (Highest deterministic priority for locations)
   const roomAns = getRoomAnswer(entities, intents, normQ, rawQuery);
   if (roomAns) {
     return maintainConversationContext(roomAns, rawQuery, context);
   }
 
-  // 4G. Library & Occupancy Handler
+  // 3. Library & Occupancy Handler
   const libAns = getLibraryAnswer(entities, intents, normQ, simulatedTime);
   if (libAns) {
     return maintainConversationContext(libAns, rawQuery, context);
   }
 
-  // 4H. Building & Location Handler
+  // 4. Faculty Handler (Includes faculty ambiguity guard)
+  const facultyAns = getFacultyAnswer(entities, intents, simulatedTime);
+  if (facultyAns) {
+    return maintainConversationContext(facultyAns, rawQuery, context);
+  }
+
+  // 5. Building & Location Handler
   const bldgAns = getBuildingAnswer(entities, intents, normQ);
   if (bldgAns) {
     return maintainConversationContext(bldgAns, rawQuery, context);
   }
 
-  // 4I. Lost & Found Handler
+  // 6. Issue Reports Handler
+  const issueAns = getIssueAnswer(entities, normQ);
+  if (issueAns) {
+    return maintainConversationContext(issueAns, rawQuery, context);
+  }
+
+  // 7. Events & Announcements (Only when asking for real events/schedules)
+  const eventAns = await getEventsAndAnnouncementsAnswer(intents, normQ, rawQuery);
+  if (eventAns) {
+    return maintainConversationContext(eventAns, rawQuery, context);
+  }
+
+  // 8. Clubs & Activities
+  const clubAns = await getClubsAnswer(intents, normQ, rawQuery);
+  if (clubAns) {
+    return maintainConversationContext(clubAns, rawQuery, context);
+  }
+
+  // 9. Lost & Found Handler
   const lfAns = getLostFoundAnswer(entities, normQ);
   if (lfAns) {
     return maintainConversationContext(lfAns, rawQuery, context);

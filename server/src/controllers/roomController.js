@@ -1,5 +1,5 @@
 import { Room } from '../models/Room.js';
-import { normalizeRoomNumber } from '../utils/roomUtils.js';
+import { normalizeRoomNumber, normalizeRoomNameForSearch } from '../utils/roomUtils.js';
 import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export async function getRooms(req, res, next) {
@@ -63,14 +63,17 @@ export async function getRooms(req, res, next) {
     const queryTerm = (q || search || '').trim();
     if (queryTerm) {
       const norm = normalizeRoomNumber(queryTerm);
+      const normName = normalizeRoomNameForSearch(queryTerm);
       const qRegex = { $regex: queryTerm, $options: 'i' };
+      const normNameRegex = normName ? { $regex: normName, $options: 'i' } : qRegex;
+
       filter.$and = filter.$and || [];
       filter.$and.push({
         $or: [
           { roomNumber: qRegex },
           { roomNumberNormalized: { $regex: norm, $options: 'i' } },
           { name: qRegex },
-          { normalizedName: { $regex: queryTerm.toLowerCase(), $options: 'i' } },
+          { normalizedName: normNameRegex },
           { building: qRegex },
           { buildingCode: qRegex },
           { department: qRegex },
@@ -97,14 +100,16 @@ export async function searchRooms(req, res, next) {
     }
 
     const norm = normalizeRoomNumber(queryStr);
+    const normName = normalizeRoomNameForSearch(queryStr);
     const qRegex = { $regex: queryStr, $options: 'i' };
+    const normNameRegex = normName ? { $regex: normName, $options: 'i' } : qRegex;
 
     const rooms = await Room.find({
       $or: [
         { roomNumber: qRegex },
         { roomNumberNormalized: { $regex: norm, $options: 'i' } },
         { name: qRegex },
-        { normalizedName: { $regex: queryStr.toLowerCase(), $options: 'i' } },
+        { normalizedName: normNameRegex },
         { building: qRegex },
         { buildingCode: qRegex },
         { department: qRegex },
