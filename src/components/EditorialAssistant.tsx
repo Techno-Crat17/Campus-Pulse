@@ -5,8 +5,6 @@ import {
   Search,
   X,
   Send,
-  Mic,
-  MicOff,
   MapPin,
   ExternalLink,
   AlertTriangle,
@@ -98,10 +96,7 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('FACULTY');
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [isListening, setIsListening] = useState(false);
-  const [voiceSupported, setVoiceSupported] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
-  const recognitionRef = useRef<any>(null);
 
   const sessionIdRef = useRef<string>('session-' + Math.random().toString(36).substring(2, 9));
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -115,37 +110,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     setCopiedEmail(email);
     setTimeout(() => setCopiedEmail(null), 2000);
   };
-
-  // Voice recognition setup
-  useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      setVoiceSupported(true);
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = 'en-US';
-
-      recognition.onresult = (event: any) => {
-        const spokenText = event.results[0][0].transcript;
-        if (spokenText) {
-          setQuery(spokenText);
-          handleQuerySubmit(spokenText);
-        }
-        setIsListening(false);
-      };
-
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-    }
-  }, []);
 
   // Rotating placeholder interval
   useEffect(() => {
@@ -179,21 +143,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     }
     loadInitial();
   }, []);
-
-  const toggleVoiceListen = () => {
-    if (!recognitionRef.current) return;
-    if (isListening) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    } else {
-      try {
-        setIsListening(true);
-        recognitionRef.current.start();
-      } catch {
-        setIsListening(false);
-      }
-    }
-  };
 
   const handleQuerySubmit = async (textToProcess: string) => {
     const text = textToProcess.trim();
@@ -314,21 +263,7 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                     </button>
                   )}
 
-                  {/* Voice Button */}
-                  {voiceSupported && (
-                    <button
-                      type="button"
-                      onClick={toggleVoiceListen}
-                      className={`p-2.5 mr-2 rounded-full transition-all ${
-                        isListening
-                          ? 'bg-rose-600 text-white animate-pulse'
-                          : 'text-gray-400 hover:text-[#DC2626] dark:hover:text-white'
-                      }`}
-                      title={isListening ? 'Stop Listening' : 'Voice Query'}
-                    >
-                      {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                    </button>
-                  )}
+
 
                   {/* Submit Button */}
                   <button
