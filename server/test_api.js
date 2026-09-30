@@ -79,13 +79,27 @@ async function runTests() {
   const bldgs = await makeRequest('/api/buildings');
   console.log('8. GET /api/buildings:', bldgs.status, 'Count:', bldgs.body.data?.length, 'Blocks:', bldgs.body.data?.map(b => b.shortName || b.name).join(', '));
 
-  // 9. Rooms (51 verified rooms)
+  // 9. Rooms (Verified rooms in DB)
   const rooms = await makeRequest('/api/rooms');
   console.log('9. GET /api/rooms:', rooms.status, 'Count:', rooms.body.data?.length);
 
-  // 10. Room Normalization (AB401 => AB-401)
-  const roomSearch = await makeRequest('/api/rooms/AB401');
-  console.log('10. GET /api/rooms/AB401:', roomSearch.status, 'Normalized match:', roomSearch.body.data?.roomNumber, 'Building:', roomSearch.body.data?.building);
+  // 9a. Rooms by Building LHC
+  const lhcRooms = await makeRequest('/api/rooms?building=LHC');
+  console.log('9a. GET /api/rooms?building=LHC:', lhcRooms.status, 'Count:', lhcRooms.body.data?.length);
+
+  // 9b. Rooms by Building CRD
+  const crdRooms = await makeRequest('/api/rooms?building=CRD');
+  console.log('9b. GET /api/rooms?building=CRD:', crdRooms.status, 'Count:', crdRooms.body.data?.length);
+
+  // 10. Room Normalization (LHC306 => LHC-306, LHC518A => LHC-518A, CRD405 => CRD-405)
+  const roomSearch = await makeRequest('/api/rooms/LHC306');
+  console.log('10. GET /api/rooms/LHC306:', roomSearch.status, 'Normalized match:', roomSearch.body.data?.roomNumber, 'Name:', roomSearch.body.data?.name, 'Floor:', roomSearch.body.data?.floor);
+
+  const roomSearch2 = await makeRequest('/api/rooms/LHC518A');
+  console.log('10a. GET /api/rooms/LHC518A:', roomSearch2.status, 'Normalized match:', roomSearch2.body.data?.roomNumber, 'Name:', roomSearch2.body.data?.name, 'Floor:', roomSearch2.body.data?.floor);
+
+  const roomSearch3 = await makeRequest('/api/rooms/CRD405');
+  console.log('10b. GET /api/rooms/CRD405:', roomSearch3.status, 'Normalized match:', roomSearch3.body.data?.roomNumber, 'Name:', roomSearch3.body.data?.name, 'Floor:', roomSearch3.body.data?.floor);
 
   // 11. Issues (Sample issue reports)
   const issues = await makeRequest('/api/issues');

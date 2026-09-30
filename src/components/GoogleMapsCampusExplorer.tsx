@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   Search,
   Navigation,
@@ -8,7 +8,9 @@ import {
   BookOpen,
   Users,
   Building2,
-  Info
+  Info,
+  DoorClosed,
+  CheckCircle2
 } from 'lucide-react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import {
@@ -28,6 +30,12 @@ import { getFacultyLiveStatus } from '../data/statusEngine';
 import { useTimeContext } from '../context/TimeContext';
 import { useTheme } from '../context/ThemeContext';
 import { LIBRARIES, searchLibraries, getLibraryOccupancyDetails } from '../data/libraryData';
+import {
+  fetchRoomsApi,
+  findRoomByNumber,
+  findRoomsByName
+} from '../data/roomsData';
+import type { MSRITRoomRecord } from '../data/roomsData';
 
 declare global {
   interface Window {
@@ -311,10 +319,43 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   const [selectedFacultyMember, setSelectedFacultyMember] = useState<MSRITFacultyRecord | null>(null);
   const [placesSearchResults, setPlacesSearchResults] = useState<any[]>([]);
 
+  // Verified Room Data from Backend API / Database
+  const [blockRooms, setBlockRooms] = useState<MSRITRoomRecord[]>([]);
+  const [isLoadingRooms, setIsLoadingRooms] = useState<boolean>(false);
+  const [roomsError, setRoomsError] = useState<string | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<MSRITRoomRecord | null>(null);
+
   // Projected non-overlapping labels
   const [projectedLabels, setProjectedLabels] = useState<PlacedBlockCard[]>([]);
 
   const { currentTime, simulatedTime } = useTimeContext();
+
+  const FLOOR_ORDER = ['Basement', 'Ground Floor', '1st Floor', '2nd Floor', '3rd Floor', '4th Floor', '5th Floor', '6th Floor'];
+
+  const groupedRooms = useMemo(() => {
+    const groups: { [floor: string]: MSRITRoomRecord[] } = {};
+    blockRooms.forEach((room) => {
+      const floorKey = room.floor || 'General';
+      if (!groups[floorKey]) {
+        groups[floorKey] = [];
+      }
+      groups[floorKey].push(room);
+    });
+
+    return Object.keys(groups)
+      .sort((a, b) => {
+        const idxA = FLOOR_ORDER.indexOf(a);
+        const idxB = FLOOR_ORDER.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.localeCompare(b);
+      })
+      .map((floor) => ({
+        floor,
+        rooms: groups[floor]
+      }));
+  }, [blockRooms]);
 
   // Refs
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -325,7 +366,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   const infoWindowRef = useRef<any>(null);
   const activeBlockRef = useRef<VerifiedCampusBlock | null>(activeBlock);
   const isCrdSelectedRef = useRef<boolean>(isCrdSelected);
-  const handleSelectBlockRef = useRef<(block: VerifiedCampusBlock) => void>(() => {});
+  const handleSelectBlockRef = useRef<(block: VerifiedCampusBlock) => void>(() => { });
 
   useEffect(() => {
     activeBlockRef.current = activeBlock;
@@ -544,11 +585,11 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
           // E. Setup Custom OverlayView for Dynamic Label Synchronization & Collision Avoidance
           class BuildingOverlayView extends google.maps.OverlayView {
-            onAdd() {}
+            onAdd() { }
             draw() {
               updateProjectedLabels();
             }
-            onRemove() {}
+            onRemove() { }
           }
 
           const overlay = new BuildingOverlayView();
@@ -653,6 +694,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     setActiveBlock(null);
     setIsCrdSelected(false);
     setSelectedFacultyMember(null);
+    setSelectedRoom(null);
 
     if (infoWindowRef.current) {
       infoWindowRef.current.close();
@@ -678,6 +720,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     setActiveBlock(block);
     setIsCrdSelected(false);
     setSelectedFacultyMember(null);
+    setSelectedRoom(null);
 
     if (googleMapInstanceRef.current && window.google?.maps) {
       const targetLatLng = new window.google.maps.LatLng(block.center.lat, block.center.lng);
@@ -724,15 +767,38 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     handleSelectBlockRef.current = handleSelectBlock;
   }, [handleSelectBlock]);
 
-  // Handle external selection
+  // Fetch Rooms for the Active Block from MongoDB Backend API
   useEffect(() => {
-    if (initialNodeId) {
-      const block = getVerifiedBlockByNameOrId(initialNodeId);
-      if (block) {
-        handleSelectBlock(block);
-      }
+    let isMounted = true;
+    const buildingCode = isCrdSelected ? 'CRD' : (activeBlock ? activeBlock.name : null);
+    if (!buildingCode) {
+      setBlockRooms([]);
+      setIsLoadingRooms(false);
+      setRoomsError(null);
+      return;
     }
-  }, [initialNodeId, handleSelectBlock]);
+
+    setIsLoadingRooms(true);
+    setRoomsError(null);
+    fetchRoomsApi({ building: buildingCode })
+      .then((rooms) => {
+        if (isMounted) {
+          setBlockRooms(rooms);
+          setIsLoadingRooms(false);
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          console.error('[GoogleMapsCampusExplorer] Room fetch error:', err);
+          setRoomsError('Room information is temporarily unavailable.');
+          setIsLoadingRooms(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeBlock, isCrdSelected]);
 
   // Handle Selection of Non-Geographic CRD Block
   const handleSelectCrd = () => {
@@ -743,10 +809,44 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     setIsCrdSelected(true);
     setActiveBlock(null);
     setSelectedFacultyMember(null);
+    setSelectedRoom(null);
     if (infoWindowRef.current) {
       infoWindowRef.current.close();
     }
   };
+
+  // Handle external selection (from Ask Campus AI or Navigation)
+  useEffect(() => {
+    if (initialNodeId) {
+      const trimmed = initialNodeId.trim();
+      if (trimmed.toLowerCase().includes('crd') || trimmed.toUpperCase() === 'CRD' || trimmed.toLowerCase() === 'block-crd') {
+        setIsCrdSelected(true);
+        setActiveBlock(null);
+        setSelectedFacultyMember(null);
+        return;
+      }
+      const roomMatch = findRoomByNumber(trimmed);
+      if (roomMatch) {
+        if (roomMatch.building === 'CRD') {
+          setIsCrdSelected(true);
+          setActiveBlock(null);
+          setSelectedFacultyMember(null);
+          setSelectedRoom(roomMatch);
+          return;
+        }
+        const block = getVerifiedBlockByNameOrId(roomMatch.building || 'LHC');
+        if (block) {
+          handleSelectBlock(block);
+          setSelectedRoom(roomMatch);
+          return;
+        }
+      }
+      const block = getVerifiedBlockByNameOrId(trimmed);
+      if (block) {
+        handleSelectBlock(block);
+      }
+    }
+  }, [initialNodeId, handleSelectBlock]);
 
   // Get Faculty associated with active block or entire campus
   const getAssociatedFaculty = (): MSRITFacultyRecord[] => {
@@ -813,15 +913,16 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const searchResultsRooms = searchQuery.trim() ? findRoomsByName(searchQuery).slice(0, 6) : [];
   const searchResultsFaculty = searchQuery.trim() ? searchFaculty(searchQuery) : [];
   const searchResultsLibraries = searchQuery.trim() ? searchLibraries(searchQuery) : [];
   const searchResultsBlocks = searchQuery.trim()
     ? VERIFIED_CAMPUS_BLOCKS.filter(
-        (b) =>
-          b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          b.departments.some((d) => d.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
+      (b) =>
+        b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        b.departments.some((d) => d.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
     : [];
 
   const overallCampusOccupancy = Math.round(
@@ -839,7 +940,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
   return (
     <section id="sec-map" className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 border-b border-[#111111]/10 dark:border-white/10 relative overflow-hidden bg-[#F5F4EF] dark:bg-[#0E0F12]">
       <div id="sec-map-explore" className="max-w-[1700px] mx-auto space-y-10">
-        
+
         {/* Section Header Breadcrumb */}
         <div className="font-mono text-xs text-[#DC2626] uppercase tracking-widest font-bold flex items-center gap-2">
           <Compass className="w-4 h-4 text-[#DC2626]" />
@@ -867,11 +968,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   <button
                     key={t}
                     onClick={() => setMapType(t)}
-                    className={`px-3 py-1 text-[11px] uppercase font-bold transition-all ${
-                      mapType === t
+                    className={`px-3 py-1 text-[11px] uppercase font-bold transition-all ${mapType === t
                         ? 'bg-[#111111] text-white'
                         : 'text-[#666660] hover:text-[#DC2626]'
-                    }`}
+                      }`}
                   >
                     {t}
                   </button>
@@ -890,11 +990,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
             <button
               onClick={handleDeselectAll}
               title={!activeBlock && !isCrdSelected ? 'Overall campus view is active' : 'Click to deselect block and view overall campus'}
-              className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${
-                !activeBlock && !isCrdSelected
+              className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${!activeBlock && !isCrdSelected
                   ? 'bg-[#111111] text-white border-[#111111] shadow-xs'
                   : 'bg-white text-[#111111] border-[#111111]/20 hover:border-[#DC2626]'
-              }`}
+                }`}
             >
               <Compass className={`w-3.5 h-3.5 ${!activeBlock && !isCrdSelected ? 'text-red-400' : 'text-[#DC2626]'}`} />
               <span>OVERALL CAMPUS</span>
@@ -911,11 +1010,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                   key={block.id}
                   onClick={() => handleSelectBlock(block)}
                   title={isSelected ? `Selected: ${block.displayName}. Click again to deselect.` : `Click to select ${block.displayName}`}
-                  className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${
-                    isSelected
+                  className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${isSelected
                       ? 'bg-[#111111] text-white border-[#DC2626] shadow-xs ring-1 ring-[#DC2626]'
                       : 'bg-white text-[#111111] border-[#111111]/20 hover:border-[#DC2626]'
-                  }`}
+                    }`}
                 >
                   <span
                     className="w-2.5 h-2.5 rounded-full inline-block border border-black/30"
@@ -933,11 +1031,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
             <button
               onClick={handleSelectCrd}
               title={isCrdSelected ? 'CRD selected. Click again to deselect.' : 'Click to select CRD'}
-              className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${
-                isCrdSelected
+              className={`px-3 py-1.5 uppercase transition-all shrink-0 font-bold border flex items-center gap-2 ${isCrdSelected
                   ? 'bg-[#111111] text-white border-[#DC2626] shadow-xs'
                   : 'bg-white text-[#666660] border-dashed border-[#111111]/40 hover:border-[#111111]'
-              }`}
+                }`}
             >
               <span className="w-2 h-2 rounded-full border border-gray-400 bg-gray-300" />
               <span>CRD (NON-GEOGRAPHIC)</span>
@@ -972,10 +1069,55 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           {/* Search Dropdown */}
           {searchQuery.trim() && (
             <div className="absolute left-0 right-0 max-w-4xl bg-white border-2 border-[#111111] z-50 p-4 max-h-[380px] overflow-y-auto space-y-4 shadow-2xl font-mono text-xs">
-              
+
+              {/* Verified Rooms Results */}
+              {searchResultsRooms.length > 0 && (
+                <div className="space-y-2">
+                  <div className="text-[#DC2626] font-bold uppercase text-[11px] flex items-center gap-1.5">
+                    <DoorClosed className="w-3.5 h-3.5" />
+                    <span>VERIFIED ROOMS ({searchResultsRooms.length}):</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {searchResultsRooms.map((r) => (
+                      <div
+                        key={r.roomNumber}
+                        onClick={() => {
+                          if (r.building === 'CRD') {
+                            setIsCrdSelected(true);
+                            setActiveBlock(null);
+                            setSelectedFacultyMember(null);
+                            setSelectedRoom(r);
+                          } else {
+                            const parentBlock = VERIFIED_CAMPUS_BLOCKS.find((b) =>
+                              b.name.toUpperCase() === (r.building || '').toUpperCase()
+                            ) || VERIFIED_CAMPUS_BLOCKS[0];
+                            handleSelectBlock(parentBlock);
+                            setSelectedRoom(r);
+                          }
+                          setSearchQuery('');
+                        }}
+                        className="p-2.5 hover:bg-[#DC2626]/10 cursor-pointer border border-[#DC2626]/30 bg-red-50/10 flex justify-between items-center transition-all"
+                      >
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <strong className="text-[#111111] uppercase font-bold text-sm">{r.roomNumber}</strong>
+                            <span className="text-[10px] bg-[#111111] text-white px-1.5 py-0.5 font-mono">{r.building} BLOCK</span>
+                            <span className="text-[10px] text-[#DC2626] font-mono">{r.floor}</span>
+                          </div>
+                          <div className="text-[#666660] text-[11px] mt-0.5 font-medium">
+                            {r.name} {r.departments && r.departments.length > 0 ? `· ${r.departments.join(' + ')}` : r.department ? `· ${r.department}` : ''}
+                          </div>
+                        </div>
+                        <span className="text-[10px] uppercase font-bold text-[#DC2626] shrink-0">SELECT ROOM →</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Blocks Results */}
               {searchResultsBlocks.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2 pt-2 border-t border-[#111111]/10">
                   <div className="text-[#111111] font-bold uppercase text-[11px]">
                     CAMPUS BLOCKS ({searchResultsBlocks.length}):
                   </div>
@@ -1119,11 +1261,11 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
 
         {/* Map and Building Details Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Left 7 Cols: Google Maps Satellite Container with Collision-Free Overlays */}
           <div className="lg:col-span-7 space-y-4">
             <div className="relative h-[380px] sm:h-[480px] lg:h-[620px] bg-[#EAE8E1] dark:bg-[#121318] border-2 border-[#111111]/20 dark:border-white/20 overflow-hidden shadow-md">
-              
+
               {/* Google Maps Base View */}
               <div ref={mapContainerRef} className="absolute inset-0 w-full h-full z-10" />
 
@@ -1321,9 +1463,8 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                     <div
                       key={`card-${card.block.id}`}
                       onClick={() => handleSelectBlock(card.block)}
-                      className={`absolute pointer-events-auto cursor-pointer transition-transform duration-150 select-none ${
-                        isSelected ? 'z-30 scale-105' : 'z-20 hover:scale-102 hover:z-25'
-                      }`}
+                      className={`absolute pointer-events-auto cursor-pointer transition-transform duration-150 select-none ${isSelected ? 'z-30 scale-105' : 'z-20 hover:scale-102 hover:z-25'
+                        }`}
                       style={{
                         left: `${card.cardX}px`,
                         top: `${card.cardY}px`,
@@ -1333,11 +1474,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                       title={`${card.block.displayName} (${card.occupancyPercent}% Occupancy) - ${isSelected ? 'Click to deselect' : 'Click to select'}`}
                     >
                       <div
-                        className={`px-2.5 py-1.5 border-2 shadow-md flex items-center justify-between gap-1.5 transition-all ${
-                          isSelected
+                        className={`px-2.5 py-1.5 border-2 shadow-md flex items-center justify-between gap-1.5 transition-all ${isSelected
                             ? 'bg-[#111111] dark:bg-[#0E0F12] text-white border-[#DC2626] ring-2 ring-[#DC2626]/30'
                             : 'bg-white/95 dark:bg-[#1A1C24]/95 text-[#111111] dark:text-[#F3F3EE] border-[#111111]/80 dark:border-white/40 hover:border-[#111111] dark:hover:border-white'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-1.5 overflow-hidden">
                           <span
@@ -1349,9 +1489,8 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                           </span>
                         </div>
                         <div
-                          className={`font-mono text-[9px] sm:text-[10px] font-extrabold shrink-0 ${
-                            isSelected ? 'text-[#FCA5A5]' : 'text-[#DC2626]'
-                          }`}
+                          className={`font-mono text-[9px] sm:text-[10px] font-extrabold shrink-0 ${isSelected ? 'text-[#FCA5A5]' : 'text-[#DC2626]'
+                            }`}
                         >
                           {card.occupancyPercent}%
                         </div>
@@ -1367,22 +1506,22 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
           {/* Right 5 Cols: Building Telemetry & Details Panel */}
           <div className="lg:col-span-5 space-y-6">
             <div className="p-6 border-2 border-[#111111]/20 bg-white/70 space-y-6 shadow-xs font-mono">
-              
+
               {/* Header Badge */}
               <div className="text-xs border-b border-[#111111]/10 pb-3 flex items-center justify-between">
                 <span className="text-[#666660] uppercase tracking-widest">
                   {isCrdSelected
                     ? 'NON-GEOGRAPHIC CAMPUS BLOCK'
                     : activeBlock
-                    ? 'VERIFIED CAMPUS BLOCK'
-                    : 'OVERALL CAMPUS TELEMETRY'}
+                      ? 'VERIFIED CAMPUS BLOCK'
+                      : 'OVERALL CAMPUS TELEMETRY'}
                 </span>
                 <span className="text-[#DC2626] font-bold uppercase">
                   {isCrdSelected
                     ? 'CRD'
                     : activeBlock
-                    ? activeBlock.id
-                    : '8 MONITORED BLOCKS'}
+                      ? activeBlock.id
+                      : '8 MONITORED BLOCKS'}
                 </span>
               </div>
 
@@ -1414,7 +1553,7 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
               ) : activeBlock ? (
                 /* Verified Geographic Block Presentation */
                 <div className="space-y-4">
-                  
+
                   {/* Deselect shortcut */}
                   <div className="flex items-center justify-between border-b border-[#111111]/10 pb-2">
                     <div className="text-[10px] text-[#666660] uppercase font-bold">SINGLE BLOCK INSPECTION</div>
@@ -1659,6 +1798,138 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                 </div>
               )}
 
+              {/* Selected Room Card if active */}
+              {selectedRoom && (
+                <div className="p-4 border-2 border-[#DC2626] bg-[#DC2626]/5 space-y-2.5 font-mono text-xs shadow-xs">
+                  <div className="flex items-center justify-between border-b border-[#DC2626]/20 pb-1.5">
+                    <span className="text-[#DC2626] font-bold uppercase flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#DC2626]" />
+                      <span>SELECTED ROOM: {selectedRoom.roomNumber}</span>
+                    </span>
+                    <button
+                      onClick={() => setSelectedRoom(null)}
+                      className="text-[10px] text-[#666660] hover:text-[#111111] uppercase font-bold"
+                    >
+                      DESELECT ✕
+                    </button>
+                  </div>
+                  <div className="font-syne font-bold text-base text-[#111111] uppercase">
+                    {selectedRoom.name}
+                  </div>
+                  <div className="text-[11px] text-[#555555] space-y-1">
+                    <div>BUILDING: <strong className="text-[#111111]">{selectedRoom.building} Block</strong></div>
+                    <div>FLOOR: <strong className="text-[#111111]">{selectedRoom.floor}</strong></div>
+                    {selectedRoom.departments && selectedRoom.departments.length > 0 && (
+                      <div>DEPARTMENTS: <strong className="text-[#111111]">{selectedRoom.departments.join(' + ')}</strong></div>
+                    )}
+                    {selectedRoom.department && (!selectedRoom.departments || selectedRoom.departments.length === 0) && (
+                      <div>DEPARTMENT: <strong className="text-[#111111]">{selectedRoom.department}</strong></div>
+                    )}
+                    {selectedRoom.category && (
+                      <div>CATEGORY: <span className="uppercase text-[#DC2626] font-bold">{selectedRoom.category}</span></div>
+                    )}
+                    {selectedRoom.libraryReference && (
+                      <div className="text-amber-800 font-bold">LIBRARY ENTITY: Unit-II Library</div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Block Rooms List Grouped by Floor */}
+              {(activeBlock || isCrdSelected) && (
+                <div className="space-y-3 pt-2">
+                  <div className="font-mono text-xs text-[#111111] uppercase font-bold border-b border-[#111111]/10 pb-2 flex justify-between items-center">
+                    <span className="flex items-center gap-1.5">
+                      <DoorClosed className="w-3.5 h-3.5 text-[#DC2626]" />
+                      <span>
+                        {isCrdSelected
+                          ? `ROOMS AT CRD (${blockRooms.length}):`
+                          : `ROOMS AT ${activeBlock?.name} (${blockRooms.length}):`}
+                      </span>
+                    </span>
+                    {isLoadingRooms ? (
+                      <span className="text-[#DC2626] text-[10px] animate-pulse font-bold">LOADING ROOMS...</span>
+                    ) : (
+                      <span className="text-[#DC2626] text-[10px] font-bold">VERIFIED DATABASE</span>
+                    )}
+                  </div>
+
+                  {/* Loading State */}
+                  {isLoadingRooms && (
+                    <div className="text-xs text-[#666660] py-3 text-center font-mono">
+                      Loading verified room data...
+                    </div>
+                  )}
+
+                  {/* Error State */}
+                  {roomsError && !isLoadingRooms && (
+                    <div className="text-xs text-amber-900 bg-amber-50 p-3 border border-amber-200">
+                      {roomsError}
+                    </div>
+                  )}
+
+                  {/* Empty State */}
+                  {!isLoadingRooms && !roomsError && blockRooms.length === 0 && (
+                    <div className="text-xs text-[#666660] py-3 text-center">
+                      No room data available for this block.
+                    </div>
+                  )}
+
+                  {/* Grouped Floor Rooms */}
+                  {!isLoadingRooms && groupedRooms.length > 0 && (
+                    <div className="space-y-3 max-h-[320px] overflow-y-auto pr-1 custom-scrollbar">
+                      {groupedRooms.map(({ floor, rooms }) => (
+                        <div key={floor} className="space-y-1.5">
+                          <div className="text-[10px] uppercase font-bold text-[#111111] bg-[#111111]/5 px-2.5 py-1 border-l-2 border-[#DC2626] flex items-center justify-between">
+                            <span>{floor}</span>
+                            <span className="text-[9px] text-[#888880]">{rooms.length} {rooms.length === 1 ? 'ROOM' : 'ROOMS'}</span>
+                          </div>
+                          <div className="space-y-1">
+                            {rooms.map((room) => {
+                              const isRoomSelected = selectedRoom?.roomNumber === room.roomNumber;
+                              const deptString = room.departments && room.departments.length > 0
+                                ? room.departments.join(' + ')
+                                : room.department || '';
+                              return (
+                                <div
+                                  key={room.roomNumber}
+                                  onClick={() => setSelectedRoom(isRoomSelected ? null : room)}
+                                  className={`p-2.5 border font-mono text-xs cursor-pointer transition-all ${isRoomSelected
+                                      ? 'border-[#DC2626] bg-[#DC2626]/10 text-[#111111] font-bold shadow-xs'
+                                      : 'border-[#111111]/15 bg-white/70 hover:border-[#111111] text-[#666660]'
+                                    }`}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <strong className="text-[#111111] font-bold text-xs uppercase font-syne">
+                                      {room.roomNumber}
+                                    </strong>
+                                    <span className="text-[10px] text-[#DC2626] uppercase font-bold">
+                                      {room.floor}
+                                    </span>
+                                  </div>
+                                  <div className="text-[11px] text-[#111111] mt-0.5 font-medium truncate">
+                                    {room.name}
+                                  </div>
+                                  {deptString ? (
+                                    <div className="text-[10px] text-[#666660] mt-0.5">
+                                      {deptString} · {room.floor}
+                                    </div>
+                                  ) : (
+                                    <div className="text-[10px] text-[#666660] mt-0.5">
+                                      {room.floor}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Associated Faculty List */}
               <div className="space-y-3 pt-2">
                 <div className="font-mono text-xs text-[#111111] uppercase font-bold border-b border-[#111111]/10 pb-2 flex justify-between">
@@ -1668,8 +1939,8 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                       {isCrdSelected
                         ? `FACULTY AT CRD (${associatedFaculty.length}):`
                         : activeBlock
-                        ? `FACULTY AT ${activeBlock.name} (${associatedFaculty.length}):`
-                        : `ALL CAMPUS FACULTY (${associatedFaculty.length}):`}
+                          ? `FACULTY AT ${activeBlock.name} (${associatedFaculty.length}):`
+                          : `ALL CAMPUS FACULTY (${associatedFaculty.length}):`}
                     </span>
                   </span>
                   <span className="text-[#DC2626] text-[10px]">DYNAMIC ROSTER</span>
@@ -1694,11 +1965,10 @@ export const GoogleMapsCampusExplorer: React.FC<GoogleMapsCampusExplorerProps> =
                             handleSelectBlock(targetBlock);
                             setSelectedFacultyMember(fac);
                           }}
-                          className={`p-2.5 border font-mono text-xs cursor-pointer transition-all ${
-                            isSelected
+                          className={`p-2.5 border font-mono text-xs cursor-pointer transition-all ${isSelected
                               ? 'border-[#DC2626] bg-[#DC2626]/10 text-[#111111] font-bold'
                               : 'border-[#111111]/15 bg-white/60 hover:border-[#111111] text-[#666660]'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <strong className="text-[#111111] uppercase font-syne text-sm">{fac.name}</strong>

@@ -142,12 +142,12 @@ export const LIBRARIES: CampusLibrary[] = [
     source: "MSRIT ESB Block"
   },
 
-  // 2. UNIT II - LIBRARY
+  // 2. UNIT II - LIBRARY (LHC-306)
   {
     id: "lhc_unit_2_library",
     name: "Unit II - Library",
     code: "UNIT-II",
-    roomNumber: "LHC-II 2nd Level",
+    roomNumber: "LHC-306",
     building: "LHC",
     type: "Physical Library",
     openingTime: "09:00",
@@ -171,8 +171,8 @@ export const LIBRARIES: CampusLibrary[] = [
       "Cybersecurity"
     ],
     nodeId: "lhc_unit_2_library",
-    floor: "LHC-II 2nd Level",
-    description: "Advanced computing and electronics technical library on LHC-II 2nd Level with high-capacity digital workstation systems and language research labs.",
+    floor: "1st Floor (Room LHC-306)",
+    description: "Library & Information Center Unit – II located in Room LHC-306 on the 1st Floor of LHC Block with high-capacity digital workstation systems and language research labs.",
     noiseLevel: "Silent",
     walkTimeMinutes: 3,
     capacity: 538,

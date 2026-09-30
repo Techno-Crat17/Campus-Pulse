@@ -338,20 +338,26 @@ export async function seedDatabase() {
     if (fs.existsSync(roomsPath)) {
       const roomJson = JSON.parse(fs.readFileSync(roomsPath, 'utf8'));
       if (roomJson.rooms && Array.isArray(roomJson.rooms)) {
+        // Clean up conflicting legacy records if present
+        await Room.deleteMany({
+          roomNumber: { $in: ['LHC Seminar Hall 1', 'LHC Seminar Hall 2', 'LHC204', 'LHC-217'] }
+        });
+
         const roomOps = roomJson.rooms.map((room) => ({
           updateOne: {
             filter: { roomNumber: room.roomNumber },
             update: {
               $set: {
                 ...room,
-                roomNumberNormalized: normalizeRoomNumber(room.roomNumber)
+                roomNumberNormalized: normalizeRoomNumber(room.roomNumber),
+                normalizedName: (room.name || '').toLowerCase().trim()
               }
             },
             upsert: true
           }
         }));
         await Room.bulkWrite(roomOps);
-        console.log(`✅ Seeded ${roomJson.rooms.length} verified rooms.`);
+        console.log(`✅ Seeded ${roomJson.rooms.length} verified rooms (including all LHC & CRD verified records).`);
       }
     }
 

@@ -740,31 +740,43 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                   {activeResult.matchedRoom && (
                     <div className="p-6 border border-[#111111]/15 dark:border-white/15 space-y-4 bg-white dark:bg-[#16181D] font-mono text-xs shadow-xs">
                       <div className="flex justify-between border-b border-[#111111]/10 dark:border-white/10 pb-2">
-                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold">OFFICIAL MSRIT ROOM REGISTRY</span>
-                        <span className="text-[#DC2626] font-bold">{activeResult.matchedRoom.type.toUpperCase()}</span>
+                        <span className="text-[#666660] dark:text-gray-400 uppercase font-bold flex items-center gap-1.5">
+                          <Building2 className="w-3.5 h-3.5 text-[#DC2626]" />
+                          <span>OFFICIAL MSRIT ROOM REGISTRY</span>
+                        </span>
+                        <span className="text-[#DC2626] font-bold">{activeResult.matchedRoom.floor ? activeResult.matchedRoom.floor.toUpperCase() : 'VERIFIED'}</span>
                       </div>
 
-                      <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
-                        {activeResult.matchedRoom.roomNumber}
+                      <div>
+                        <div className="font-syne text-2xl font-bold text-[#111111] dark:text-[#F3F3EE]">
+                          {activeResult.matchedRoom.roomNumber}
+                        </div>
+                        {activeResult.matchedRoom.name && (
+                          <div className="text-sm font-bold text-[#DC2626] uppercase mt-0.5">
+                            {activeResult.matchedRoom.name}
+                          </div>
+                        )}
                       </div>
 
                       <div className="text-[#666660] dark:text-gray-300 space-y-1">
-                        <div>BUILDING: <strong className="text-[#111111] dark:text-white">{activeResult.matchedRoom.building || 'Campus Facilities'}</strong></div>
-                        {activeResult.matchedRoom.department && (
-                          <div>DEPARTMENT: <strong className="text-[#111111] dark:text-white">{activeResult.matchedRoom.department}</strong></div>
+                        <div>BUILDING: <strong className="text-[#111111] dark:text-white">📍 {activeResult.matchedRoom.building ? `${activeResult.matchedRoom.building} Block` : 'Campus Facilities'}</strong></div>
+                        {activeResult.matchedRoom.floor && (
+                          <div>FLOOR: <strong className="text-[#111111] dark:text-white">{activeResult.matchedRoom.floor}</strong></div>
                         )}
-                        <div>STATUS: <strong className="text-[#DC2626]">{activeResult.matchedRoom.temporalStatus === 'historical' ? 'Historical Record' : 'Current Verified (2026)'}</strong></div>
+                        {(activeResult.matchedRoom.departments?.length || activeResult.matchedRoom.department) ? (
+                          <div>DEPARTMENT: <strong className="text-[#111111] dark:text-white">{activeResult.matchedRoom.departments?.join(' + ') || activeResult.matchedRoom.department}</strong></div>
+                        ) : null}
                       </div>
 
                       <div className="pt-3 flex justify-between items-center border-t border-[#111111]/10 dark:border-white/10">
-                        <span className="text-[#666660] dark:text-gray-400 text-[11px]">Source: {activeResult.matchedRoom.sourceTitle}</span>
+                        <span className="text-[#666660] dark:text-gray-400 text-[11px]">{activeResult.matchedRoom.category || 'Verified Room'}</span>
                         {activeResult.actionTargetId && (
                           <button
                             onClick={() => onSelectBuildingForMap(activeResult.actionTargetId!)}
                             className="px-3 py-1.5 bg-[#111111] hover:bg-[#DC2626] text-white font-bold flex items-center gap-1.5 uppercase text-[11px] transition-all cursor-pointer"
                           >
                             <MapPin className="w-3.5 h-3.5 text-rose-300" />
-                            <span>VIEW BUILDING ON MAP →</span>
+                            <span>VIEW ON MAP →</span>
                           </button>
                         )}
                       </div>

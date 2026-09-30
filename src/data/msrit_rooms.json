@@ -1,6 +1,6 @@
 {
-  "lastVerified": "2026-09-27",
-  "source": "Official MSRIT website (https://www.msrit.edu/)",
+  "lastVerified": "2026-09-30",
+  "source": "Official MSRIT website and verified survey telemetry",
   "rooms": [
     {
       "roomNumber": "AB-401",
@@ -11,7 +11,13 @@
       "sourceTitle": "Official MSRIT MCA Department page",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB401",
+      "floor": "2nd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
     },
     {
       "roomNumber": "AB-404",
@@ -22,7 +28,13 @@
       "sourceTitle": "Official MSRIT MCA Department page",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB404",
+      "floor": "2nd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
     },
     {
       "roomNumber": "AB-405",
@@ -33,7 +45,13 @@
       "sourceTitle": "Official MSRIT MCA Department page",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB405",
+      "floor": "2nd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
     },
     {
       "roomNumber": "AB-407",
@@ -44,29 +62,13 @@
       "sourceTitle": "Official MSRIT MCA Department page",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "LHC204",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ARCH307",
-      "building": "Architecture Block",
-      "department": "Architecture",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/architecture.html",
-      "sourceTitle": "Official MSRIT Architecture timetable",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB407",
+      "floor": "2nd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
     },
     {
       "roomNumber": "AB-501",
@@ -77,7 +79,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB501",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC131: Building Science and Mechanics)"
+      ]
     },
     {
       "roomNumber": "AB-502",
@@ -88,7 +96,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB502",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC131: Building Science and Mechanics)"
+      ]
     },
     {
       "roomNumber": "AB-503",
@@ -99,7 +113,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB503",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC131: Building Science and Mechanics)"
+      ]
     },
     {
       "roomNumber": "AB-504",
@@ -110,7 +130,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB504",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC131: Building Science and Mechanics)"
+      ]
     },
     {
       "roomNumber": "AB-505",
@@ -121,7 +147,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB505",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC131: Building Science and Mechanics)"
+      ]
     },
     {
       "roomNumber": "AB-507",
@@ -132,7 +164,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB507",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC132: Introduction to Electrical Engineering)"
+      ]
     },
     {
       "roomNumber": "AB-508",
@@ -143,7 +181,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB508",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC132: Introduction to Electrical Engineering)"
+      ]
     },
     {
       "roomNumber": "AB-512",
@@ -154,7 +198,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB512",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC132: Introduction to Electrical Engineering)"
+      ]
     },
     {
       "roomNumber": "AB-514",
@@ -165,7 +215,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB514",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
+      ]
     },
     {
       "roomNumber": "AB-516",
@@ -176,7 +232,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB516",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
+      ]
     },
     {
       "roomNumber": "AB-517",
@@ -187,7 +249,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB517",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
+      ]
     },
     {
       "roomNumber": "AB-518",
@@ -198,7 +266,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB518",
+      "floor": "3rd Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
+      ]
     },
     {
       "roomNumber": "AB-602",
@@ -209,7 +283,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB602",
+      "floor": "4th Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
+      ]
     },
     {
       "roomNumber": "AB-701",
@@ -220,7 +300,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB701",
+      "floor": "5th Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
+      ]
     },
     {
       "roomNumber": "AB-702",
@@ -231,326 +317,13 @@
       "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB-322",
-      "building": "ESB Block",
-      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB-326",
-      "building": "ESB Block",
-      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB-414",
-      "building": "ESB Block",
-      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB-419",
-      "building": "ESB Block",
-      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB-419A",
-      "building": "ESB Block",
-      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/",
-      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Room-101",
-      "building": "LHC",
-      "department": "Information Science & Engineering",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/ise.html",
-      "sourceTitle": "MSRIT Internal Faculty Time Schedule Archive",
-      "sourceYear": 2024,
-      "verified": true,
-      "temporalStatus": "historical"
-    },
-    {
-      "roomNumber": "Room-102",
-      "building": "LHC",
-      "department": "Information Science & Engineering",
-      "type": "Classroom",
-      "sourceUrl": "https://www.msrit.edu/department/ise.html",
-      "sourceTitle": "MSRIT Internal Faculty Time Schedule Archive",
-      "sourceYear": 2024,
-      "verified": true,
-      "temporalStatus": "historical"
-    },
-    {
-      "roomNumber": "MCA Lab 1",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "MCA Lab 2",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "MCA Lab 3",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "MCA Consultancy Lab",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "MCA R&D Lab",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Diagnostic & Therapeutic Equipment Laboratory",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Medical Electronics Laboratory",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Medical Software Laboratory",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Medical Instrumentation Laboratory",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Texas Instruments Innovation Laboratory",
-      "building": "LHC",
-      "department": "Medical Electronics Engineering",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
-      "sourceTitle": "Official MSRIT Medical Electronics Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "English Language Lab",
-      "building": "LHC",
-      "department": "Humanities",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/humanities.html",
-      "sourceTitle": "Official MSRIT Humanities Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Engineering Chemistry Lab",
-      "building": "Basic Sciences Block",
-      "department": "Chemistry",
-      "type": "Lab",
-      "sourceUrl": "https://www.msrit.edu/department/chemistry.html",
-      "sourceTitle": "Official MSRIT Chemistry Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB Seminar Hall 1",
-      "building": "ESB Block",
-      "department": "Central Academic Facilities",
-      "type": "Seminar Hall",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB Seminar Hall 2",
-      "building": "ESB Block",
-      "department": "Central Academic Facilities",
-      "type": "Seminar Hall",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "DES Hi-Tech Seminar Hall",
-      "building": "DES Block",
-      "department": "Central Academic Facilities",
-      "type": "Seminar Hall",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "LHC Seminar Hall 1",
-      "building": "LHC",
-      "department": "Central Academic Facilities",
-      "type": "Seminar Hall",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "LHC Seminar Hall 2",
-      "building": "LHC",
-      "department": "Central Academic Facilities",
-      "type": "Seminar Hall",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "Apex Board Room",
-      "building": "Apex Block",
-      "department": "Central Administration",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "ESB Board Room",
-      "building": "ESB Block",
-      "department": "Central Administration",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "DES Board Room 1",
-      "building": "DES Block",
-      "department": "Central Administration",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "DES Board Room 2",
-      "building": "DES Block",
-      "department": "Central Administration",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/facilities/",
-      "sourceTitle": "Official MSRIT Facilities page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
-    },
-    {
-      "roomNumber": "MCA Board Room",
-      "building": "Apex Block",
-      "department": "MCA",
-      "type": "Board Room",
-      "sourceUrl": "https://www.msrit.edu/department/mca.html",
-      "sourceTitle": "Official MSRIT MCA Department page",
-      "sourceYear": 2026,
-      "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "AB702",
+      "floor": "5th Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
+      ]
     },
     {
       "roomNumber": "Apex Block Auditorium",
@@ -561,7 +334,1018 @@
       "sourceTitle": "Official MSRIT Facilities page",
       "sourceYear": 2026,
       "verified": true,
-      "temporalStatus": "current"
+      "temporalStatus": "current",
+      "roomNumberNormalized": "APEXBLOCKAUDITORIUM",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "Central Campus Facilities"
+      ]
+    },
+    {
+      "roomNumber": "Apex Board Room",
+      "building": "Apex Block",
+      "department": "Central Administration",
+      "type": "Board Room",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "APEXBOARDROOM",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "Central Administration"
+      ]
+    },
+    {
+      "roomNumber": "ARCH307",
+      "building": "Architecture Block",
+      "department": "Architecture",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/department/architecture.html",
+      "sourceTitle": "Official MSRIT Architecture timetable",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ARCH307",
+      "floor": "1st Floor",
+      "buildingCode": "ARCHITECTURE",
+      "departments": [
+        "Architecture"
+      ]
+    },
+    {
+      "roomNumber": "CRD-405",
+      "roomNumberNormalized": "CRD405",
+      "name": "Computer Lab",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "2nd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lab",
+      "category": "Computer Lab",
+      "description": "Computer Lab for CSE (AIML) and CSE (Cyber Security).",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-406",
+      "roomNumberNormalized": "CRD406",
+      "name": "Office of International Relations",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "2nd Floor",
+      "department": "-",
+      "departments": [],
+      "type": "Office",
+      "category": "International Relations Office",
+      "description": "Office of International Relations in CRD / Multipurpose Block.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-410",
+      "roomNumberNormalized": "CRD410",
+      "name": "Schneider Centre of Excellence",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "2nd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lab",
+      "category": "Centre of Excellence",
+      "description": "Schneider Electric Centre of Excellence Lab.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-411",
+      "roomNumberNormalized": "CRD411",
+      "name": "Faculty Lounge",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "2nd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lounge",
+      "category": "Faculty Lounge",
+      "description": "Faculty Lounge for CSE (AIML) and CSE (Cyber Security).",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-501",
+      "roomNumberNormalized": "CRD501",
+      "name": "Faculty Lounge",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lounge",
+      "category": "Faculty Lounge",
+      "description": "Faculty Lounge on 3rd Floor, CRD.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-502",
+      "roomNumberNormalized": "CRD502",
+      "name": "Faculty Lounge",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lounge",
+      "category": "Faculty Lounge",
+      "description": "Faculty Lounge on 3rd Floor, CRD.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-505A",
+      "roomNumberNormalized": "CRD505A",
+      "name": "Ramaiah Evolute (Startup Zone)",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "-",
+      "departments": [],
+      "type": "Other",
+      "category": "Incubation / Startup Zone",
+      "description": "Ramaiah Evolute Startup & Entrepreneurship Innovation Zone.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-505B",
+      "roomNumberNormalized": "CRD505B",
+      "name": "Office (Ramaiah Evolute)",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "-",
+      "departments": [],
+      "type": "Office",
+      "category": "Administrative Office",
+      "description": "Administrative Office for Ramaiah Evolute.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-506",
+      "roomNumberNormalized": "CRD506",
+      "name": "Office",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Office",
+      "category": "Department Office",
+      "description": "Department Office for CSE AIML and Cyber Security.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-508",
+      "roomNumberNormalized": "CRD508",
+      "name": "Computer Lab",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lab",
+      "category": "Computer Lab",
+      "description": "Advanced Computing Laboratory for AIML and Cyber Security.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "CRD-509",
+      "roomNumberNormalized": "CRD509",
+      "name": "Faculty Lounge",
+      "building": "CRD",
+      "buildingCode": "CRD",
+      "floor": "3rd Floor",
+      "department": "CSE (AIML) + CSE (Cyber Security)",
+      "departments": [
+        "CSE-AIML",
+        "CSE-CY"
+      ],
+      "type": "Lounge",
+      "category": "Faculty Lounge",
+      "description": "Faculty Lounge on 3rd Floor, CRD.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT Multipurpose/CRD Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "DES Board Room 1",
+      "building": "DES Block",
+      "department": "Central Administration",
+      "type": "Board Room",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DESBOARDROOM1",
+      "floor": "Ground Floor",
+      "buildingCode": "DES",
+      "departments": [
+        "Central Administration"
+      ]
+    },
+    {
+      "roomNumber": "DES Board Room 2",
+      "building": "DES Block",
+      "department": "Central Administration",
+      "type": "Board Room",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DESBOARDROOM2",
+      "floor": "Ground Floor",
+      "buildingCode": "DES",
+      "departments": [
+        "Central Administration"
+      ]
+    },
+    {
+      "roomNumber": "DES Hi-Tech Seminar Hall",
+      "building": "DES Block",
+      "department": "Central Academic Facilities",
+      "type": "Seminar Hall",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DESHITECHSEMINARHALL",
+      "floor": "Ground Floor",
+      "buildingCode": "DES",
+      "departments": [
+        "Central Academic Facilities"
+      ]
+    },
+    {
+      "roomNumber": "Diagnostic & Therapeutic Equipment Laboratory",
+      "building": "LHC",
+      "department": "Medical Electronics Engineering",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
+      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "DIAGNOSTIC&THERAPEUTICEQUIPMENTLABORATORY",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Medical Electronics Engineering"
+      ]
+    },
+    {
+      "roomNumber": "Engineering Chemistry Lab",
+      "building": "Basic Sciences Block",
+      "department": "Chemistry",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/chemistry.html",
+      "sourceTitle": "Official MSRIT Chemistry Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ENGINEERINGCHEMISTRYLAB",
+      "floor": "Ground Floor",
+      "buildingCode": "BASIC",
+      "departments": [
+        "Chemistry"
+      ]
+    },
+    {
+      "roomNumber": "English Language Lab",
+      "building": "LHC",
+      "department": "Humanities",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/humanities.html",
+      "sourceTitle": "Official MSRIT Humanities Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ENGLISHLANGUAGELAB",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Humanities"
+      ]
+    },
+    {
+      "roomNumber": "ESB Board Room",
+      "building": "ESB Block",
+      "department": "Central Administration",
+      "type": "Board Room",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESBBOARDROOM",
+      "floor": "Ground Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "Central Administration"
+      ]
+    },
+    {
+      "roomNumber": "ESB Seminar Hall 1",
+      "building": "ESB Block",
+      "department": "Central Academic Facilities",
+      "type": "Seminar Hall",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESBSEMINARHALL1",
+      "floor": "Ground Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "Central Academic Facilities"
+      ]
+    },
+    {
+      "roomNumber": "ESB Seminar Hall 2",
+      "building": "ESB Block",
+      "department": "Central Academic Facilities",
+      "type": "Seminar Hall",
+      "sourceUrl": "https://www.msrit.edu/facilities/",
+      "sourceTitle": "Official MSRIT Facilities page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESBSEMINARHALL2",
+      "floor": "Ground Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "Central Academic Facilities"
+      ]
+    },
+    {
+      "roomNumber": "ESB-322",
+      "building": "ESB Block",
+      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/",
+      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESB322",
+      "floor": "1st Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
+      ]
+    },
+    {
+      "roomNumber": "ESB-326",
+      "building": "ESB Block",
+      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/",
+      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESB326",
+      "floor": "1st Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
+      ]
+    },
+    {
+      "roomNumber": "ESB-414",
+      "building": "ESB Block",
+      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/",
+      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESB414",
+      "floor": "2nd Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
+      ]
+    },
+    {
+      "roomNumber": "ESB-419",
+      "building": "ESB Block",
+      "department": "First Year Engineering (ESC134: Introduction to Mechanical Engineering)",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/",
+      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESB419",
+      "floor": "2nd Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "First Year Engineering (ESC134: Introduction to Mechanical Engineering)"
+      ]
+    },
+    {
+      "roomNumber": "ESB-419A",
+      "building": "ESB Block",
+      "department": "First Year Engineering (ESC133: Introduction to Electronics & Communication)",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/",
+      "sourceTitle": "Official MSRIT Engineering Science Courses Schedule 2026-27",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "ESB419A",
+      "floor": "2nd Floor",
+      "buildingCode": "ESB",
+      "departments": [
+        "First Year Engineering (ESC133: Introduction to Electronics & Communication)"
+      ]
+    },
+    {
+      "roomNumber": "LHC-101",
+      "roomNumberNormalized": "LHC101",
+      "name": "D & T Equipment Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Lab",
+      "category": "Equipment Lab",
+      "description": "Design & Testing Equipment Laboratory for Medical Electronics.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-103",
+      "roomNumberNormalized": "LHC103",
+      "name": "Faculty Lounge – II & Department Library",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Lounge",
+      "category": "Faculty Lounge & Library",
+      "description": "Faculty Lounge - II and MLE Department Library.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-104",
+      "roomNumberNormalized": "LHC104",
+      "name": "Medical Electronics Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Lab",
+      "category": "Medical Electronics Lab",
+      "description": "Medical Electronics core testing and research laboratory.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-105",
+      "roomNumberNormalized": "LHC105",
+      "name": "Medical Software Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Lab",
+      "category": "Software Lab",
+      "description": "Medical Software and computational diagnostics laboratory.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-106",
+      "roomNumberNormalized": "LHC106",
+      "name": "Medical Instrumentation Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Lab",
+      "category": "Instrumentation Lab",
+      "description": "Medical Instrumentation and bio-signal acquisition laboratory.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-109",
+      "roomNumberNormalized": "LHC109",
+      "name": "Department Library",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Library",
+      "category": "Department Library",
+      "description": "Medical Electronics Department Reference Library.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-110",
+      "roomNumberNormalized": "LHC110",
+      "name": "Linear Integrated Circuits Lab / Logic Design Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "E&EE",
+      "departments": [
+        "E&EE"
+      ],
+      "type": "Lab",
+      "category": "Circuits & Logic Lab",
+      "description": "Linear Integrated Circuits and Logic Design laboratory for E&EE.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-111",
+      "roomNumberNormalized": "LHC111",
+      "name": "LHC Seminar Hall – II",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "-",
+      "departments": [],
+      "type": "Seminar Hall",
+      "category": "Seminar Hall",
+      "description": "LHC Seminar Hall - II facility.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-113",
+      "roomNumberNormalized": "LHC113",
+      "name": "LHC Seminar Hall – I",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Basement",
+      "department": "-",
+      "departments": [],
+      "type": "Seminar Hall",
+      "category": "Seminar Hall",
+      "description": "LHC Seminar Hall - I auditorium.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-205",
+      "roomNumberNormalized": "LHC205",
+      "name": "HOD & Faculty Room",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Ground Floor",
+      "department": "MLE",
+      "departments": [
+        "MLE"
+      ],
+      "type": "Office",
+      "category": "Faculty & HOD Room",
+      "description": "Medical Electronics HOD and Faculty office chamber.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-212",
+      "roomNumberNormalized": "LHC212",
+      "name": "Faculty Room",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "Ground Floor",
+      "department": "E&EE",
+      "departments": [
+        "E&EE"
+      ],
+      "type": "Office",
+      "category": "Faculty Room",
+      "description": "Electrical & Electronics Engineering Faculty Room.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-306",
+      "roomNumberNormalized": "LHC306",
+      "name": "Library & Information Center Unit – II",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "1st Floor",
+      "department": "-",
+      "departments": [],
+      "type": "Library",
+      "category": "Library",
+      "libraryReference": "lhc_unit_2_library",
+      "description": "Library & Information Center Unit - II in LHC Block housing CSE and electronics collections.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-314",
+      "roomNumberNormalized": "LHC314",
+      "name": "Faculty Room",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "1st Floor",
+      "department": "E&EE",
+      "departments": [
+        "E&EE"
+      ],
+      "type": "Office",
+      "category": "Faculty Room",
+      "description": "Electrical & Electronics Engineering Faculty Room on 1st Floor.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-502B",
+      "roomNumberNormalized": "LHC502B",
+      "name": "R&D Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE"
+      ],
+      "type": "Lab",
+      "category": "Research & Development Lab",
+      "description": "Electronics & Instrumentation Engineering Research & Development Laboratory.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-518",
+      "roomNumberNormalized": "LHC518",
+      "name": "Communication Lab / Simulation Lab",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "3rd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE"
+      ],
+      "type": "Lab",
+      "category": "Communication Lab",
+      "description": "Electronics & Telecommunication Communication & Simulation Laboratory.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-518A",
+      "roomNumberNormalized": "LHC518A",
+      "name": "Antenna Fabrication Unit",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "3rd Floor",
+      "department": "E&TE",
+      "departments": [
+        "E&TE"
+      ],
+      "type": "Lab",
+      "category": "Antenna Fabrication Lab",
+      "description": "Antenna Fabrication Unit for Electronics & Telecommunication Engineering.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "LHC-519",
+      "roomNumberNormalized": "LHC519",
+      "name": "Department Library",
+      "building": "LHC",
+      "buildingCode": "LHC",
+      "floor": "3rd Floor",
+      "department": "E&IE",
+      "departments": [
+        "E&IE"
+      ],
+      "type": "Library",
+      "category": "Department Library",
+      "description": "Electronics & Instrumentation Engineering Department Library.",
+      "verified": true,
+      "temporalStatus": "current",
+      "sourceTitle": "Official MSRIT LHC Building Survey",
+      "sourceYear": 2026
+    },
+    {
+      "roomNumber": "MCA Board Room",
+      "building": "Apex Block",
+      "department": "MCA",
+      "type": "Board Room",
+      "sourceUrl": "https://www.msrit.edu/department/mca.html",
+      "sourceTitle": "Official MSRIT MCA Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MCABOARDROOM",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
+    },
+    {
+      "roomNumber": "MCA Consultancy Lab",
+      "building": "Apex Block",
+      "department": "MCA",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/mca.html",
+      "sourceTitle": "Official MSRIT MCA Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MCACONSULTANCYLAB",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
+    },
+    {
+      "roomNumber": "MCA Lab 1",
+      "building": "Apex Block",
+      "department": "MCA",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/mca.html",
+      "sourceTitle": "Official MSRIT MCA Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MCALAB1",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
+    },
+    {
+      "roomNumber": "MCA Lab 2",
+      "building": "Apex Block",
+      "department": "MCA",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/mca.html",
+      "sourceTitle": "Official MSRIT MCA Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MCALAB2",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
+    },
+    {
+      "roomNumber": "MCA Lab 3",
+      "building": "Apex Block",
+      "department": "MCA",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/mca.html",
+      "sourceTitle": "Official MSRIT MCA Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MCALAB3",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
+    },
+    {
+      "roomNumber": "MCA R&D Lab",
+      "building": "Apex Block",
+      "department": "MCA",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/mca.html",
+      "sourceTitle": "Official MSRIT MCA Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MCAR&DLAB",
+      "floor": "Ground Floor",
+      "buildingCode": "APEX",
+      "departments": [
+        "MCA"
+      ]
+    },
+    {
+      "roomNumber": "Medical Electronics Laboratory",
+      "building": "LHC",
+      "department": "Medical Electronics Engineering",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
+      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MEDICALELECTRONICSLABORATORY",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Medical Electronics Engineering"
+      ]
+    },
+    {
+      "roomNumber": "Medical Instrumentation Laboratory",
+      "building": "LHC",
+      "department": "Medical Electronics Engineering",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
+      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MEDICALINSTRUMENTATIONLABORATORY",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Medical Electronics Engineering"
+      ]
+    },
+    {
+      "roomNumber": "Medical Software Laboratory",
+      "building": "LHC",
+      "department": "Medical Electronics Engineering",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
+      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "MEDICALSOFTWARELABORATORY",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Medical Electronics Engineering"
+      ]
+    },
+    {
+      "roomNumber": "Room-101",
+      "building": "LHC",
+      "department": "Information Science & Engineering",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/department/ise.html",
+      "sourceTitle": "MSRIT Internal Faculty Time Schedule Archive",
+      "sourceYear": 2024,
+      "verified": true,
+      "temporalStatus": "historical",
+      "roomNumberNormalized": "ROOM101",
+      "floor": "Basement",
+      "buildingCode": "LHC",
+      "departments": [
+        "Information Science & Engineering"
+      ]
+    },
+    {
+      "roomNumber": "Room-102",
+      "building": "LHC",
+      "department": "Information Science & Engineering",
+      "type": "Classroom",
+      "sourceUrl": "https://www.msrit.edu/department/ise.html",
+      "sourceTitle": "MSRIT Internal Faculty Time Schedule Archive",
+      "sourceYear": 2024,
+      "verified": true,
+      "temporalStatus": "historical",
+      "roomNumberNormalized": "ROOM102",
+      "floor": "Basement",
+      "buildingCode": "LHC",
+      "departments": [
+        "Information Science & Engineering"
+      ]
+    },
+    {
+      "roomNumber": "Texas Instruments Innovation Laboratory",
+      "building": "LHC",
+      "department": "Medical Electronics Engineering",
+      "type": "Lab",
+      "sourceUrl": "https://www.msrit.edu/department/medical-electronics.html",
+      "sourceTitle": "Official MSRIT Medical Electronics Department page",
+      "sourceYear": 2026,
+      "verified": true,
+      "temporalStatus": "current",
+      "roomNumberNormalized": "TEXASINSTRUMENTSINNOVATIONLABORATORY",
+      "floor": "Ground Floor",
+      "buildingCode": "LHC",
+      "departments": [
+        "Medical Electronics Engineering"
+      ]
     }
   ]
 }
