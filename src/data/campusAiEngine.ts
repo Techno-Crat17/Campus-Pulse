@@ -46,10 +46,7 @@ import {
 import type { LostFoundItem } from './lostFoundData';
 
 import {
-  queryAllIssues,
-  queryIssuesByLocation,
-  queryUnresolvedIssues,
-  queryHighPriorityIssues
+  queryAllIssues
 } from './issueReportsData';
 import type { IssueReport } from './issueReportsData';
 
@@ -635,11 +632,19 @@ export function detectIntents(normalizedQuery: string, context?: CampusAiContext
   const hasAnnouncements = /\b(announcement|announcements|news|circular|notice|latest\s*news|msrit\s*news|circulars)\b/.test(q);
 
   const hasLostFound = /\b(lost|found|misplaced|calculator|airpods|bottle|wallet|watch|umbrella|keys|bag|spectacles)\b/.test(q);
-  const hasIssues = /\b(issue|issues|complaint|complaints|reported|unresolved|resolved|high\s*priority|urgent|infrastructure|cleanliness|electricity|water|wifi|wi-fi)\b/.test(q);
+  const hasIssues = /\b(issue|issues|problem|problems|complaint|complaints|complain|complains|report|reports|reported|wifi|wi-fi|water|electricity|infrastructure|cleanliness)\b/i.test(q);
 
   const hasRoomAvailability = /\b(free|available|khali|empty|vacant|room\s*chahiye|chahiye|need\s*a\s*room)\b/i.test(q) || /\b\d{1,2}\s*(se|to|-)\s*\d{1,2}\s*(baje|pm|am)?\b/i.test(q);
   const hasRoom = /\b(ab[- ]?\d{3}[a-z]?|esb[- ]?\d{3}[a-z]?|lhc[- ]?\d{3}[a-z]?|crd[- ]?\d{3}[a-z]?|arch[- ]?\d{3}[a-z]?|room[- ]?\d{3}[a-z]?|\d{3}[a-z]?|classroom|classrooms|seminar\s*hall|seminar\s*hall\s*1|seminar\s*hall\s*2|seminar\s*hall\s*i|seminar\s*hall\s*ii|board\s*room|auditorium|antenna|fabrication|schneider|evolute|startup\s*zone|equipment\s*lab|software\s*lab|instrumentation\s*lab|logic\s*design)\b/i.test(q);
   const mentionsBuilding = /\b(lhc|esb|apex|architecture|basketball|sports|quadrangle|multipurpose|workshop|crd|des|cafeteria|food\s*court|hostel|basic\s*sciences)\b/.test(q);
+
+  // 1. Issue Reports (High Priority over generic building location)
+  if (hasIssues) {
+    if (q.includes('status') || q.includes('resolve') || q.includes('pahuchi')) intents.push('ISSUE_STATUS');
+    else if (/\b(where\s*was|location|kaha|kahan|kidhar)\b/i.test(q)) intents.push('ISSUE_LOCATION');
+    else if (/\b(priority|urgent|high\s*priority)\b/i.test(q)) intents.push('ISSUE_PRIORITY');
+    else intents.push('ISSUE_REPORT_QUERY');
+  }
 
   // HOD Intents (Part 2: DEPARTMENT_HOD, DEPARTMENT_HOD_EMAIL, DEPARTMENT_HOD_LOCATION, DEPARTMENT_HOD_DESIGNATION)
   if (isHod) {
@@ -660,7 +665,7 @@ export function detectIntents(normalizedQuery: string, context?: CampusAiContext
 
   const isFacultyQuery = /\b(faculty|faculties|facuty|faculity|teacher|teachers|teahcer|teahcers|professor|professors|staff|member|members)\b/i.test(q);
   const deptMatch = /\b(cse|ise|ece|eee|ee|et|ei|me|cv|aiml|cy|biotech|ind|computer science|information science|electronics|electrical|medical electronics)\b/i.test(q);
-  const hasExplicitRoomKeyword = /\b(room|rooms|classroom|classrooms|lab|labs|lecture hall|lh|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/i.test(q);
+  const hasExplicitRoomKeyword = /\b(room|rooms|classroom|classrooms|lab|labs|lecture\s*hall|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/i.test(q);
 
   if (isFacultyQuery && !hasExplicitRoomKeyword) {
     if (deptMatch || /\b(department|dept|branch)\b/.test(q)) {
@@ -700,11 +705,6 @@ export function detectIntents(normalizedQuery: string, context?: CampusAiContext
   if (hasLocation && !mentionsExplicitLibrary && !mentionsBuilding && !hasRoom && !hasIssues && !isHod) intents.push('FACULTY_LOCATION');
   if (hasAvailability) intents.push('FACULTY_AVAILABILITY');
   if (hasSchedule) intents.push('FACULTY_SCHEDULE');
-
-  // 5. Issue reports
-  if (hasIssues && (q.includes('issue') || q.includes('reported') || q.includes('unresolved') || q.includes('resolved') || q.includes('priority'))) {
-    intents.push('ISSUE_REPORT_QUERY');
-  }
 
   // 6. Lost & Found
   if (hasLostFound && (q.includes('lost') || q.includes('found') || q.includes('item') || q.includes('where was'))) {
@@ -1624,7 +1624,7 @@ export function getRoomAnswer(
     !/\b(room|rooms|lounge|lounges|space|hall|lab|labs)\b/i.test(normQ)
   );
 
-  if (isFacultyContext) {
+  if (isFacultyContext || _intents.some((i) => i.startsWith('ISSUE_'))) {
     return null;
   }
 
@@ -2169,6 +2169,9 @@ export function getBuildingAnswer(
   }
 
   if (matchedBlock) {
+    if (!_intents.includes('BUILDING_LOCATION') && !_intents.includes('BUILDING_SEARCH') && !_intents.includes('CAMPUS_LOCATION')) {
+      return null;
+    }
     const b = matchedBlock;
     const isCrd = b.id.toLowerCase().includes('crd') || b.id.toLowerCase().includes('multipurpose');
     const title = isCrd ? 'Multipurpose Block (CRD)' : (b.id.toLowerCase() === 'lhc' ? 'LHC Block' : (b.displayName.includes('Block') ? b.displayName : `${b.displayName} Block`));
@@ -2223,108 +2226,63 @@ export function getIssueAnswer(
   normQ: string
 ): CampusAiResult | null {
   const { rawQuery } = entities;
-  const isIssue = normQ.includes('issue') || normQ.includes('complaint') || normQ.includes('reported') || normQ.includes('unresolved') || normQ.includes('wifi') || normQ.includes('wi-fi');
+  const isIssue = /\b(issue|issues|problem|problems|complaint|complaints|complain|complains|report|reports|reported|wifi|wi-fi|water|electricity|infrastructure|cleanliness)\b/i.test(normQ);
   if (!isIssue) return null;
 
-  // Specific category search (e.g. "wifi ka issue kaha report hua?")
-  if (normQ.includes('wifi') || normQ.includes('wi-fi') || normQ.includes('internet')) {
-    const issues = queryAllIssues().filter(i => i.category.toLowerCase().includes('wi-fi') || i.category.toLowerCase().includes('internet') || i.title.toLowerCase().includes('wi-fi'));
-    if (issues.length > 0) {
-      const lines = issues.map(i => `• **${i.title}** (${i.category})\n  📍 Location: ${i.location}\n  Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['ISSUE_REPORT_QUERY'],
-        responseText: `Reported Wi-Fi Issues (${issues.length}):\n\n${lines}`,
-        subText: "Source: Central Campus Pulse issue-report database.",
-        matchedIssues: issues
-      };
-    }
-  }
+  let all = queryAllIssues();
 
-  if (normQ.includes('water') || normQ.includes('dispenser')) {
-    const issues = queryAllIssues().filter(i => i.category.toLowerCase().includes('water') || i.title.toLowerCase().includes('water'));
-    if (issues.length > 0) {
-      const lines = issues.map(i => `• **${i.title}** (${i.category})\n  📍 Location: ${i.location}\n  Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['ISSUE_REPORT_QUERY'],
-        responseText: `Reported Water Facility Issues (${issues.length}):\n\n${lines}`,
-        subText: "Source: Central Campus Pulse issue-report database.",
-        matchedIssues: issues
-      };
-    }
-  }
-
-  const locBlock = ['lhc', 'esb', 'apex', 'quadrangle', 'multipurpose', 'architecture', 'workshop'].find((b) => normQ.includes(b));
+  // 1. Building / Location Filter
+  const locBlock = ['lhc', 'esb', 'apex', 'quadrangle', 'multipurpose', 'architecture', 'workshop', 'crd', 'des'].find((b) => normQ.includes(b));
   if (locBlock) {
-    const issues = queryIssuesByLocation(locBlock);
-    if (issues.length === 0) {
-      return {
-        queryText: rawQuery,
-        normalizedQuery: normQ,
-        intents: ['ISSUE_REPORT_QUERY'],
-        responseText: `No issues are currently reported for ${locBlock.toUpperCase()} Block.`,
-        subText: `Location Filter: ${locBlock.toUpperCase()} • Campus Pulse Community Issue Dispatch.`
-      };
-    }
-    const lines = issues.map((i) => `• ${i.title} (${i.category})\n  Location: ${i.location}\n  Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
-    return {
-      queryText: rawQuery,
-      normalizedQuery: normQ,
-      intents: ['ISSUE_REPORT_QUERY'],
-      responseText: `Reported issues in ${locBlock.toUpperCase()} Block (${issues.length}):\n\n${lines}`,
-      subText: `Location Filter: ${locBlock.toUpperCase()} • Campus Pulse Community Issue Dispatch.`,
-      matchedIssues: issues
-    };
+    all = all.filter(i => i.location.toLowerCase().includes(locBlock));
   }
 
-  if (normQ.includes('unresolved') || normQ.includes('pending') || normQ.includes('open')) {
-    const issues = queryUnresolvedIssues();
-    const lines = issues.map((i) => `• ${i.title} [${i.status}]\n  Category: ${i.category} | Location: ${i.location}`).join('\n\n');
-    return {
-      queryText: rawQuery,
-      normalizedQuery: normQ,
-      intents: ['ISSUE_REPORT_QUERY'],
-      responseText: `Unresolved Campus Issues (${issues.length}):\n\n${lines}`,
-      subText: "Statuses: Reported, Under Review, In Progress.",
-      matchedIssues: issues
-    };
+  // 2. Room filter if present (e.g. LHC204)
+  const roomMatch = normQ.match(/\b(lhc\d{3}|ab-\d{3}|esb-\d{3}|\d{3})\b/i);
+  if (roomMatch) {
+    const roomStr = roomMatch[1].toLowerCase();
+    const roomFiltered = all.filter(i => i.location.toLowerCase().includes(roomStr));
+    if (roomFiltered.length > 0) all = roomFiltered;
   }
 
+  // 3. Category Filter
+  if (normQ.includes('wifi') || normQ.includes('wi-fi') || normQ.includes('internet')) {
+    all = all.filter(i => i.category.toLowerCase().includes('wi-fi') || i.category.toLowerCase().includes('internet') || i.title.toLowerCase().includes('wi-fi'));
+  } else if (normQ.includes('water') || normQ.includes('dispenser')) {
+    all = all.filter(i => i.category.toLowerCase().includes('water') || i.title.toLowerCase().includes('water'));
+  } else if (normQ.includes('electricity') || normQ.includes('light') || normQ.includes('power')) {
+    all = all.filter(i => i.category.toLowerCase().includes('electricity') || i.title.toLowerCase().includes('light'));
+  } else if (normQ.includes('classroom') || normQ.includes('projector')) {
+    all = all.filter(i => i.category.toLowerCase().includes('classroom') || i.title.toLowerCase().includes('projector'));
+  } else if (normQ.includes('infrastructure') || normQ.includes('bench')) {
+    all = all.filter(i => i.category.toLowerCase().includes('infrastructure') || i.title.toLowerCase().includes('bench'));
+  }
+
+  // 4. Priority Filter
   if (normQ.includes('high priority') || normQ.includes('urgent')) {
-    const issues = queryHighPriorityIssues();
-    const lines = issues.map((i) => `• ${i.title} (${i.category})\n  Location: ${i.location} | Status: ${i.status}`).join('\n\n');
+    all = all.filter(i => i.priority === 'High');
+  }
+
+  const bldgTitle = locBlock ? `${locBlock.toUpperCase()} Block` : 'Campus';
+
+  if (all.length === 0) {
     return {
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['ISSUE_REPORT_QUERY'],
-      responseText: `High Priority Issues (${issues.length}):\n\n${lines}`,
-      subText: "Priority Filter: High • Sourced from active campus issue reports.",
-      matchedIssues: issues
+      responseText: `No reported issues found for ${bldgTitle}.`,
+      subText: `Location Filter: ${bldgTitle} • Campus Pulse Community Issue Dispatch.`
     };
   }
 
-  const allIssues = queryAllIssues();
-  if (allIssues.length > 0) {
-    const lines = allIssues.map((i) => `• ${i.title} (${i.category})\n  Location: ${i.location} | Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
-    return {
-      queryText: rawQuery,
-      normalizedQuery: normQ,
-      intents: ['ISSUE_REPORT_QUERY'],
-      responseText: `Reported Campus Issues (${allIssues.length}):\n\n${lines}`,
-      subText: "Source: Central Campus Pulse issue-report database.",
-      matchedIssues: allIssues
-    };
-  }
-
+  const lines = all.map(i => `• **${i.title}** (${i.category})\n  📍 Location: ${i.location}\n  Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
   return {
     queryText: rawQuery,
     normalizedQuery: normQ,
     intents: ['ISSUE_REPORT_QUERY'],
-    responseText: "No issues are currently reported on campus.",
-    subText: "Source: Central Campus Pulse issue-report database."
+    responseText: `Reported Campus Facility Issues in ${bldgTitle} (${all.length}):\n\n${lines}`,
+    subText: `Location Filter: ${bldgTitle} • Campus Pulse Community Issue Dispatch.`,
+    matchedIssues: all
   };
 }
 
@@ -2820,16 +2778,16 @@ export async function processCampusAiQuery(
     return maintainConversationContext(clubAns, rawQuery, context);
   }
 
-  // 6. Building & Location Handler
-  const bldgAns = getBuildingAnswer(entities, intents, normQ);
-  if (bldgAns) {
-    return maintainConversationContext(bldgAns, rawQuery, context);
-  }
-
-  // 7. Issue Reports Handler
+  // 6. Issue Reports Handler (Checked before generic building handler)
   const issueAns = getIssueAnswer(entities, normQ);
   if (issueAns) {
     return maintainConversationContext(issueAns, rawQuery, context);
+  }
+
+  // 7. Building & Location Handler
+  const bldgAns = getBuildingAnswer(entities, intents, normQ);
+  if (bldgAns) {
+    return maintainConversationContext(bldgAns, rawQuery, context);
   }
 
   // 8. Events & Announcements (Only when asking for real events/schedules)

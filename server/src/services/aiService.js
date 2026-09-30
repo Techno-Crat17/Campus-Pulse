@@ -102,6 +102,64 @@ export function detectLanguage(rawQuery, normQuery) {
   return count > 0 ? 'HINGLISH' : 'ENGLISH';
 }
 
+const VERIFIED_CAMPUS_ISSUES = [
+  {
+    id: 'iss-demo-01',
+    title: 'Flickering Overhead Tube Light',
+    category: 'Electricity',
+    description: 'Two fluorescent fixtures in row 3 flicker intermittently during evening lectures.',
+    location: 'LHC Block, Room 204',
+    building: 'LHC',
+    room: 'LHC204',
+    priority: 'Low',
+    status: 'Under Review'
+  },
+  {
+    id: 'iss-demo-02',
+    title: 'Water Dispenser Sensor Malfunction',
+    category: 'Water',
+    description: 'Drinking water station sensor does not detect bottles reliably; continuous slow drip.',
+    location: 'ESB Block, 2nd Floor Corridor',
+    building: 'ESB',
+    room: null,
+    priority: 'Medium',
+    status: 'In Progress'
+  },
+  {
+    id: 'iss-demo-03',
+    title: 'Weak Wi-Fi Signal Near Study Pods',
+    category: 'Internet / Wi-Fi',
+    description: 'Access point coverage drops below -82dBm near the quiet study pods on the north side.',
+    location: 'Apex Block, Library Reading Hall',
+    building: 'APEX',
+    room: null,
+    priority: 'High',
+    status: 'Reported'
+  },
+  {
+    id: 'iss-demo-04',
+    title: 'Broken Bench Armrest Replaced',
+    category: 'Infrastructure',
+    description: 'Outdoor wooden seating armrest repaired and revarnished by campus carpentry dispatch.',
+    location: 'Campus Quadrangle Plaza',
+    building: 'QUADRANGLE',
+    room: null,
+    priority: 'Low',
+    status: 'Resolved'
+  },
+  {
+    id: 'iss-demo-05',
+    title: 'Projector HDMI Loose Connection',
+    category: 'Classroom',
+    description: 'Wall plate HDMI port cuts signal intermittently when connecting laptops at the podium.',
+    location: 'LHC Block, Seminar Hall 1',
+    building: 'LHC',
+    room: null,
+    priority: 'High',
+    status: 'Under Review'
+  }
+];
+
 export function resolveDepartment(input) {
   if (!input) return null;
   const rec = getDepartmentRecord(input);
@@ -231,11 +289,20 @@ export function detectIntents(normQuery, rawQuery = '', context = {}) {
   const hasClubs = /\b(club|clubs|organization|society|extracurricular|ieee|tedx|nss|innovation cell|iic|idea lab)\b/.test(q);
   const hasEmergency = /\b(emergency|ambulance|fire|anti ragging|helpline|police|contact number)\b/.test(q);
 
-  const hasIssues = /\b(issue|issues|problem|complaint|complain|wifi|water|electricity|broken|repair|status|resolve)\b/.test(q);
-  const hasExplicitRoomKeyword = /\b(room|rooms|classroom|classrooms|lab|labs|lecture hall|lh|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/.test(q);
+  const hasIssues = /\b(issue|issues|problem|problems|complaint|complaints|complain|complains|report|reports|reported|wifi|wi-fi|water|electricity|broken|repair|status|resolve|infrastructure|cleanliness)\b/i.test(q);
+  const hasExplicitRoomKeyword = /\b(room|rooms|classroom|classrooms|lab|labs|lecture\s*hall|auditorium|lhc\d{3}|ab-\d{3}|esb-\d{3}|arch\d{3})\b/i.test(q);
   const mentionsBuilding = /\b(lhc|esb|crd|apex|building|block)\b/.test(q);
 
-  // 1. Strict HOD Intents Priority
+  // 1. Issue Intents Priority (Higher priority than generic building location)
+  if (hasIssues) {
+    if (q.includes('status') || q.includes('resolve') || q.includes('pahuchi')) intents.push('ISSUE_STATUS');
+    else if (/\b(where\s*was|location|kaha|kahan|kidhar)\b/i.test(q)) intents.push('ISSUE_LOCATION');
+    else if (/\b(priority|urgent|high\s*priority)\b/i.test(q)) intents.push('ISSUE_PRIORITY');
+    else intents.push('ISSUE_SEARCH');
+    return intents;
+  }
+
+  // 2. Strict HOD Intents Priority
   if (isHod) {
     if (hasEmail) {
       intents.push('DEPARTMENT_HOD_EMAIL');
@@ -252,7 +319,7 @@ export function detectIntents(normQuery, rawQuery = '', context = {}) {
     return intents;
   }
 
-  // 2. Strict Faculty Query Priority (Must NOT route to room search unless explicit room keyword present)
+  // 3. Strict Faculty Query Priority (Must NOT route to room search unless explicit room keyword present)
   if (isFacultyQuery && !hasExplicitRoomKeyword) {
     if (hasCabin) {
       intents.push('FACULTY_CABIN');
@@ -288,11 +355,6 @@ export function detectIntents(normQuery, rawQuery = '', context = {}) {
     }
   }
 
-  if (hasIssues) {
-    if (q.includes('status') || q.includes('resolve') || q.includes('pahuchi')) intents.push('ISSUE_STATUS');
-    else intents.push('ISSUE_SEARCH');
-  }
-
   if (mentionsLibrary) {
     if (hasOccupancy) intents.push('LIBRARY_OCCUPANCY');
     if (hasLibraryHours) intents.push('LIBRARY_HOURS');
@@ -300,7 +362,7 @@ export function detectIntents(normQuery, rawQuery = '', context = {}) {
     if (intents.length === 0) intents.push('LIBRARY_SEARCH');
   }
 
-  if (mentionsBuilding && (hasLocation || q.includes('dikhao')) && !mentionsLibrary && !hasExplicitRoomKeyword && intents.length === 0) {
+  if (mentionsBuilding && (hasLocation || q.includes('dikhao')) && !mentionsLibrary && !hasExplicitRoomKeyword && !hasIssues && intents.length === 0) {
     intents.push('BUILDING_LOCATION');
   }
 
@@ -428,7 +490,7 @@ export async function extractEntities(normQuery, rawQuery, context) {
     }
   }
 
-  const isNonFacultyTarget = /\b(room|classroom|library|building|block|event|notice|circular|emergency|fire|ambulance|wifi|complaint|issue|map|kaise jana)\b/i.test(fullText);
+  const isNonFacultyTarget = /\b(room|classroom|library|building|block|event|notice|circular|emergency|fire|ambulance|wifi|complaint|issue|map|kaise jana|lhc|esb|crd|apex|des)\b/i.test(fullText);
   const hasExplicitFacultyTitle = /\b(dr\.|dr|prof\.|prof|professor|teacher|teachers|faculty|cabin|email|mail|yogish|sumana)\b/i.test(fullText);
 
   if (!entities.faculty && (!isNonFacultyTarget || hasExplicitFacultyTitle)) {
@@ -975,9 +1037,62 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
   }
 
   // --------------------------------------------------------------------------
+  // INTENT HANDLER: ISSUES & COMPLAINTS
+  // --------------------------------------------------------------------------
+  if (intents.includes('ISSUE_SEARCH') || intents.includes('ISSUE_STATUS') || intents.includes('ISSUE_LOCATION') || intents.includes('ISSUE_PRIORITY') || /\b(issue|issues|problem|complaint|wifi|wi-fi|water|electricity)\b/i.test(normQuery)) {
+    let matchedIssues = [...VERIFIED_CAMPUS_ISSUES];
+
+    const targetBldg = entities.building || (normQuery.includes('lhc') ? 'LHC' : normQuery.includes('esb') ? 'ESB' : normQuery.includes('apex') ? 'APEX' : null);
+    if (targetBldg) {
+      matchedIssues = matchedIssues.filter(i => i.building === targetBldg || i.location.toUpperCase().includes(targetBldg));
+    }
+
+    if (normQuery.includes('wifi') || normQuery.includes('wi-fi') || normQuery.includes('internet')) {
+      matchedIssues = matchedIssues.filter(i => i.category.includes('Wi-Fi') || i.category.includes('Internet'));
+    } else if (normQuery.includes('water') || normQuery.includes('dispenser')) {
+      matchedIssues = matchedIssues.filter(i => i.category === 'Water');
+    } else if (normQuery.includes('electricity') || normQuery.includes('light')) {
+      matchedIssues = matchedIssues.filter(i => i.category === 'Electricity');
+    }
+
+    if (intents.includes('ISSUE_PRIORITY') || normQuery.includes('high priority')) {
+      matchedIssues = matchedIssues.filter(i => i.priority === 'High');
+    }
+
+    const bldgTitle = targetBldg ? `${targetBldg} Block` : 'Campus';
+    const primaryIntent = intents.find(i => i.startsWith('ISSUE_')) || 'ISSUE_SEARCH';
+
+    if (matchedIssues.length === 0) {
+      const ans = `No reported issues found for ${bldgTitle}.`;
+      const resObj = {
+        success: true,
+        intent: primaryIntent,
+        answer: ans,
+        data: { issues: [], count: 0, building: targetBldg },
+        actions: [{ type: 'VIEW_ISSUE' }]
+      };
+      logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);
+      return resObj;
+    }
+
+    const listStr = matchedIssues.map(i => `• "${i.title}" (${i.category})\n  📍 ${i.location} | Priority: ${i.priority} | Status: ${i.status}`).join('\n\n');
+    const ans = `Reported Campus Facility Issues in ${bldgTitle} (${matchedIssues.length}):\n\n${listStr}`;
+
+    const resObj = {
+      success: true,
+      intent: primaryIntent,
+      answer: ans,
+      data: { issues: matchedIssues, count: matchedIssues.length, building: targetBldg },
+      actions: [{ type: 'VIEW_ISSUE' }]
+    };
+    logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);
+    return resObj;
+  }
+
+  // --------------------------------------------------------------------------
   // INTENT HANDLER: BUILDINGS & CAMPUS MAP
   // --------------------------------------------------------------------------
-  if (intents.includes('BUILDING_LOCATION') || normQuery.includes('lhc') || normQuery.includes('esb') || normQuery.includes('crd')) {
+  if (intents.includes('BUILDING_LOCATION') || intents.includes('BUILDING_SEARCH')) {
     const searchTarget = entities.building || (normQuery.includes('lhc') ? 'LHC' : normQuery.includes('esb') ? 'ESB' : 'LHC');
     updateSessionContext(sessionId, { lastBlockId: `block-${searchTarget.toLowerCase()}`, lastBlockName: `${searchTarget} Block` });
     const ans = `${searchTarget} Block\n📍 Verified Academic Campus Block\nDepartments: CSE, ISE, ECE, Medical Electronics`;
@@ -1077,21 +1192,6 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     } catch (e) {}
   }
 
-  // --------------------------------------------------------------------------
-  // INTENT HANDLER: ISSUES & COMPLAINTS
-  // --------------------------------------------------------------------------
-  if (intents.includes('ISSUE_SEARCH') || intents.includes('ISSUE_STATUS')) {
-    const ans = `Reported Campus Facility Issues:\n• "Weak Wi-Fi Signal Near Study Pods" — Status: Reported (Apex Block Library)`;
-    const resObj = {
-      success: true,
-      intent: 'ISSUE_STATUS',
-      answer: ans,
-      data: { status: 'Reported', location: 'Apex Block Library' },
-      actions: [{ type: 'VIEW_ISSUE' }]
-    };
-    logQueryPerformance(sessionId, resObj, startTime, dbQueryTimeMs);
-    return resObj;
-  }
 
   // --------------------------------------------------------------------------
   // ZERO-RESULT FALLBACK (STRICT GROUNDING & NO HALLUCINATION)
