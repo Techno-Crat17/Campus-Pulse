@@ -13,8 +13,7 @@
 // ============================================================================
 
 import {
-  FACULTY_MSRIT_DATA,
-  resolveFacultyBuildingMapping
+  FACULTY_MSRIT_DATA
 } from './facultyData';
 import type { MSRITFacultyRecord, CampusNode, FacultyDayScheduleItem } from './facultyData';
 
@@ -1114,7 +1113,6 @@ export function getFacultyAnswer(
       normalizedQuery: normQ,
       intents,
       responseText: `I found multiple faculty members matching that name:\n\n${optionsText}\n\nWhich faculty member do you mean?`,
-      subText: "Strict Faculty Resolution Rule: Never guess among multiple matches.",
       multipleFaculty,
       clarificationNeeded: true,
       clarificationOptions: options
@@ -1134,7 +1132,6 @@ export function getFacultyAnswer(
         normalizedQuery: normQ,
         intents: ['DEPARTMENT_HOD'],
         responseText: "Multiple HOD records found. Please select one.",
-        subText: "Strict Faculty Resolution Rule: Multiple HOD records found.",
         multipleFaculty
       };
     }
@@ -1150,7 +1147,6 @@ export function getFacultyAnswer(
           normalizedQuery: normQ,
           intents: ['DEPARTMENT_HOD'],
           responseText: "Multiple HOD records found. Please select one.",
-          subText: "Strict Faculty Resolution Rule: Multiple HOD records found.",
           multipleFaculty: hodMatches
         };
       }
@@ -1161,8 +1157,7 @@ export function getFacultyAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['DEPARTMENT_HOD'],
-        responseText: `I couldn't find a verified HOD for ${deptCode} in the Campus Pulse data.`,
-        subText: "Zero-hallucination verification against official MSRIT registry."
+        responseText: `I couldn't find a verified HOD for ${deptCode} in the Campus Pulse data.`
       };
     }
 
@@ -1192,7 +1187,6 @@ export function getFacultyAnswer(
       normalizedQuery: normQ,
       intents: [primaryIntent, 'DEPARTMENT_HOD'],
       responseText: ans,
-      subText: "Verified from official MSRIT faculty registry.",
       matchedFaculty: { ...hod, isCollegeOpen: true },
       matchedDepartment: entities.matchedDepartment,
       actionTargetId: hod.nodeId || deptInfo?.buildingId || 'block-lhc'
@@ -1209,7 +1203,6 @@ export function getFacultyAnswer(
               normQ.includes('ece') ? 'ECE' : 'CSE'
     );
 
-    const bldgMapping = resolveFacultyBuildingMapping(deptFilter);
     let facultyList = FACULTY_MSRIT_DATA.filter((f) => {
       const fDept = f.department.toLowerCase();
       if (deptFilter === 'CSE') return fDept.includes('computer science') && !fDept.includes('ai') && !fDept.includes('cyber');
@@ -1256,7 +1249,6 @@ export function getFacultyAnswer(
         normalizedQuery: normQ,
         intents: ['FACULTY_SEARCH'],
         responseText: `**${deptFilter} Faculty${bldgTag}${availTag}** (${facultyList.length} total):\n\n${listText}${facultyList.length > 8 ? `\n\n...and ${facultyList.length - 8} more faculty members.` : ''}`,
-        subText: `Department Base: ${bldgMapping.primaryBuilding} • Dynamic status evaluated from timetable schedule & campus hours.`,
         matchedDepartment: entities.matchedDepartment,
         actionTargetId: filterLhc ? 'block-lhc' : undefined
       };
@@ -1306,8 +1298,7 @@ export function getFacultyAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_AVAILABILITY'],
-      responseText: `Faculty Members currently ${targetStatusTag} (${matching.length} total):\n\n${listText}${matching.length > 5 ? `\n...and ${matching.length - 5} more.` : ''}`,
-      subText: "Dynamic status calculated strictly from campus hours and today's schedule."
+      responseText: `Faculty Members currently ${targetStatusTag} (${matching.length} total):\n\n${listText}${matching.length > 5 ? `\n...and ${matching.length - 5} more.` : ''}`
     };
   }
 
@@ -1325,8 +1316,7 @@ export function getFacultyAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_AVAILABILITY'],
-      responseText: `Currently Available Faculty (${availableFaculty.length} available right now):\n\n${listText}${availableFaculty.length > 5 ? `\n...and ${availableFaculty.length - 5} more.` : ''}`,
-      subText: "Real-time status dynamically calculated from working hours and today's schedule."
+      responseText: `Currently Available Faculty (${availableFaculty.length} available right now):\n\n${listText}${availableFaculty.length > 5 ? `\n...and ${availableFaculty.length - 5} more.` : ''}`
     };
   }
 
@@ -1422,7 +1412,6 @@ export function getFacultyAnswer(
       normalizedQuery: normQ,
       intents: ['FACULTY_SCHEDULE'],
       responseText,
-      subText: `Department: ${fac.department} • Cabin: ${fac.cabinLocation}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
@@ -1435,7 +1424,6 @@ export function getFacultyAnswer(
       normalizedQuery: normQ,
       intents: ['FACULTY_DESIGNATION'],
       responseText: `${fac.name}\n${fac.designation}, ${fac.department}`,
-      subText: `Verified from official MSRIT faculty registry.`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
     };
@@ -1636,7 +1624,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_AVAILABILITY'],
         responseText: `**${r.roomNumber}${namePart}**\n${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}\n\n🟢 **AVAILABLE**\nNo scheduled lecture/class at this hour in the timetable registry.\n\n*Note: Scheduled classroom availability based on timetable. Physical occupancy may vary.*`,
-        subText: "Timetable schedule status verified. Physical occupancy depends on student presence.",
         matchedRoom: r,
         actionTargetId: r.building?.toLowerCase().includes('crd') ? 'crd' : 'block-lhc'
       };
@@ -1660,7 +1647,6 @@ export function getRoomAnswer(
       normalizedQuery: normQ,
       intents: ['ROOM_AVAILABILITY'],
       responseText: `**${bldgHeader}Available Classrooms${timeTag}**\n\n${lines}\n\n🟢 *Verified from timetable schedule slots.*`,
-      subText: "Scheduled classroom availability based on official timetable records.",
       actionTargetId: bldgKey === 'crd' ? 'crd' : 'block-lhc'
     };
   }
@@ -1731,7 +1717,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION'],
         responseText,
-        subText: `Source: ${r.sourceTitle || 'Official MSRIT Verified Survey'} • Verified Room Registry.`,
         matchedRoom: r,
         actionTargetId: bldgId
       };
@@ -1753,7 +1738,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION', 'FACULTY_LOCATION'],
         responseText: `**ISE Faculty Cubicles & Research Cabins**\nInformation Science & Engineering · 3rd Floor · LHC Block (ISE Wing)${facultyListSnippet}`,
-        subText: "Grounded strictly in official MSRIT department & faculty registry.",
         actionTargetId: 'block-lhc'
       };
     }
@@ -1795,7 +1779,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION'],
         responseText: `**${r.roomNumber} — ${r.name || r.type}**\n${deptPart}${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoom: r,
         actionTargetId: actionId
       };
@@ -1812,7 +1795,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION', 'DEPARTMENT_ROOMS'],
         responseText: `**${deptDisplayName} ${categoryTitle}**\n\n${lines}${moreText}\n\n📍 ${bldgDisplay}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoomsList: matchingRooms,
         actionTargetId: actionId
       };
@@ -1823,8 +1805,7 @@ export function getRoomAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['ROOM_LOCATION'],
-      responseText: `I couldn't find a verified ${deptDisplayName} ${roomCategory === 'FACULTY_ROOM' ? 'faculty room' : 'room'} in the campus data.`,
-      subText: "Strict No-Hallucination Policy: Verified against official MSRIT registry."
+      responseText: `I couldn't find a verified ${deptDisplayName} ${roomCategory === 'FACULTY_ROOM' ? 'faculty room' : 'room'} in the campus data.`
     };
   }
 
@@ -1848,7 +1829,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION'],
         responseText: `**${r.roomNumber} — ${r.name || r.type}**\n${deptPart}${r.floor ? `${r.floor} · ` : ''}${bldgDisplay}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoom: r,
         actionTargetId: actionId
       };
@@ -1864,7 +1844,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION', 'BUILDING_ROOMS'],
         responseText: `**${bldgDisplay} — ${categoryTitle}**\n\n${lines}${moreText}\n\n📍 ${bldgDisplay}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoomsList: matchingRooms,
         actionTargetId: actionId
       };
@@ -1887,7 +1866,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['ROOM_LOCATION', 'ROOM_SEARCH'],
         responseText: `**${categoryTitle}**\n\n${lines}${moreText}`,
-        subText: "Grounded strictly in official MSRIT verified survey & database.",
         matchedRoomsList: matchingRooms,
         actionTargetId: 'block-lhc'
       };
@@ -1921,7 +1899,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['BUILDING_FLOOR_ROOMS'],
         responseText: `**Verified Rooms on ${fRooms[0].floor} in ${bldgDisplay} (${fRooms.length} total):**\n\n${lines}${moreText}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoomsList: fRooms,
         actionTargetId: actionId
       };
@@ -1943,7 +1920,6 @@ export function getRoomAnswer(
         normalizedQuery: normQ,
         intents: ['BUILDING_ROOMS'],
         responseText: `**Verified Rooms in ${bldgDisplay} (${bRooms.length} total):**\n\n${lines}${moreText}`,
-        subText: "Grounded strictly in official MSRIT department & facility registry.",
         matchedRoomsList: bRooms,
         actionTargetId: actionId
       };
@@ -1955,8 +1931,7 @@ export function getRoomAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['ROOM_SEARCH'],
-      responseText: "I couldn't find that information in the available campus data.",
-      subText: "Strict No-Hallucination Policy: Only room numbers verified from official MSRIT sources are recognized."
+      responseText: "I couldn't find that information in the available campus data."
     };
   }
 
@@ -1994,7 +1969,6 @@ export function getLibraryAnswer(
       normalizedQuery: normQ,
       intents: ['LIBRARY_SEARCH', 'LIBRARY_LOCATION'],
       responseText: `**Apex Library**\nLibrary & Information Center (First year) · 5th Floor (Room AB-714)\n📍 Apex Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: 1st Year UG Students (All Disciplines)\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
-      subText: "Verified Campus Pulse Apex Block library & room telemetry.",
       matchedLibrary: apexLib,
       matchedRoom: ab714,
       actionTargetId: 'block-apex'
@@ -2019,7 +1993,6 @@ export function getLibraryAnswer(
       normalizedQuery: normQ,
       intents: ['LIBRARY_SEARCH', 'LIBRARY_LOCATION'],
       responseText: `**MCA Library**\nDept of MCA Library · 2nd Floor (Room AB-401)\n📍 Apex Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: Master of Computer Applications (MCA)\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
-      subText: "Verified Campus Pulse MCA department library & room telemetry.",
       matchedLibrary: mcaLib,
       matchedRoom: ab401,
       actionTargetId: 'block-apex'
@@ -2044,7 +2017,6 @@ export function getLibraryAnswer(
       normalizedQuery: normQ,
       intents: ['LIBRARY_SEARCH', 'LIBRARY_LOCATION'],
       responseText: `**Unit II - Library (LHC Library)**\nLibrary & Information Center Unit – II · 1st Floor (Room LHC-306)\n📍 LHC Block\n\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: ${lhcLib.primaryGroups.join(', ')}\n📊 Occupancy: ${det.displayOccupancy} [${det.statusLabel}]`,
-      subText: "Grounded strictly in official MSRIT Unit-II library telemetry.",
       matchedLibrary: lhcLib,
       matchedRoom: lhc306,
       actionTargetId: 'block-lhc'
@@ -2067,7 +2039,6 @@ export function getLibraryAnswer(
       normalizedQuery: normQ,
       intents: ['LIBRARY_OCCUPANCY', 'LIBRARY_LOCATION'],
       responseText: `${lowest.name} is currently the least crowded library at ${lowestDet.displayOccupancy} occupancy.\n\n📍 Location: ${lowest.building} Block (${lowest.floor})\n⏰ Hours: 09:00–21:00 Daily\n👥 Primary Users: ${lowest.primaryGroups.join(', ')}`,
-      subText: "Estimated Live Occupancy (Formatted as percentage).",
       matchedLibrary: lowest,
       actionTargetId: lowest.nodeId
     };
@@ -2214,7 +2185,6 @@ export function getBuildingAnswer(
         normalizedQuery: normQ,
         intents: ['DEPARTMENT_SEARCH'],
         responseText: `**${deptInfo.name}**\n📍 Primary Building: ${deptInfo.building} Block\nDepartment Code: ${deptInfo.code}`,
-        subText: "Grounded in official MSRIT academic department registry.",
         actionTargetId: deptInfo.buildingId
       };
     }

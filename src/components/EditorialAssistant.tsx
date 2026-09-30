@@ -419,12 +419,6 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
                       {activeResult.responseText}
                     </p>
 
-                    {activeResult.subText && (
-                      <p className="text-xs font-mono text-[#666660] dark:text-gray-400 pt-2 border-t border-[#111111]/10 dark:border-white/10">
-                        {activeResult.subText}
-                      </p>
-                    )}
-
                     {/* Compact Action Bar */}
                     <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-[#111111]/10 dark:border-white/10 font-mono text-xs">
                       {activeResult.matchedFaculty?.email ? (
