@@ -1,158 +1,178 @@
-const CACHE_TTL_MS = 45 * 60 * 1000; // 45 Minutes Cache TTL
+import { Club } from '../models/Club.js';
+import { VERIFIED_MSRIT_CLUBS } from '../data/clubsData.js';
+import mongoose from 'mongoose';
+
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 Minutes Cache TTL
 
 let clubCache = {
   data: [],
   lastFetched: null
 };
 
-// Official MSRIT Verified Student Clubs, Societies, Cells & Extracurricular Organizations
-const OFFICIAL_MSRIT_CLUBS = [
-  {
-    id: 'ieee-rit',
-    name: 'IEEE RIT Student Branch',
-    category: 'Professional Society',
-    description: 'IEEE RIT is the official student branch of the Institute of Electrical and Electronics Engineers at Ramaiah Institute of Technology, hosting technical workshops, hackathons, research symposiums, and national student conferences.',
-    department: 'IEEE Student Branch & Electrical Engineering Division',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'aicte-idea-lab',
-    name: 'AICTE IDEA Lab',
-    category: 'Innovation',
-    description: 'The AICTE IDEA Lab at Ramaiah Institute of Technology provides a state-of-the-art facility for UG and PG students, faculty, and researchers to execute interdisciplinary prototyping, ideathons, hackathons, and product development.',
-    department: 'Department of Biotechnology & Interdisciplinary Engineering',
-    officialUrl: 'https://www.msrit.edu/idealab.html',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/idealab.html'
-  },
-  {
-    id: 'rit-iic',
-    name: 'RIT Institution\'s Innovation Cell (IIC)',
-    category: 'Innovation',
-    description: 'Established under Ministry of Education (MoE) Innovation Cell guidelines, RIT IIC promotes systematically organized innovation, patent filing, technology transfer, and startup incubation across all engineering disciplines.',
-    department: 'Innovation & Incubation Council',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'rit-edc',
-    name: 'Entrepreneurship Development Cell (EDC)',
-    category: 'Entrepreneurship',
-    description: 'The Entrepreneurship Development Cell at MSRIT fosters startup culture by organizing business plan competitions, founder conclaves, venture capital pitching sessions, and mentorship programs.',
-    department: 'Entrepreneurship & Incubation Division',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'tedx-msrit',
-    name: 'TEDxMSRIT',
-    category: 'Cultural',
-    description: 'TEDxMSRIT is an independently organized TED event hosted annually at Ramaiah Institute of Technology, featuring inspiring talks, performances, and boundary-pushing ideas from visionaries and student leaders.',
-    department: 'Extra-Curricular Activities Board',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'nss-rit',
-    name: 'National Service Scheme (NSS RIT)',
-    category: 'Social Service',
-    description: 'The NSS Unit at MSRIT mobilizes student volunteers for community development projects, blood donation camps, environmental awareness drives, and rural literacy initiatives.',
-    department: 'Student Welfare Division',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'rit-sports',
-    name: 'Department of Sports & Physical Education',
-    category: 'Sports',
-    description: 'Manages campus athletic teams, indoor/outdoor sports complexes, inter-collegiate VTU tournaments, annual athletic meets, and physical fitness programs.',
-    department: 'Department of Physical Education',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'apple-training-center',
-    name: 'Apple Authorized Training Center for Education',
-    category: 'Technical',
-    description: 'Official Apple Training Center at MSRIT providing specialized curriculum, hands-on training, and certification in Swift programming, iOS application development, and Xcode workflows.',
-    department: 'Computer Science & IT Infrastructure',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'eca-board',
-    name: 'Department of Extra-Curricular Activities (ECA)',
-    category: 'Cultural',
-    description: 'Coordinates annual cultural fests, music ensembles, dance troupes, theatrical productions, debate societies, and student club governance across the institute.',
-    department: 'Extra-Curricular Activities Board',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  },
-  {
-    id: 'co-curricular-council',
-    name: 'RIT Co-Curricular & Professional Societies (SAE / ACM / CSI / ISTE)',
-    category: 'Co-curricular',
-    description: 'Umbrella council coordinating domain-specific student chapters including SAE India RIT, ACM RIT, CSI RIT, ISTE RIT, and ISHRAE student chapters.',
-    department: 'Engineering Faculty Board',
-    officialUrl: 'https://www.msrit.edu/',
-    socialLinks: [],
-    source: 'MSRIT Official Website',
-    sourceUrl: 'https://www.msrit.edu/'
-  }
-];
+/**
+ * Normalizes query string for case-insensitive matching
+ */
+function normalizeSearch(str) {
+  return (str || '').toLowerCase().trim();
+}
 
-export async function getLiveClubs(forceRefresh = false) {
-  const now = Date.now();
-  if (
-    !forceRefresh &&
-    clubCache.lastFetched &&
-    now - clubCache.lastFetched < CACHE_TTL_MS &&
-    clubCache.data.length > 0
-  ) {
-    return {
-      success: true,
-      source: 'MSRIT Official Website',
-      lastFetched: new Date(clubCache.lastFetched).toISOString(),
-      cached: true,
-      data: clubCache.data
-    };
+/**
+ * Fetch clubs from MongoDB with in-memory fallback
+ */
+export async function getLiveClubs({ category, q, limit, forceRefresh = false } = {}) {
+  const isDbConnected = mongoose.connection.readyState === 1;
+
+  let allClubs = [];
+
+  if (isDbConnected) {
+    try {
+      let query = { active: true };
+      if (category && category !== 'All') {
+        query.category = category;
+      }
+      if (q && q.trim()) {
+        const norm = normalizeSearch(q);
+        query.$or = [
+          { name: { $regex: norm, $options: 'i' } },
+          { normalizedName: { $regex: norm, $options: 'i' } },
+          { description: { $regex: norm, $options: 'i' } },
+          { category: { $regex: norm, $options: 'i' } },
+          { relatedChapters: { $regex: norm, $options: 'i' } }
+        ];
+      }
+
+      let dbQuery = Club.find(query).sort({ category: 1, name: 1 });
+      if (limit && Number.isInteger(Number(limit))) {
+        dbQuery = dbQuery.limit(Number(limit));
+      }
+
+      allClubs = await dbQuery.lean();
+
+      // If database has records, format and return
+      if (allClubs && allClubs.length > 0) {
+        return {
+          success: true,
+          source: 'Provided MSRIT club directory',
+          lastFetched: new Date().toISOString(),
+          cached: false,
+          data: allClubs.map(c => ({
+            id: c._id ? String(c._id) : c.normalizedName,
+            name: c.name,
+            normalizedName: c.normalizedName || normalizeSearch(c.name),
+            category: c.category,
+            description: c.description,
+            type: c.type || 'CLUB',
+            relatedChapters: c.relatedChapters || [],
+            source: c.source || 'Provided MSRIT club directory',
+            active: c.active !== false
+          }))
+        };
+      }
+    } catch (err) {
+      console.warn('[ClubService] Database query failed, using static verified directory fallback:', err.message);
+    }
   }
 
-  // Populate cache with verified official timestamp
-  const timestamp = new Date().toISOString();
-  const enrichedClubs = OFFICIAL_MSRIT_CLUBS.map((c) => ({
-    ...c,
-    lastUpdated: timestamp
-  }));
+  // Fallback to verified in-memory dataset
+  let fallbackList = [...VERIFIED_MSRIT_CLUBS];
 
-  clubCache = {
-    data: enrichedClubs,
-    lastFetched: now
-  };
+  if (category && category !== 'All') {
+    fallbackList = fallbackList.filter(c => c.category.toLowerCase() === category.toLowerCase());
+  }
+
+  if (q && q.trim()) {
+    const norm = normalizeSearch(q);
+    fallbackList = fallbackList.filter(c =>
+      c.normalizedName.includes(norm) ||
+      c.name.toLowerCase().includes(norm) ||
+      c.description.toLowerCase().includes(norm) ||
+      c.category.toLowerCase().includes(norm) ||
+      (c.relatedChapters && c.relatedChapters.some(rc => rc.toLowerCase().includes(norm)))
+    );
+  }
+
+  if (limit && Number.isInteger(Number(limit))) {
+    fallbackList = fallbackList.slice(0, Number(limit));
+  }
 
   return {
     success: true,
-    source: 'MSRIT Official Website',
-    lastFetched: timestamp,
+    source: 'Provided MSRIT club directory',
+    lastFetched: new Date().toISOString(),
     cached: false,
-    data: enrichedClubs
+    data: fallbackList.map((c, i) => ({
+      id: c.id || c.normalizedName || `club-${i + 1}`,
+      name: c.name,
+      normalizedName: c.normalizedName || normalizeSearch(c.name),
+      category: c.category,
+      description: c.description,
+      type: c.type || 'CLUB',
+      relatedChapters: c.relatedChapters || [],
+      source: c.source || 'Provided MSRIT club directory',
+      active: c.active !== false
+    }))
   };
+}
+
+/**
+ * Fetch single club by ID or normalized name
+ */
+export async function getClubById(idOrName) {
+  const norm = normalizeSearch(idOrName);
+  const isDbConnected = mongoose.connection.readyState === 1;
+
+  if (isDbConnected) {
+    try {
+      let club = null;
+      if (mongoose.Types.ObjectId.isValid(idOrName)) {
+        club = await Club.findById(idOrName).lean();
+      }
+      if (!club) {
+        club = await Club.findOne({
+          $or: [
+            { normalizedName: norm },
+            { name: { $regex: `^${norm}$`, $options: 'i' } }
+          ]
+        }).lean();
+      }
+      if (club) {
+        return {
+          id: String(club._id),
+          name: club.name,
+          normalizedName: club.normalizedName,
+          category: club.category,
+          description: club.description,
+          type: club.type || 'CLUB',
+          relatedChapters: club.relatedChapters || [],
+          source: club.source || 'Provided MSRIT club directory',
+          active: club.active !== false
+        };
+      }
+    } catch (err) {
+      console.warn('[ClubService] Database lookup failed, falling back to static dataset:', err.message);
+    }
+  }
+
+  // Static fallback
+  const found = VERIFIED_MSRIT_CLUBS.find(c =>
+    c.normalizedName === norm ||
+    c.name.toLowerCase() === norm ||
+    (c.id && c.id === idOrName)
+  );
+
+  if (found) {
+    return {
+      id: found.id || found.normalizedName,
+      name: found.name,
+      normalizedName: found.normalizedName,
+      category: found.category,
+      description: found.description,
+      type: found.type || 'CLUB',
+      relatedChapters: found.relatedChapters || [],
+      source: found.source || 'Provided MSRIT club directory',
+      active: found.active !== false
+    };
+  }
+
+  return null;
 }

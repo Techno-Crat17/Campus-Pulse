@@ -25,6 +25,8 @@ import { Issue } from '../models/Issue.js';
 import { User } from '../models/User.js';
 import { LostFound } from '../models/LostFound.js';
 import { INITIAL_LOST_FOUND_SEED } from '../controllers/lostFoundController.js';
+import { Club } from '../models/Club.js';
+import { VERIFIED_MSRIT_CLUBS } from './clubsData.js';
 
 // Buildings verified data
 const VERIFIED_BUILDINGS = [
@@ -382,6 +384,28 @@ export async function seedDatabase() {
       );
     }
     console.log(`✅ Seeded ${INITIAL_LOST_FOUND_SEED.length} sample Lost & Found records.`);
+
+    // --- Seed Verified Clubs & Student Activities ---
+    console.log('Seeding verified Clubs & Student Activities directory...');
+    for (const club of VERIFIED_MSRIT_CLUBS) {
+      await Club.findOneAndUpdate(
+        { normalizedName: club.normalizedName },
+        {
+          $set: {
+            name: club.name,
+            normalizedName: club.normalizedName,
+            category: club.category,
+            description: club.description,
+            type: club.type || 'CLUB',
+            relatedChapters: club.relatedChapters || [],
+            source: club.source || 'Provided MSRIT club directory',
+            active: club.active !== false
+          }
+        },
+        { upsert: true, new: true }
+      );
+    }
+    console.log(`✅ Seeded ${VERIFIED_MSRIT_CLUBS.length} verified MSRIT Clubs.`);
 
     const adminEmail = 'admin@campuspulse.edu';
     const adminPasswordHash = await bcrypt.hash('Admin@123', 10);

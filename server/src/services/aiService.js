@@ -307,7 +307,7 @@ export function detectIntents(normQuery, rawQuery = '') {
 
   const hasEvents = /\b(event|program|programme|function|activity|aaj kya|upcoming)\b/.test(q);
   const hasAnnouncements = /\b(announcement|notice|circular|news|latest notice|new notice)\b/.test(q);
-  const hasClubs = /\b(club|clubs|organization|society|extracurricular|ieee|tedx|nss|innovation cell|iic|idea lab)\b/.test(q);
+  const hasClubs = /\b(club|clubs|organization|society|societies|extracurricular|ieee|csi|ici|iiche|roborit|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|quiz\s*club|iclick|inara|comedy\s*club|studio\.?rit|clutchrit|nakama|ritmunsoc|dance|music|drama|theatre|photography|gaming|anime|debate|robotics)\b/i.test(q);
   const hasEmergency = /\b(emergency|ambulance|fire|anti ragging|helpline|police|contact number)\b/.test(q);
 
   const hasIssues = /\b(issue|issues|problem|complaint|complain|wifi|water|electricity|broken|repair|status|resolve)\b/.test(q);
@@ -992,15 +992,29 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
   // --------------------------------------------------------------------------
   if (intents.includes('CLUB_SEARCH')) {
     try {
-      const result = await getLiveClubs();
-      const clubs = (result?.data || []).slice(0, 4);
-      if (clubs.length > 0) {
-        const clubsText = clubs.map(c => `• ${c.name} (${c.category})`).join('\n');
+      const result = await getLiveClubs({ q: query });
+      const clubs = result?.data || [];
+      if (clubs.length === 1) {
+        const c = clubs[0];
+        const chStr = c.relatedChapters && c.relatedChapters.length > 0
+          ? `\n\nRelated Chapters:\n${c.relatedChapters.map(ch => `• ${ch}`).join('\n')}`
+          : '';
+        return {
+          success: true,
+          intent: 'CLUB_DETAILS',
+          answer: `**${c.name}**\n${c.category}\n\n${c.description}${chStr}`,
+          data: { club: c },
+          actions: []
+        };
+      }
+      if (clubs.length > 1) {
+        const sample = clubs.slice(0, 5);
+        const clubsText = sample.map(c => `• **${c.name}** (${c.category})\n  ${c.description}`).join('\n\n');
         return {
           success: true,
           intent: 'CLUB_SEARCH',
-          answer: `Verified MSRIT Student Clubs:\n${clubsText}`,
-          data: { clubs },
+          answer: `Verified MSRIT Student Clubs (${clubs.length}):\n\n${clubsText}`,
+          data: { clubs: sample },
           actions: []
         };
       }

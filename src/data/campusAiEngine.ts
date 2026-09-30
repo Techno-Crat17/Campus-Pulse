@@ -69,9 +69,13 @@ import {
 import type { MSRITRoomRecord } from './roomsData';
 
 import {
+  VERIFIED_MSRIT_CLUBS
+} from './clubsData';
+import type { VerifiedClub } from './clubsData';
+
+import {
   fetchAnnouncements,
-  fetchEvents,
-  fetchClubs
+  fetchEvents
 } from '../services/api';
 
 // ----------------------------------------------------------------------------
@@ -124,6 +128,7 @@ export type CampusAiIntent =
   | 'ANNOUNCEMENT_SEARCH'
   | 'CLUB_SEARCH'
   | 'CLUB_DETAILS'
+  | 'CLUB_CATEGORY_SEARCH'
   | 'EMERGENCY_CONTACT'
   | 'GENERAL_CAMPUS_QUERY'
   | 'UNKNOWN_QUERY';
@@ -148,6 +153,7 @@ export interface CampusAiResult {
   matchedEvents?: Array<{ title: string; date: string; location?: string; link?: string; category?: string }>;
   matchedAnnouncements?: Array<{ title: string; date: string; link?: string; category?: string }>;
   matchedClubs?: Array<{ name: string; category: string; description?: string; officialUrl?: string; sourceUrl?: string; department?: string }>;
+  matchedClub?: VerifiedClub;
   matchedEmergencyContacts?: Array<{ label: string; phone: string; category: string }>;
   sourceUrl?: string;
   sourceAttribution?: string;
@@ -168,6 +174,7 @@ export interface CampusAiContext {
   lastRoomCategory?: string | null;
   lastBuildingKey?: string | null;
   lastRoom?: MSRITRoomRecord | null;
+  lastClub?: VerifiedClub | null;
   lastIntents?: CampusAiIntent[];
   history?: Array<{ query: string; responseText: string; timestamp: number }>;
 }
@@ -179,6 +186,9 @@ export interface ExtractedEntities {
   matchedFaculty?: MSRITFacultyRecord;
   multipleFaculty?: MSRITFacultyRecord[];
   isPronounFaculty?: boolean;
+  matchedClub?: VerifiedClub;
+  isPronounClub?: boolean;
+  clubQuery?: string;
   role?: string;
   requestedField?: string;
   isHod?: boolean;
@@ -441,7 +451,7 @@ export function normalizeQuery(query: string): string {
 // 2. Intent Detection Pipeline (Multi-Intent Support)
 // ----------------------------------------------------------------------------
 
-export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
+export function detectIntents(normalizedQuery: string, context?: CampusAiContext): CampusAiIntent[] {
   const q = normalizedQuery;
   const intents: CampusAiIntent[] = [];
 
@@ -468,9 +478,11 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
     /\bupcoming\s*(seminars?|workshops?|events?)\b/i.test(q) ||
     (/\b(seminar|workshop)\b/i.test(q) && /\b(tomorrow|today|upcoming|next\s*week|happening|any\s*workshop|any\s*seminar|kal|parso)\b/i.test(q))
   );
-  const hasAnnouncements = /\b(announcement|announcements|news|circular|notice|latest\s*news|msrit\s*news|circulars)\b/.test(q);
-  const hasClubs = /\b(club|clubs|organization|organizations|society|societies|extracurricular|ieee|nss|tedx|edc|iic|idea\s*lab|apple\s*training|co-curricular|student\s*activity|student\s*activities)\b/.test(q);
+  const hasSpecificClubName = /\b(tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|quiz\s*club|iclick|inara|ramaiah\s*comedy|comedy\s*club|studio\.?rit|studiorit|clutchrit|nakama|ritmunsoc|munsoc|ieee|csi|ici|iiche|roborit|indian\s*music|western\s*music)\b/i.test(q);
+  const hasClubCategoryKeyword = /\b(dance|dancing|music|singing|band|vocal|instrumental|drama|theatre|theater|nukkad|natak|acting|photography|videography|creative\s*writing|fine\s*arts|comedy|stand-up|standup|improv|gaming|esports|anime|japanese|mun|debate|debates|debating|public\s*speaking|robotics|coding|hackathons|concrete|civil\s*engineering|chemical\s*engineering)\b/i.test(q) && /\b(club|clubs|team|crew|society|societies|community|kaunsa|hai|batao|kya|wala|chahiye|konsa)\b/i.test(q) || /\b(cultural\s*clubs?|technical\s*clubs?|literary\s*clubs?)\b/i.test(q);
+  const hasClubs = hasSpecificClubName || hasClubCategoryKeyword || /\b(club|clubs|organization|organizations|society|societies|extracurricular|co-curricular|student\s*activity|student\s*activities|chapters)\b/i.test(q);
   const hasEmergency = /\b(emergency|contact|phone|ambulance|fire|registrar\s*phone|administration\s*phone|helpline|anti[- ]ragging)\b/.test(q);
+  const hasAnnouncements = /\b(announcement|announcements|news|circular|notice|latest\s*news|msrit\s*news|circulars)\b/.test(q);
 
   const hasLostFound = /\b(lost|found|misplaced|calculator|airpods|bottle|wallet|watch|umbrella|keys|bag|spectacles)\b/.test(q);
   const hasIssues = /\b(issue|issues|complaint|complaints|reported|unresolved|resolved|high\s*priority|urgent|infrastructure|cleanliness|electricity|water|wifi|wi-fi)\b/.test(q);
@@ -542,7 +554,14 @@ export function detectIntents(normalizedQuery: string): CampusAiIntent[] {
   if (hasAnnouncements) intents.push('ANNOUNCEMENT_SEARCH');
 
   // 8. Clubs & Student Activities
-  if (hasClubs) intents.push('CLUB_SEARCH');
+  const hasClubPronoun = Boolean(context?.lastClub) && /\b(they|them|their|it|its|this club|that club|the club|uske|iska|uski|unka|kya karta|kya karti|chapters|subchapters|what do they do|what does it do|what they do|tell me more|unke bare me)\b/i.test(q);
+  if (hasSpecificClubName || (/\b(what\s*is|tell\s*me\s*about|kya\s*hai|kya\s*karta|details|chapters)\b/i.test(q) && hasClubs) || hasClubPronoun) {
+    intents.push('CLUB_DETAILS');
+  } else if (hasClubCategoryKeyword) {
+    intents.push('CLUB_CATEGORY_SEARCH');
+  } else if (hasClubs) {
+    intents.push('CLUB_SEARCH');
+  }
 
   // 9. Emergency Contacts
   if (hasEmergency && (q.includes('emergency') || q.includes('number') || q.includes('phone') || q.includes('contact') || q.includes('ambulance') || q.includes('fire'))) {
@@ -827,6 +846,48 @@ export function extractEntities(
   });
   if (locMatch) {
     entities.matchedLocation = locMatch;
+  }
+
+  // --- Verified Club Entity Matching & Pronoun Follow-up ---
+  const hasClubPronoun = /\b(they|them|their|it|its|this club|that club|the club|uske|iska|uski|unka|kya karta|kya karti|chapters|subchapters)\b/i.test(normQ) && !roomCat;
+  if (hasClubPronoun && context?.lastClub && !entities.matchedClub) {
+    entities.matchedClub = context.lastClub;
+    entities.isPronounClub = true;
+  }
+
+  if (!entities.matchedClub) {
+    // Specific club keyword lookups
+    if (/\btnt\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'TNT');
+    else if (/\blasya\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Lasya');
+    else if (/\btheatrix\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Theatrix');
+    else if (/\bprayaag\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Prayaag');
+    else if (/\bchiraranga\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Chiraranga');
+    else if (/\bdebsoc\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('DEBSOC'));
+    else if (/\b19a\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === '19A');
+    else if (/\bquiz\s*club\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Quiz Club');
+    else if (/\biclick\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'iClick');
+    else if (/\binara\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'INARA');
+    else if (/\bcomedy\s*club\b|\bramaiah\s*comedy\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('Comedy'));
+    else if (/\bstudio\.?rit\b|\bstudiorit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'STUDIO.RIT');
+    else if (/\bclutchrit\b|\bclutch\s*rit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'ClutchRIT');
+    else if (/\bnakama\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('Nakama'));
+    else if (/\britmunsoc\b|\bmunsoc\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'RITMUNSOC');
+    else if (/\bieee\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('IEEE'));
+    else if (/\bcsi\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('CSI'));
+    else if (/\bici\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('ICI'));
+    else if (/\biiche\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name.includes('IIChE'));
+    else if (/\broborit\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'RoboRIT');
+    else if (/\bindian\s*music\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Indian Music Team');
+    else if (/\bwestern\s*music\b/i.test(normQ)) entities.matchedClub = VERIFIED_MSRIT_CLUBS.find((c) => c.name === 'Western Music Team');
+    else {
+      // General match
+      for (const club of VERIFIED_MSRIT_CLUBS) {
+        if (normQ.includes(club.normalizedName)) {
+          entities.matchedClub = club;
+          break;
+        }
+      }
+    }
   }
 
   return entities;
@@ -1999,58 +2060,153 @@ export async function getEventsAndAnnouncementsAnswer(
 // ----------------------------------------------------------------------------
 
 export async function getClubsAnswer(
+  entities: ExtractedEntities,
   intents: CampusAiIntent[],
   normQ: string,
-  rawQuery: string
+  rawQuery: string,
+  context?: CampusAiContext
 ): Promise<CampusAiResult | null> {
-  const isClub = intents.includes('CLUB_SEARCH') || normQ.includes('club') || normQ.includes('student activit') || normQ.includes('ieee') || normQ.includes('nss') || normQ.includes('tedx') || normQ.includes('idea lab');
-  if (!isClub) return null;
+  const isClubIntent = intents.includes('CLUB_SEARCH') || intents.includes('CLUB_DETAILS') || intents.includes('CLUB_CATEGORY_SEARCH');
+  const mentionsClubs = /\b(club|clubs|society|societies|chapter|chapters|tnt|lasya|prayaag|theatrix|chiraranga|debsoc|19a|iclick|inara|clutchrit|nakama|ritmunsoc|ieee|csi|ici|iiche|roborit)\b/i.test(normQ);
 
-  try {
-    const res = await fetchClubs();
-    const clubs = (Array.isArray(res) ? res : ((res as any)?.data || [])) as any[];
-    if (Array.isArray(clubs) && clubs.length > 0) {
-      let filtered = clubs;
-      if (normQ.includes('technical')) {
-        filtered = clubs.filter((c) => c.category === 'Technical' || c.category === 'Professional Society' || c.name.toLowerCase().includes('ieee') || c.name.toLowerCase().includes('apple'));
-      } else if (normQ.includes('innovation')) {
-        filtered = clubs.filter((c) => c.category === 'Innovation' || c.name.toLowerCase().includes('idea') || c.name.toLowerCase().includes('iic'));
-      } else if (normQ.includes('sports')) {
-        filtered = clubs.filter((c) => c.category === 'Sports');
-      } else if (normQ.includes('ieee')) {
-        filtered = clubs.filter((c) => c.name.toLowerCase().includes('ieee'));
-      }
+  if (!isClubIntent && !mentionsClubs && !entities.matchedClub && !entities.isPronounClub) {
+    return null;
+  }
 
-      const sample = filtered.slice(0, 5);
-      const text = sample.map((c, i) => `${i + 1}. ${c.name} [${c.category}]\n   ${c.description ? c.description.slice(0, 110) + '...' : ''}`).join('\n\n');
+  // 1. Specific Club Match (e.g. "What is TNT?", "Tell me about Lasya", "IEEE club details", "what do they do?")
+  let targetClub = entities.matchedClub;
+  if (!targetClub && entities.isPronounClub && context?.lastClub) {
+    targetClub = context.lastClub;
+  }
 
+  if (targetClub) {
+    const c = targetClub;
+    let chaptersBlock = '';
+    if (c.relatedChapters && c.relatedChapters.length > 0) {
+      chaptersBlock = `\n\n**Related Chapters:**\n${c.relatedChapters.map((ch) => `• ${ch}`).join('\n')}`;
+    }
+
+    // Check if asking specifically about chapters (e.g. "uske chapters?", "What chapters are under IEEE?")
+    if (/\b(chapter|chapters|wings|sub-chapters|subchapters)\b/i.test(normQ) && c.relatedChapters && c.relatedChapters.length > 0) {
       return {
         queryText: rawQuery,
         normalizedQuery: normQ,
-        intents: ['CLUB_SEARCH'],
-        responseText: `Official MSRIT Student Organizations & Clubs (${filtered.length}):\n\n${text}`,
-        subText: "Source: MSRIT Official Website (https://www.msrit.edu)",
-        matchedClubs: sample.map((c) => ({
-          name: c.name,
-          category: c.category,
-          description: c.description,
-          officialUrl: c.officialUrl || c.sourceUrl || 'https://www.msrit.edu',
-          sourceUrl: c.sourceUrl || 'https://www.msrit.edu'
-        })),
-        sourceUrl: 'https://www.msrit.edu',
-        sourceAttribution: 'MSRIT Official Website'
+        intents: ['CLUB_DETAILS'],
+        responseText: `**${c.name} — Related Chapters**\n\n${c.relatedChapters.map((ch) => `• **${ch}**`).join('\n')}\n\n*${c.description}*`,
+        subText: `Category: ${c.category} • Source: ${c.source || 'Provided MSRIT club directory'}`,
+        matchedClub: c,
+        actionTargetId: 'sec-others'
       };
     }
-  } catch {
-    // Fallback message
+
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['CLUB_DETAILS'],
+      responseText: `**${c.name}**\n${c.category}\n\n${c.description}${chaptersBlock}`,
+      subText: `Category: ${c.category} • Source: ${c.source || 'Provided MSRIT club directory'}`,
+      matchedClub: c,
+      actionTargetId: 'sec-others'
+    };
   }
+
+  // 2. Domain / Genre Query (e.g. "dance clubs?", "music club hai kya?", "photography club?", "debate club", "gaming club", "robotics club")
+  const isDance = /\b(dance|dancing|choreography)\b/i.test(normQ);
+  const isMusic = /\b(music|vocal|singing|band|bands|instrumental)\b/i.test(normQ);
+  const isDrama = /\b(drama|theatre|theater|nukkad|natak|acting|plays)\b/i.test(normQ);
+  const isPhoto = /\b(photo|photography|videography|video|camera)\b/i.test(normQ);
+  const isGaming = /\b(gaming|esports|games|gamer)\b/i.test(normQ);
+  const isAnime = /\b(anime|manga|japanese|otaku)\b/i.test(normQ);
+  const isDebate = /\b(debate|debating|debates|mun|public\s*speaking|parliamentary)\b/i.test(normQ);
+  const isRobotics = /\b(robotics|robot|robots|automation)\b/i.test(normQ);
+  const isCoding = /\b(coding|software|code|hackathon|hackathons|csi)\b/i.test(normQ);
+  const isCivil = /\b(civil|concrete|ici)\b/i.test(normQ);
+  const isChemical = /\b(chemical|iiche)\b/i.test(normQ);
+  const isComedy = /\b(comedy|stand-up|standup|improv)\b/i.test(normQ);
+  const isTechCat = /\b(technical|co-curricular|chapters|technology)\b/i.test(normQ);
+  const isCulturalCat = /\b(cultural|arts|performing\s*arts)\b/i.test(normQ) && !isTechCat;
+
+  let domainMatches: VerifiedClub[] = [];
+  let domainTitle = '';
+
+  if (isDance) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'TNT' || c.name === 'Lasya');
+    domainTitle = 'Dance & Performing Arts Clubs';
+  } else if (isMusic) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('Music'));
+    domainTitle = 'Music & Vocal Clubs';
+  } else if (isDrama) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'Theatrix' || c.name === 'Chiraranga');
+    domainTitle = 'Theatre & Dramatics Clubs';
+  } else if (isPhoto) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'iClick' || c.name === 'STUDIO.RIT');
+    domainTitle = 'Photography & Media Production Clubs';
+  } else if (isGaming) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'ClutchRIT');
+    domainTitle = 'Gaming & Esports Community';
+  } else if (isAnime) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'Nakama RIT');
+    domainTitle = 'Anime & Pop-Culture Community';
+  } else if (isDebate) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('DEBSOC') || c.name.includes('RITMUNSOC'));
+    domainTitle = 'Debating & Model United Nations Clubs';
+  } else if (isRobotics) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name === 'RoboRIT');
+    domainTitle = 'Robotics & Automation Clubs';
+  } else if (isCoding) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('CSI') || c.name.includes('IEEE'));
+    domainTitle = 'Coding & Technical Chapters';
+  } else if (isCivil) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('ICI'));
+    domainTitle = 'Civil Engineering Chapters';
+  } else if (isChemical) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('IIChE'));
+    domainTitle = 'Chemical Engineering Chapters';
+  } else if (isComedy) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.name.includes('Comedy'));
+    domainTitle = 'Comedy & Improv Community';
+  } else if (isCulturalCat) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.category === 'Cultural & Performing Arts');
+    domainTitle = 'Cultural & Performing Arts Clubs';
+  } else if (isTechCat) {
+    domainMatches = VERIFIED_MSRIT_CLUBS.filter((c) => c.category === 'Technical & Co-Curricular Chapters');
+    domainTitle = 'Technical & Co-Curricular Chapters';
+  }
+
+  if (domainMatches.length > 0) {
+    const list = domainMatches.map((c, i) => `${i + 1}. **${c.name}** — ${c.category}\n   ${c.description}`).join('\n\n');
+    return {
+      queryText: rawQuery,
+      normalizedQuery: normQ,
+      intents: ['CLUB_CATEGORY_SEARCH'],
+      responseText: `**MSRIT ${domainTitle}** (${domainMatches.length}):\n\n${list}`,
+      subText: 'Source: Provided MSRIT club directory • Verified database records',
+      matchedClubs: domainMatches.map((c) => ({
+        name: c.name,
+        category: c.category,
+        description: c.description
+      })),
+      matchedClub: domainMatches.length > 0 ? domainMatches[0] : undefined,
+      actionTargetId: 'sec-others'
+    };
+  }
+
+  // 3. General Club Directory Listing (Limit to max 5 featured clubs per Prompt Rule 17)
+  const sample = VERIFIED_MSRIT_CLUBS.slice(0, 5);
+  const sampleText = sample.map((c, i) => `${i + 1}. **${c.name}** — ${c.category}\n   ${c.description}`).join('\n\n');
 
   return {
     queryText: rawQuery,
     normalizedQuery: normQ,
     intents: ['CLUB_SEARCH'],
-    responseText: "I couldn't find that information in the official MSRIT data.",
-    subText: "Source: MSRIT Official Website"
+    responseText: `**MSRIT Clubs & Student Activities Directory** (22 Verified Clubs)\n\n**Categories:**\n• **Cultural & Performing Arts** (7 clubs)\n• **Literary, Quizzing & Media** (10 clubs)\n• **Technical & Co-Curricular Chapters** (5 clubs)\n\n**Featured Clubs:**\n\n${sampleText}\n\n*View all 22 clubs and chapters under Others → Clubs & Student Activities.*`,
+    subText: 'Source: Provided MSRIT club directory • Filter by category or search by name.',
+    matchedClubs: sample.map((c) => ({
+      name: c.name,
+      category: c.category,
+      description: c.description
+    })),
+    actionTargetId: 'sec-others'
   };
 }
 
@@ -2104,12 +2260,14 @@ export function maintainConversationContext(
   if (result.matchedLocation) updatedContext.lastLocation = result.matchedLocation;
   if (result.matchedDepartment) updatedContext.lastDepartment = result.matchedDepartment;
   if (result.matchedRoom) updatedContext.lastRoom = result.matchedRoom;
+  if (result.matchedClub) updatedContext.lastClub = result.matchedClub;
   if (result.intents) updatedContext.lastIntents = result.intents;
 
   const entities = extractEntities(normalizeQuery(rawQuery), rawQuery, result.intents || [], context);
   if (entities.departmentCode) updatedContext.lastDepartmentCode = entities.departmentCode;
   if (entities.roomCategory) updatedContext.lastRoomCategory = entities.roomCategory;
   if (entities.buildingKey) updatedContext.lastBuildingKey = entities.buildingKey;
+  if (entities.matchedClub && !updatedContext.lastClub) updatedContext.lastClub = entities.matchedClub;
 
   result.contextUpdated = updatedContext;
   return result;
@@ -2138,7 +2296,7 @@ export async function processCampusAiQuery(
   const normQ = normalizeQuery(rawQuery);
 
   // Step 2: Detect Intents
-  const intents = detectIntents(normQ);
+  const intents = detectIntents(normQ, context);
 
   // Step 3: Extract Entities
   const entities = extractEntities(normQ, rawQuery, intents, context);
@@ -2169,31 +2327,36 @@ export async function processCampusAiQuery(
     return maintainConversationContext(facultyAns, rawQuery, context);
   }
 
-  // 5. Building & Location Handler
+  // 5. Clubs & Activities (High deterministic priority for club inquiries)
+  const clubAns = await getClubsAnswer(entities, intents, normQ, rawQuery, context);
+  if (clubAns && (entities.matchedClub || entities.isPronounClub || intents.includes('CLUB_DETAILS') || intents.includes('CLUB_CATEGORY_SEARCH'))) {
+    return maintainConversationContext(clubAns, rawQuery, context);
+  }
+
+  // 6. Building & Location Handler
   const bldgAns = getBuildingAnswer(entities, intents, normQ);
   if (bldgAns) {
     return maintainConversationContext(bldgAns, rawQuery, context);
   }
 
-  // 6. Issue Reports Handler
+  // 7. Issue Reports Handler
   const issueAns = getIssueAnswer(entities, normQ);
   if (issueAns) {
     return maintainConversationContext(issueAns, rawQuery, context);
   }
 
-  // 7. Events & Announcements (Only when asking for real events/schedules)
+  // 8. Events & Announcements (Only when asking for real events/schedules)
   const eventAns = await getEventsAndAnnouncementsAnswer(intents, normQ, rawQuery);
   if (eventAns) {
     return maintainConversationContext(eventAns, rawQuery, context);
   }
 
-  // 8. Clubs & Activities
-  const clubAns = await getClubsAnswer(intents, normQ, rawQuery);
+  // 9. Clubs General Handler (If not already dispatched)
   if (clubAns) {
     return maintainConversationContext(clubAns, rawQuery, context);
   }
 
-  // 9. Lost & Found Handler
+  // 10. Lost & Found Handler
   const lfAns = getLostFoundAnswer(entities, normQ);
   if (lfAns) {
     return maintainConversationContext(lfAns, rawQuery, context);

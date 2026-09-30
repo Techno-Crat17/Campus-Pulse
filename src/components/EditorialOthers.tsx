@@ -52,14 +52,13 @@ export interface EventItem {
 export interface ClubItem {
   id: string;
   name: string;
-  category: string;
+  normalizedName?: string;
+  category: 'Cultural & Performing Arts' | 'Literary, Quizzing & Media' | 'Technical & Co-Curricular Chapters' | string;
   description: string;
-  department?: string | null;
-  officialUrl: string;
-  socialLinks?: string[];
-  source: string;
-  sourceUrl: string;
-  lastUpdated: string;
+  type?: string;
+  relatedChapters?: string[];
+  source?: string;
+  active?: boolean;
 }
 
 export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSection }) => {
@@ -82,6 +81,7 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
   const [clubsLastFetched, setClubsLastFetched] = useState<string | null>(null);
   const [clubSearch, setClubSearch] = useState<string>('');
   const [clubCategoryFilter, setClubCategoryFilter] = useState<string>('All');
+  const [selectedClub, setSelectedClub] = useState<ClubItem | null>(null);
 
   // Modals
   const [showAllAnnouncementsModal, setShowAllAnnouncementsModal] = useState<boolean>(false);
@@ -151,16 +151,18 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
 
   // Filtered Clubs
   const filteredClubs = clubs.filter((c) => {
+    const qNorm = clubSearch.trim().toLowerCase();
     const matchesSearch =
-      !clubSearch.trim() ||
-      c.name.toLowerCase().includes(clubSearch.toLowerCase()) ||
-      c.category.toLowerCase().includes(clubSearch.toLowerCase()) ||
-      (c.department && c.department.toLowerCase().includes(clubSearch.toLowerCase())) ||
-      c.description.toLowerCase().includes(clubSearch.toLowerCase());
+      !qNorm ||
+      c.name.toLowerCase().includes(qNorm) ||
+      (c.normalizedName && c.normalizedName.includes(qNorm)) ||
+      c.category.toLowerCase().includes(qNorm) ||
+      c.description.toLowerCase().includes(qNorm) ||
+      (c.relatedChapters && c.relatedChapters.some(rc => rc.toLowerCase().includes(qNorm)));
 
     const matchesCategory =
       clubCategoryFilter === 'All' ||
-      c.category.toLowerCase().includes(clubCategoryFilter.toLowerCase());
+      c.category.toLowerCase() === clubCategoryFilter.toLowerCase();
 
     return matchesSearch && matchesCategory;
   });
@@ -603,7 +605,7 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
           </div>
 
           {/* Card 7: 🎯 Clubs & Student Activities (Full Row Card) */}
-          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-5 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all md:col-span-2 lg:col-span-3">
+          <div className="p-6 bg-white dark:bg-[#1A1C24] border-2 border-[#111111]/15 dark:border-white/15 space-y-6 font-mono text-xs shadow-2xs hover:border-[#DC2626] transition-all md:col-span-2 lg:col-span-3">
             
             {/* Card Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 gap-2">
@@ -613,11 +615,11 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 font-bold uppercase text-[10px]">
-                  Live from MSRIT Official Website
+                  Verified MSRIT Club Directory
                 </span>
                 {clubsLastFetched && (
                   <span className="text-[10px] text-[#666660] dark:text-[#9CA3AF]">
-                    Last updated: {clubsLastFetched}
+                    Total: {filteredClubs.length} Active Clubs
                   </span>
                 )}
               </div>
@@ -633,7 +635,7 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                     type="text"
                     value={clubSearch}
                     onChange={(e) => setClubSearch(e.target.value)}
-                    placeholder="Search clubs, societies, cells, or activities..."
+                    placeholder="Search clubs by name, category, or description (e.g., TNT, IEEE, Quiz Club, Robotics)..."
                     className="w-full bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/20 dark:border-white/20 pl-9 pr-3.5 py-2 text-xs text-[#111111] dark:text-[#F3F3EE] focus:outline-none focus:border-[#DC2626]"
                   />
                   {clubSearch && (
@@ -648,7 +650,12 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
 
                 {/* Filter Pills */}
                 <div className="flex flex-wrap gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                  {['All', 'Technical', 'Cultural', 'Sports', 'Social', 'Innovation'].map((cat) => (
+                  {[
+                    'All',
+                    'Cultural & Performing Arts',
+                    'Literary, Quizzing & Media',
+                    'Technical & Co-Curricular Chapters'
+                  ].map((cat) => (
                     <button
                       key={cat}
                       onClick={() => setClubCategoryFilter(cat)}
@@ -658,14 +665,14 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
                           : 'bg-white dark:bg-white/5 border-[#111111]/15 dark:border-white/15 text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626]'
                       }`}
                     >
-                      {cat}
+                      {cat === 'All' ? 'ALL CLUBS' : cat}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Clubs Grid Sub-Component */}
+            {/* Category-Wise Clubs Display */}
             {clubsLoading ? (
               <div className="py-12 flex flex-col items-center justify-center space-y-2 text-[#666660] dark:text-[#9CA3AF]">
                 <Loader2 className="w-6 h-6 animate-spin text-[#DC2626]" />
@@ -675,48 +682,91 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
               <div className="p-4 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 text-[11px]">
                 {clubsError}
               </div>
+            ) : filteredClubs.length === 0 ? (
+              <div className="p-6 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 text-center text-xs text-[#666660] dark:text-[#9CA3AF]">
+                No clubs found matching &quot;{clubSearch}&quot;. Try a different keyword or select &quot;ALL CLUBS&quot;.
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
-                {filteredClubs.map((club) => (
-                  <div
-                    key={club.id}
-                    className="p-4 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-3 flex flex-col justify-between group"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold text-[9px] uppercase">
-                          {club.category}
+              <div className="space-y-8 pt-1">
+                {(clubCategoryFilter === 'All'
+                  ? [
+                      'Cultural & Performing Arts',
+                      'Literary, Quizzing & Media',
+                      'Technical & Co-Curricular Chapters'
+                    ]
+                  : [clubCategoryFilter]
+                ).map((catName) => {
+                  const catClubs = filteredClubs.filter(
+                    (c) => c.category.toLowerCase() === catName.toLowerCase()
+                  );
+                  if (catClubs.length === 0) return null;
+
+                  return (
+                    <div key={catName} className="space-y-3">
+                      <div className="flex items-center justify-between border-b-2 border-[#111111]/15 dark:border-white/15 pb-2">
+                        <div className="font-syne font-extrabold text-sm sm:text-base uppercase tracking-tight text-[#111111] dark:text-[#F3F3EE] flex items-center gap-2">
+                          <span className="w-2 h-2 bg-[#DC2626]" />
+                          <span>{catName}</span>
+                        </div>
+                        <span className="px-2 py-0.5 bg-[#111111]/5 dark:bg-white/10 text-[10px] font-bold text-[#DC2626]">
+                          {catClubs.length} {catClubs.length === 1 ? 'Club' : 'Clubs'}
                         </span>
-                        {club.department && (
-                          <span className="text-[9px] text-[#666660] dark:text-[#9CA3AF] truncate max-w-[150px]">
-                            {club.department}
-                          </span>
-                        )}
                       </div>
 
-                      <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
-                        {club.name}
-                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {catClubs.map((club) => (
+                          <div
+                            key={club.id || club.name}
+                            className="p-4 bg-[#F5F4EF]/70 dark:bg-white/5 border border-[#111111]/10 dark:border-white/10 hover:border-[#DC2626] transition-all space-y-3 flex flex-col justify-between group shadow-2xs"
+                          >
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="px-2 py-0.5 bg-[#111111] dark:bg-white dark:text-[#111111] text-white font-bold text-[9px] uppercase">
+                                  {club.category}
+                                </span>
+                              </div>
 
-                      <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] leading-relaxed line-clamp-3">
-                        {club.description}
-                      </p>
-                    </div>
+                              <h4 className="font-syne font-bold text-sm text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors leading-tight">
+                                {club.name}
+                              </h4>
 
-                    <div className="pt-2 border-t border-[#111111]/5 dark:border-white/5 flex items-center justify-between">
-                      <span className="text-[9px] text-[#888880] uppercase">Source: {club.source}</span>
-                      <a
-                        href={club.officialUrl || club.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 bg-[#111111] dark:bg-[#DC2626] hover:bg-[#DC2626] text-white text-[10px] font-bold uppercase inline-flex items-center gap-1 transition-colors"
-                      >
-                        <span>VIEW DETAILS</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
+                              <p className="text-[11px] text-[#666660] dark:text-[#9CA3AF] leading-relaxed line-clamp-3">
+                                {club.description}
+                              </p>
+
+                              {club.relatedChapters && club.relatedChapters.length > 0 && (
+                                <div className="pt-1 flex flex-wrap gap-1">
+                                  {club.relatedChapters.map((ch, cIdx) => (
+                                    <span
+                                      key={cIdx}
+                                      className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-[9px] font-bold"
+                                    >
+                                      {ch}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="pt-3 border-t border-[#111111]/10 dark:border-white/10 flex items-center justify-between">
+                              <span className="text-[9px] text-[#888880] uppercase truncate max-w-[130px]">
+                                {club.source || 'MSRIT Club Directory'}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedClub(club)}
+                                className="px-3 py-1 bg-[#111111] dark:bg-white text-white dark:text-[#111111] hover:bg-[#DC2626] dark:hover:bg-[#DC2626] dark:hover:text-white text-[10px] font-bold uppercase inline-flex items-center gap-1 transition-colors cursor-pointer"
+                              >
+                                <span>VIEW DETAILS</span>
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -877,10 +927,84 @@ export const EditorialOthers: React.FC<EditorialOthersProps> = ({ onNavigateSect
 
             <button
               onClick={() => setShowAllEventsModal(false)}
-              className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-xs uppercase"
+              className="w-full py-2.5 bg-[#111111] dark:bg-[#0E0F12] hover:bg-[#DC2626] text-white font-bold text-xs uppercase cursor-pointer"
             >
               CLOSE EVENTS INDEX
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: View Single Club Details */}
+      {selectedClub && (
+        <div
+          className="fixed inset-0 z-[999] bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setSelectedClub(null)}
+        >
+          <div
+            className="bg-white dark:bg-[#1A1C24] border-2 border-[#111111] dark:border-white/20 p-6 max-w-lg w-full font-mono text-xs space-y-4 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 gap-3">
+              <div>
+                <span className="px-2 py-0.5 bg-[#DC2626]/10 text-[#DC2626] border border-[#DC2626]/30 text-[9px] font-bold uppercase inline-block mb-1.5">
+                  {selectedClub.category}
+                </span>
+                <h3 className="font-syne font-extrabold text-lg sm:text-xl text-[#111111] dark:text-[#F3F3EE] uppercase tracking-tight">
+                  {selectedClub.name}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedClub(null)}
+                className="p-1 hover:bg-[#DC2626] hover:text-white text-[#888] border border-[#111111]/15 dark:border-white/15 transition-colors cursor-pointer shrink-0"
+                aria-label="Close modal"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs leading-relaxed text-[#111111] dark:text-[#F3F3EE]">
+              <div>
+                <span className="text-[10px] text-[#666660] dark:text-[#9CA3AF] uppercase block font-bold mb-1">
+                  DESCRIPTION & MISSION
+                </span>
+                <p className="bg-[#F5F4EF]/70 dark:bg-white/5 p-3.5 border border-[#111111]/10 dark:border-white/10 leading-relaxed text-xs">
+                  {selectedClub.description}
+                </p>
+              </div>
+
+              {selectedClub.relatedChapters && selectedClub.relatedChapters.length > 0 && (
+                <div>
+                  <span className="text-[10px] text-[#666660] dark:text-[#9CA3AF] uppercase block font-bold mb-1.5">
+                    RELATED CHAPTERS & WINGS
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedClub.relatedChapters.map((ch, idx) => (
+                      <span
+                        key={idx}
+                        className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300 font-bold text-[10px] uppercase"
+                      >
+                        {ch}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-[#111111]/10 dark:border-white/10 flex items-center justify-between text-[10px] text-[#666660] dark:text-[#9CA3AF]">
+                <span>SOURCE: {selectedClub.source || 'Provided MSRIT club directory'}</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">● ACTIVE DIRECTORY RECORD</span>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setSelectedClub(null)}
+                className="px-4 py-2 bg-[#111111] dark:bg-white text-white dark:text-[#111111] hover:bg-[#DC2626] dark:hover:bg-[#DC2626] dark:hover:text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                CLOSE
+              </button>
+            </div>
           </div>
         </div>
       )}

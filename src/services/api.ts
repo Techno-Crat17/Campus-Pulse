@@ -1,4 +1,5 @@
 import { isBlockedUser, BLOCKED_USER_ERROR_MESSAGE } from '../config/blockedUsers';
+import { VERIFIED_MSRIT_CLUBS } from '../data/clubsData';
 
 /**
  * Campus Pulse Frontend API Service Client
@@ -459,20 +460,70 @@ export async function fetchEvents(): Promise<{ success: boolean; data: any[]; la
   return { success: false, data: [] };
 }
 
-export async function fetchClubs(): Promise<{ success: boolean; data: any[]; lastFetched?: string }> {
+export async function fetchClubs(params?: { category?: string; q?: string; limit?: number }): Promise<{ success: boolean; data: any[]; lastFetched?: string }> {
   try {
     const isOnline = await checkBackendHealth();
     if (isOnline) {
-      const res = await fetch(`${API_BASE_URL}/clubs`);
+      const searchParams = new URLSearchParams();
+      if (params?.category && params.category !== 'All') searchParams.set('category', params.category);
+      if (params?.q) searchParams.set('q', params.q);
+      if (params?.limit) searchParams.set('limit', String(params.limit));
+
+      const queryStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
+      const res = await fetch(`${API_BASE_URL}/clubs${queryStr}`);
       if (res.ok) {
         const json = await res.json();
-        if (json.success && Array.isArray(json.data)) return json;
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) return json;
       }
     }
   } catch (err) {
     console.warn('[API Client] fetchClubs failed:', err);
   }
-  return { success: false, data: [] };
+
+  // Fallback to static verified directory
+  let data = [...VERIFIED_MSRIT_CLUBS];
+  if (params?.category && params.category !== 'All') {
+    data = data.filter(c => c.category.toLowerCase() === params.category!.toLowerCase());
+  }
+  if (params?.q) {
+    const qNorm = params.q.toLowerCase().trim();
+    data = data.filter(c =>
+      c.normalizedName.includes(qNorm) ||
+      c.name.toLowerCase().includes(qNorm) ||
+      c.description.toLowerCase().includes(qNorm) ||
+      c.category.toLowerCase().includes(qNorm) ||
+      (c.relatedChapters && c.relatedChapters.some(rc => rc.toLowerCase().includes(qNorm)))
+    );
+  }
+  if (params?.limit) {
+    data = data.slice(0, params.limit);
+  }
+
+  return { success: true, data, lastFetched: new Date().toISOString() };
+}
+
+export async function fetchClubById(idOrName: string): Promise<{ success: boolean; data: any | null }> {
+  try {
+    const isOnline = await checkBackendHealth();
+    if (isOnline) {
+      const res = await fetch(`${API_BASE_URL}/clubs/${encodeURIComponent(idOrName)}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) return json;
+      }
+    }
+  } catch (err) {
+    console.warn('[API Client] fetchClubById failed:', err);
+  }
+
+  const norm = idOrName.toLowerCase().trim();
+  const found = VERIFIED_MSRIT_CLUBS.find(c =>
+    c.normalizedName === norm ||
+    c.name.toLowerCase() === norm ||
+    (c.id && c.id === idOrName)
+  );
+
+  return { success: !!found, data: found || null };
 }
 
 // ----------------------------------------------------
