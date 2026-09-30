@@ -1,47 +1,17 @@
 import React, { useState, useEffect } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, ArrowUpRight, Bell } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
-interface MinimalNavbarProps {
-  onNavigateSection: (sectionId: string) => void;
-}
-
-export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection }) => {
+export const MinimalNavbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('sec-hero');
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
-
-      // Scrollspy logic to glow the active section button
-      const scrollPosition = window.scrollY + window.innerHeight * 0.35;
-      
-      const sections = [
-        { id: 'sec-others', navId: 'sec-others' },
-        { id: 'sec-lostfound', navId: 'sec-lostfound' },
-        { id: 'sec-report', navId: 'sec-report' },
-        { id: 'sec-faculty', navId: 'sec-faculty' },
-        { id: 'sec-find', navId: 'sec-find' },
-        { id: 'sec-map', navId: 'sec-map' },
-        { id: 'sec-ask', navId: 'sec-ask' },
-        { id: 'sec-hero', navId: 'sec-hero' },
-      ];
-
-      for (const sec of sections) {
-        const el = document.getElementById(sec.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          const top = rect.top + window.scrollY;
-          if (scrollPosition >= top) {
-            setActiveSection(sec.navId);
-            return;
-          }
-        }
-      }
-      setActiveSection('sec-hero');
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -58,20 +28,20 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
   }, [toastMessage]);
 
   const navItems = [
-    { id: 'sec-hero', label: '01 / HOME' },
-    { id: 'sec-ask', label: '02 / ASK' },
-    { id: 'sec-map', label: '03 / MAP' },
-    { id: 'sec-find', label: '04 / SPACES' },
-    { id: 'sec-faculty', label: '05 / FACULTY' },
-    { id: 'sec-report', label: '06 / ISSUES' },
-    { id: 'sec-lostfound', label: '07 / LOST & FOUND' },
-    { id: 'sec-others', label: '08 / OTHERS' },
+    { path: '/', label: '01 / HOME' },
+    { path: '/ask-ai', label: '02 / ASK' },
+    { path: '/map', label: '03 / MAP' },
+    { path: '/libraries', label: '04 / LIBRARIES' },
+    { path: '/faculty', label: '05 / FACULTY' },
+    { path: '/issues', label: '06 / ISSUES' },
+    { path: '/others', label: '07 / OTHERS' },
   ];
 
-  const handleNavClick = (id: string) => {
-    setActiveSection(id);
-    onNavigateSection(id);
-    setMenuOpen(false);
+  const isNavItemActive = (itemPath: string) => {
+    if (itemPath === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(itemPath);
   };
 
   return (
@@ -111,8 +81,9 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
       <div className="max-w-[1700px] mx-auto px-4 sm:px-8 lg:px-12 flex items-center justify-between font-mono text-xs text-[#111111] dark:text-[#F3F3EE]">
         
         {/* Campus Pulse Brand Logo */}
-        <button 
-          onClick={() => handleNavClick('sec-hero')}
+        <Link
+          to="/"
+          onClick={() => setMenuOpen(false)}
           aria-label="Campus Pulse Home"
           title="Campus Pulse • UVERMA"
           className="cursor-pointer font-bold text-sm uppercase flex items-center gap-2.5 sm:gap-3 group focus:outline-none transition-transform hover:opacity-95"
@@ -126,25 +97,25 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
           <span className="hidden min-[380px]:inline-block font-syne font-extrabold tracking-tight text-sm sm:text-base text-[#111111] dark:text-[#F3F3EE] group-hover:text-[#DC2626] transition-colors">
             CAMPUS PULSE
           </span>
-        </button>
+        </Link>
 
-        {/* Minimal Desktop Navigation */}
+        {/* Minimal Desktop Route Navigation */}
         <nav className="hidden lg:flex items-center space-x-7 text-[11px] tracking-wider text-[#666660] dark:text-[#9CA3AF]">
           {navItems.map((item) => {
-            const isActive = activeSection === item.id;
+            const active = isNavItemActive(item.path);
 
             return (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
+              <NavLink
+                key={item.path}
+                to={item.path}
                 className={`transition-all duration-300 uppercase font-mono flex items-center gap-1.5 py-1 ${
-                  isActive
+                  active
                     ? 'text-[#DC2626] font-extrabold drop-shadow-[0_0_8px_rgba(220,38,38,0.55)] border-b-2 border-[#DC2626]'
                     : 'text-[#666660] dark:text-[#9CA3AF] hover:text-[#DC2626]'
                 }`}
               >
                 <span>{item.label}</span>
-              </button>
+              </NavLink>
             );
           })}
         </nav>
@@ -177,23 +148,24 @@ export const MinimalNavbar: React.FC<MinimalNavbarProps> = ({ onNavigateSection 
             </div>
             <div className="space-y-2 sm:space-y-3">
               {navItems.map((item) => {
-                const isActive = activeSection === item.id;
+                const active = isNavItemActive(item.path);
 
                 return (
-                  <div
-                    key={item.id}
-                    onClick={() => handleNavClick(item.id)}
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMenuOpen(false)}
                     className={`group cursor-pointer flex items-center justify-between border-b border-[#111111]/10 dark:border-white/10 pb-3 sm:pb-4 text-2xl sm:text-4xl md:text-6xl font-syne font-black transition-colors uppercase ${
-                      isActive ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] dark:text-[#F3F3EE] hover:text-[#DC2626]'
+                      active ? 'text-[#DC2626] drop-shadow-[0_0_10px_rgba(220,38,38,0.4)]' : 'text-[#111111] dark:text-[#F3F3EE] hover:text-[#DC2626]'
                     }`}
                   >
                     <div className="flex items-center gap-3 flex-wrap">
                       <span>{item.label}</span>
                     </div>
                     <ArrowUpRight className={`w-8 h-8 transition-all group-hover:translate-x-1 group-hover:-translate-y-1 ${
-                      isActive ? 'text-[#DC2626]' : 'text-[#666660] dark:text-[#9CA3AF] group-hover:text-[#DC2626]'
+                      active ? 'text-[#DC2626]' : 'text-[#666660] dark:text-[#9CA3AF] group-hover:text-[#DC2626]'
                     }`} />
-                  </div>
+                  </NavLink>
                 );
               })}
             </div>

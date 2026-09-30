@@ -1,12 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 
-interface EditorialFooterProps {
-  onAskClick: () => void;
-  onExploreClick?: () => void;
-}
-
-export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, onExploreClick }) => {
+export const EditorialFooter: React.FC = () => {
   return (
     <footer className="py-16 sm:py-24 lg:py-32 px-4 sm:px-8 lg:px-12 bg-[#F5F4EF] text-[#111111] relative overflow-hidden border-t border-[#111111]/10">
       <div className="max-w-[1700px] mx-auto space-y-16 sm:space-y-24">
@@ -34,8 +30,8 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
         {/* Final CTA Line */}
         <div className="pt-8 border-t border-[#111111]/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-1">
-            <div 
-              onClick={onExploreClick}
+            <Link
+              to="/"
               className="font-syne text-2xl sm:text-3xl font-bold uppercase text-[#111111] dark:text-[#F3F3EE] cursor-pointer hover:text-[#DC2626] transition-colors flex items-center gap-3"
             >
               <img 
@@ -44,19 +40,19 @@ export const EditorialFooter: React.FC<EditorialFooterProps> = ({ onAskClick, on
                 className="w-8 h-8 rounded-lg bg-[#0A0A0A] object-contain shadow-xs border border-black/15 dark:border-white/15" 
               />
               <span>CAMPUS PULSE <span className="text-[#DC2626]">→</span></span>
-            </div>
+            </Link>
             <div className="font-mono text-xs text-[#666660] uppercase">
               ASK YOUR CAMPUS. SEE YOUR CAMPUS. NAVIGATE YOUR CAMPUS.
             </div>
           </div>
 
-          <button
-            onClick={onAskClick}
+          <Link
+            to="/ask-ai"
             className="w-full sm:w-auto px-8 py-4 bg-[#111111] hover:bg-[#DC2626] text-white font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs"
           >
             <span>LAUNCH ASSISTANT</span>
             <ArrowUpRight className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
 
         {/* Minimal Footer Line */}

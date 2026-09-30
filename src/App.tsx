@@ -1,14 +1,14 @@
-import { useState } from 'react';
+import { Routes, Route, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { MinimalNavbar } from './components/MinimalNavbar';
-import { EditorialHero } from './components/EditorialHero';
-import { EditorialAssistant } from './components/EditorialAssistant';
 import { GoogleMapsCampusExplorer } from './components/GoogleMapsCampusExplorer';
+import { EditorialAssistant } from './components/EditorialAssistant';
 import { EditorialRecommender } from './components/EditorialRecommender';
 import { EditorialFaculty } from './components/EditorialFaculty';
 import { EditorialIssues } from './components/EditorialIssues';
 import { EditorialLostFound } from './components/EditorialLostFound';
 import { EditorialOthers } from './components/EditorialOthers';
 import { EditorialFooter } from './components/EditorialFooter';
+import { HomePage } from './pages/HomePage';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { TimeProvider } from './context/TimeContext';
@@ -16,95 +16,150 @@ import { TimeSimulationBar } from './components/TimeSimulationBar';
 import { FloatingScrollArrow } from './components/FloatingScrollArrow';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PwaInstallPrompt } from './components/PwaInstallPrompt';
+import { ScrollToTop } from './components/ScrollToTop';
+
+/**
+ * Route wrapper for /map that reads optional search parameters:
+ * e.g., /map?building=ise_hod_office
+ */
+function MapRouteWrapper() {
+  const [searchParams] = useSearchParams();
+  const buildingId = searchParams.get('building') || searchParams.get('nodeId') || 'ise-lab-2';
+
+  return (
+    <ErrorBoundary
+      fallbackTitle="Google Maps Explorer Unavailable"
+      fallbackMessage="The interactive Google Maps explorer could not be initialized. All other campus telemetry features and building schedules remain active."
+    >
+      <GoogleMapsCampusExplorer initialNodeId={buildingId} />
+    </ErrorBoundary>
+  );
+}
+
+/**
+ * 404 Not Found Route Component
+ */
+function NotFoundRoute() {
+  return (
+    <div className="min-h-[65vh] flex flex-col items-center justify-center text-center p-8 font-mono space-y-6">
+      <div className="text-6xl font-syne font-black text-[#DC2626]">404</div>
+      <h1 className="text-2xl sm:text-4xl font-syne font-extrabold uppercase text-[#111111] dark:text-[#F3F3EE] tracking-tight">
+        PAGE NOT FOUND
+      </h1>
+      <p className="text-xs sm:text-sm text-[#666660] dark:text-[#9CA3AF] max-w-md leading-relaxed">
+        The route you are trying to access does not exist or has moved. Return to the home dashboard to continue exploring Campus Pulse.
+      </p>
+      <Link
+        to="/"
+        className="px-6 py-3 bg-[#111111] dark:bg-white text-white dark:text-[#111111] font-bold text-xs uppercase tracking-widest hover:bg-[#DC2626] dark:hover:bg-[#DC2626] dark:hover:text-white transition-colors shadow-xs"
+      >
+        GO TO HOME DASHBOARD →
+      </Link>
+    </div>
+  );
+}
 
 export function App() {
-  const [selectedBuildingId, setSelectedBuildingId] = useState<string>('ise-lab-2');
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const navigate = useNavigate();
 
   const handleSelectBuildingForMap = (id: string) => {
-    setSelectedBuildingId(id);
-    scrollToSection('sec-map');
+    navigate(`/map?building=${id}`);
   };
 
   return (
     <ThemeProvider>
       <TimeProvider>
         <div className="min-h-screen bg-[#F5F4EF] dark:bg-[#0E0F12] text-[#111111] dark:text-[#F3F3EE] font-sans selection-red relative transition-colors duration-200">
-        
-        {/* PWA Mobile/Tablet Install Prompt */}
-        <PwaInstallPrompt />
+          {/* ScrollToTop component scrolls window to top on every route change */}
+          <ScrollToTop />
 
-        {/* Floating Time Simulation Widget */}
-        <TimeSimulationBar />
+          {/* PWA Mobile/Tablet Install Prompt */}
+          <PwaInstallPrompt />
 
-        {/* Floating Scroll Arrow (Down when near top, Up when scrolling) */}
-        <FloatingScrollArrow />
+          {/* Floating Time Simulation Widget */}
+          <TimeSimulationBar />
 
-        {/* Minimal Navbar */}
-      <MinimalNavbar onNavigateSection={scrollToSection} />
+          {/* Floating Scroll Arrow */}
+          <FloatingScrollArrow />
 
-      {/* Main Long-Scrolling Editorial Trajectory */}
-      <main className="w-full">
-        
-        {/* 01. Editorial Hero */}
-        <EditorialHero
-          onAskClick={() => scrollToSection('sec-ask')}
-          onExploreClick={() => scrollToSection('sec-ask')}
-        />
+          {/* Route-Aware Minimal Navbar */}
+          <MinimalNavbar />
 
-        {/* Section 02 — ASK (AI Assistant) */}
-        <EditorialAssistant
-          onSelectBuildingForMap={(id) => {
-            setSelectedBuildingId(id);
-            scrollToSection('sec-map');
-          }}
-        />
+          {/* Main Application Routes Container */}
+          <main className="w-full pt-20 sm:pt-24">
+            <Routes>
+              {/* / -> Home Dashboard */}
+              <Route path="/" element={<HomePage />} />
 
-        {/* Section 03 — REAL GOOGLE MAPS GEOGRAPHIC CAMPUS EXPLORER */}
-        <ErrorBoundary
-          fallbackTitle="Google Maps Explorer Unavailable"
-          fallbackMessage="The interactive Google Maps explorer could not be initialized. All other campus telemetry features and building schedules remain active."
-        >
-          <GoogleMapsCampusExplorer
-            initialNodeId={selectedBuildingId}
-          />
-        </ErrorBoundary>
+              {/* /map -> Geographic Campus Map Explorer */}
+              <Route path="/map" element={<MapRouteWrapper />} />
 
-        {/* Section 04 — FIND YOUR SPACE (Recommendations) */}
-        <EditorialRecommender
-          onSelectBuildingForMap={(id) => {
-            setSelectedBuildingId(id);
-            scrollToSection('sec-map');
-          }}
-        />
+              {/* /faculty -> Faculty Directory & Dynamic Status */}
+              <Route
+                path="/faculty"
+                element={
+                  <EditorialFaculty
+                    onSelectFacultyForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
 
-        {/* Section 05 — FACULTY (WHO CAN I MEET?) */}
-        <EditorialFaculty onSelectFacultyForMap={handleSelectBuildingForMap} />
+              {/* /libraries -> Campus Libraries & Study Spaces */}
+              <Route
+                path="/libraries"
+                element={
+                  <EditorialRecommender
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
 
-        {/* Section 06 — REPORT (Issue Dispatch) */}
-        <EditorialIssues />
+              {/* /ask-ai -> Ask Campus AI Chat Engine */}
+              <Route
+                path="/ask-ai"
+                element={
+                  <EditorialAssistant
+                    onSelectBuildingForMap={handleSelectBuildingForMap}
+                  />
+                }
+              />
 
-        {/* Section 07 — LOST & FOUND (Community Recovery Telemetry) */}
-        <EditorialLostFound />
+              {/* /issues -> Anonymous Issue Dispatch Queue */}
+              <Route path="/issues" element={<EditorialIssues />} />
 
-        {/* Section 08 — OTHERS (Campus Utilities & Resources) */}
-        <EditorialOthers onNavigateSection={scrollToSection} />
+              {/* /others -> Announcements, Events, Clubs, Emergency Contacts & Lost & Found */}
+              <Route
+                path="/others"
+                element={
+                  <div className="space-y-12">
+                    <EditorialOthers
+                      onNavigateSection={(sectionId) => {
+                        const routeMap: Record<string, string> = {
+                          'sec-faculty': '/faculty',
+                          'sec-find': '/libraries',
+                          'sec-map': '/map',
+                          'sec-report': '/issues',
+                          'sec-ask': '/ask-ai',
+                          'sec-others': '/others',
+                          'sec-hero': '/'
+                        };
+                        navigate(routeMap[sectionId] || '/others');
+                      }}
+                    />
+                    <EditorialLostFound />
+                  </div>
+                }
+              />
 
-        {/* Final Section & Footer */}
-        <EditorialFooter
-          onAskClick={() => scrollToSection('sec-ask')}
-          onExploreClick={() => scrollToSection('sec-hero')}
-        />
+              {/* 404 Fallback */}
+              <Route path="*" element={<NotFoundRoute />} />
+            </Routes>
+          </main>
 
-      </main>
+          {/* Persistent Footer on Every Route */}
+          <EditorialFooter />
 
-    </div>
+        </div>
       </TimeProvider>
     </ThemeProvider>
   );
