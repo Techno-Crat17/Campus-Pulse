@@ -202,12 +202,13 @@ export function normalizeQuery(query) {
   return q.replace(/\s+/g, ' ').trim();
 }
 
-export function detectIntents(normQuery, rawQuery = '') {
+export function detectIntents(normQuery, rawQuery = '', context = {}) {
   const q = (normQuery + ' ' + rawQuery).toLowerCase();
   const intents = [];
 
   const isHod = /\b(hod|head\s*of\s*department|head\s*of\s*the\s*department|dept\s*head|department\s*head|vod|hodh|hodd)\b/i.test(q)
-    || (/\bhead\b/i.test(q) && /\b(ise|cse|ece|eee|ee|et|ei|me|aiml|cy|cv|biotech|ind|department|dept)\b/i.test(q));
+    || (/\bhead\b/i.test(q) && /\b(ise|cse|ece|eee|ee|et|ei|me|aiml|cy|cv|biotech|ind|department|dept)\b/i.test(q))
+    || (context?.lastEntity === 'HOD' && /\b(unka|unki|uska|uski|he|his|him|she|her|they)\b/i.test(q));
 
   const hasEmail = /\b(email|e-mail|mail|gmail|contact mail)\b/.test(q);
   const hasCabin = /\b(cabin|office|sitting)\b/.test(q);
@@ -225,8 +226,8 @@ export function detectIntents(normQuery, rawQuery = '') {
   const hasLibraryHours = /\b(hours|open|close|band|timing|timings|kab khulti|kitne baje)\b/.test(q);
   const mentionsLibrary = /\b(library|lib|libs|padhne ki jagah)\b/.test(q);
 
-  const hasEvents = /\b(event|program|programme|function|activity|aaj kya|upcoming)\b/.test(q);
-  const hasAnnouncements = /\b(announcement|notice|circular|news|latest notice|new notice)\b/.test(q);
+  const hasEvents = /\b(event|events|program|programs|programme|programmes|fest|fests|symposium|function|activity|activities|aaj kya|upcoming)\b/i.test(q);
+  const hasAnnouncements = /\b(announcement|announcements|announcment|announcments|notice|notices|circular|circulars|news|latest notice|new notice|update|updates)\b/i.test(q);
   const hasClubs = /\b(club|clubs|organization|society|extracurricular|ieee|tedx|nss|innovation cell|iic|idea lab)\b/.test(q);
   const hasEmergency = /\b(emergency|ambulance|fire|anti ragging|helpline|police|contact number)\b/.test(q);
 
@@ -352,10 +353,9 @@ export async function extractEntities(normQuery, rawQuery, context) {
   let isHod = /\b(hod|head\s*of\s*department|head\s*of\s*the\s*department|dept\s*head|department\s*head|vod|hodh|hodd)\b/i.test(fullText)
     || (/\bhead\b/i.test(fullText) && /\b(ise|cse|ece|eee|ee|et|ei|me|aiml|cy|cv|biotech|ind|department|dept)\b/i.test(fullText));
 
-  if (!isHod && deptInfoInQuery && context?.lastEntity === 'HOD' && !/\b(faculty|teachers|professors|list|room|classroom|library)\b/i.test(fullText)) {
+  if (!isHod && context?.lastEntity === 'HOD' && !/\b(faculty|teachers|professors|list|room|classroom|library)\b/i.test(fullText)) {
     isHod = true;
   }
-
 
   if (isHod) {
     entities.isHod = true;
@@ -364,7 +364,7 @@ export async function extractEntities(normQuery, rawQuery, context) {
     else if (/\b(kaha|kahan|kidhar|where|cabin|office|sitting|milenge|milega|location)\b/i.test(fullText)) entities.requestedField = 'LOCATION';
     else if (/\b(designation|post|title|role)\b/i.test(fullText)) entities.requestedField = 'DESIGNATION';
 
-    const deptInfo = deptInfoInQuery || (context?.lastDepartment ? resolveDepartment(context.lastDepartment) : null);
+    const deptInfo = deptInfoInQuery || (context?.lastDepartment ? resolveDepartment(context.lastDepartment) : (context?.lastHOD?.deptCode ? resolveDepartment(context.lastHOD.deptCode) : null));
     if (deptInfo) {
       entities.departmentCode = deptInfo.code;
       entities.deptInfo = deptInfo;
@@ -386,9 +386,16 @@ export async function extractEntities(normQuery, rawQuery, context) {
         entities.faculty = hodMatches[0];
       } else if (hodMatches.length > 1) {
         entities.multipleHod = hodMatches;
+      } else if (context?.lastHOD) {
+        entities.hod = context.lastHOD;
+        entities.faculty = context.lastHOD;
       } else {
         entities.hodNotFound = true;
       }
+    } else if (context?.lastHOD) {
+      entities.hod = context.lastHOD;
+      entities.faculty = context.lastHOD;
+      entities.departmentCode = context.lastDepartment || context.lastHOD.deptCode;
     } else {
       entities.hodDepartmentMissing = true;
     }
@@ -479,6 +486,73 @@ export function getCurrentCampusTime() {
   return new Date(kolkataStr);
 }
 
+export function isContextualFollowUp(rawQuery, normQuery, detectedIntents, entities) {
+  const fullText = (rawQuery + ' ' + normQuery).toLowerCase();
+
+  // 1. Independent explicit intents (always false, ignoring previous context)
+  const isIndependentIntent = detectedIntents.some(intent =>
+    [
+      'ANNOUNCEMENT_SEARCH',
+      'EVENT_SEARCH',
+      'EMERGENCY_CONTACT',
+      'LIBRARY_OCCUPANCY',
+      'LIBRARY_HOURS',
+      'LIBRARY_SEARCH',
+      'CLUB_SEARCH',
+      'ISSUE_SEARCH',
+      'ISSUE_STATUS',
+      'ROOM_SEARCH',
+      'ROOM_AVAILABILITY',
+      'ROOM_LOCATION',
+      'BUILDING_LOCATION'
+    ].includes(intent)
+  );
+  if (isIndependentIntent) return false;
+
+  // 2. If explicit entities exist directly in the user query, it's an independent query:
+  if (entities.departmentCode || entities.building || entities.roomNumber || entities.faculty) {
+    return false;
+  }
+
+  // 3. Genuine follow-up language & pronouns:
+  const hasFollowupPronoun = /\b(unka|unki|uska|uski|ye|yeh|woh|wo|iske|iska|he|his|him|she|her|they|waha|wahan|same)\b/i.test(fullText);
+  const isBareFollowupWord = /^\s*(email|mail|cabin|office|schedule|timetable|location|dept|department|designation)\s*[?]?\s*$/i.test(rawQuery);
+  const isFollowupPhrase = /\b(aur\s*(cse|ise|ece|eee|me|cv|et|ei|aiml|cy)?|what\s*about|unka\s*kya|waha\s*kitne|kab\s*tak)\b/i.test(fullText);
+
+  return hasFollowupPronoun || isBareFollowupWord || isFollowupPhrase;
+}
+
+export function validateResponseMatchesIntent(intent, resObj) {
+  if (!resObj || typeof resObj !== 'object') return resObj;
+
+  // FACULTY_DEPARTMENT or FACULTY_SEARCH: Must not include room registry or building room data
+  if (intent === 'FACULTY_DEPARTMENT' || intent === 'FACULTY_SEARCH') {
+    if (resObj.data) {
+      delete resObj.data.room;
+      delete resObj.data.roomNumber;
+      delete resObj.data.building;
+    }
+  }
+
+  // ANNOUNCEMENT_SEARCH: Must not include faculty or room data
+  if (intent === 'ANNOUNCEMENT_SEARCH') {
+    if (resObj.data) {
+      delete resObj.data.faculty;
+      delete resObj.data.room;
+      delete resObj.data.hod;
+    }
+  }
+
+  // ROOM_AVAILABILITY / ROOM_SEARCH / ROOM_LOCATION: Must not include faculty lists
+  if (intent === 'ROOM_AVAILABILITY' || intent === 'ROOM_SEARCH' || intent === 'ROOM_LOCATION') {
+    if (resObj.data) {
+      delete resObj.data.faculty;
+    }
+  }
+
+  return resObj;
+}
+
 // ----------------------------------------------------------------------------
 // Main Process Query Pipeline
 // ----------------------------------------------------------------------------
@@ -500,11 +574,17 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
 
   const normQuery = normalizeQuery(rawQuery);
   const language = detectLanguage(rawQuery, normQuery);
-  const context = getSessionContext(sessionId);
+  const sessionContext = getSessionContext(sessionId);
 
-  const intents = detectIntents(normQuery, rawQuery);
+  const rawIntents = detectIntents(normQuery, rawQuery, {});
   const dbStart = Date.now();
-  const entities = await extractEntities(normQuery, rawQuery, context);
+
+  const rawEntities = await extractEntities(normQuery, rawQuery, {});
+  const isFollowUp = isContextualFollowUp(rawQuery, normQuery, rawIntents, rawEntities);
+  const effectiveContext = isFollowUp ? sessionContext : {};
+  const context = effectiveContext;
+  const intents = isFollowUp ? detectIntents(normQuery, rawQuery, effectiveContext) : rawIntents;
+  const entities = isFollowUp ? await extractEntities(normQuery, rawQuery, effectiveContext) : rawEntities;
   dbQueryTimeMs = Date.now() - dbStart;
 
   // Ambiguity Guard

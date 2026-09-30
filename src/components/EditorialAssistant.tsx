@@ -100,6 +100,7 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
 
   const sessionIdRef = useRef<string>('session-' + Math.random().toString(36).substring(2, 9));
   const abortControllerRef = useRef<AbortController | null>(null);
+  const queryIdRef = useRef<number>(0);
 
   const [activeResult, setActiveResult] = useState<CampusAiResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -148,6 +149,9 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
     const text = textToProcess.trim();
     if (!text) return;
 
+    const currentQueryId = Date.now();
+    queryIdRef.current = currentQueryId;
+
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -161,7 +165,7 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
 
     try {
       const res = await queryCampusAi(text, sessionIdRef.current, controller.signal);
-      if (controller.signal.aborted) return;
+      if (controller.signal.aborted || queryIdRef.current !== currentQueryId) return;
 
       if (res && res.answer) {
         if (res.resultObject && res.resultObject.queryText) {
@@ -181,11 +185,11 @@ export const EditorialAssistant: React.FC<EditorialAssistantProps> = ({
         }
       }
     } catch (err: any) {
-      if (err.name === 'AbortError') return;
+      if (err.name === 'AbortError' || queryIdRef.current !== currentQueryId) return;
       console.error('[EditorialAssistant] Query execution error:', err);
       setErrorMessage('Campus data is temporarily unavailable. Please try again.');
     } finally {
-      if (!controller.signal.aborted) {
+      if (!controller.signal.aborted && queryIdRef.current === currentQueryId) {
         setIsProcessing(false);
       }
     }

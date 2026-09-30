@@ -2696,6 +2696,39 @@ export function maintainConversationContext(
   return result;
 }
 
+export function isContextualFollowUp(rawQuery: string, normQuery: string, detectedIntents: string[], entities: any): boolean {
+  const fullText = (rawQuery + ' ' + normQuery).toLowerCase();
+
+  const isIndependentIntent = detectedIntents.some(intent =>
+    [
+      'ANNOUNCEMENT_SEARCH',
+      'EVENT_SEARCH',
+      'EMERGENCY_CONTACT',
+      'LIBRARY_OCCUPANCY',
+      'LIBRARY_HOURS',
+      'LIBRARY_SEARCH',
+      'CLUB_SEARCH',
+      'ISSUE_SEARCH',
+      'ISSUE_STATUS',
+      'ROOM_SEARCH',
+      'ROOM_AVAILABILITY',
+      'ROOM_LOCATION',
+      'BUILDING_LOCATION'
+    ].includes(intent)
+  );
+  if (isIndependentIntent) return false;
+
+  if (entities.departmentCode || entities.building || entities.roomNumber || entities.faculty) {
+    return false;
+  }
+
+  const hasFollowupPronoun = /\b(unka|unki|uska|uski|ye|yeh|woh|wo|iske|iska|he|his|him|she|her|they|waha|wahan|same)\b/i.test(fullText);
+  const isBareFollowupWord = /^\s*(email|mail|cabin|office|schedule|timetable|location|dept|department|designation)\s*[?]?\s*$/i.test(rawQuery);
+  const isFollowupPhrase = /\b(aur\s*(cse|ise|ece|eee|me|cv|et|ei|aiml|cy)?|what\s*about|unka\s*kya|waha\s*kitne|kab\s*tak)\b/i.test(fullText);
+
+  return hasFollowupPronoun || isBareFollowupWord || isFollowupPhrase;
+}
+
 // ----------------------------------------------------------------------------
 // 14. Central Dispatch Pipeline: processCampusAiQuery
 // ----------------------------------------------------------------------------
@@ -2736,11 +2769,16 @@ export async function processCampusAiQuery(
   // Step 1: Normalize Query
   const normQ = normalizeQuery(rawQuery);
 
-  // Step 2: Detect Intents
-  const intents = detectIntents(normQ, context);
+  // Step 2: Detect Intents (In Isolation)
+  const intents = detectIntents(normQ, undefined);
 
-  // Step 3: Extract Entities
-  const entities = extractEntities(normQ, rawQuery, intents, context);
+  // Step 3: Extract Raw Entities
+  const rawEntities = extractEntities(normQ, rawQuery, intents, undefined);
+
+  // Step 4: Determine Contextual Follow-up
+  const isFollowUp = isContextualFollowUp(rawQuery, normQ, intents, rawEntities);
+  const effectiveContext = isFollowUp ? context : undefined;
+  const entities = isFollowUp ? extractEntities(normQ, rawQuery, intents, effectiveContext) : rawEntities;
 
   // Step 4: Search Relevant Data & Generate Grounded Response (Deterministic Pipeline Priority Order)
 
