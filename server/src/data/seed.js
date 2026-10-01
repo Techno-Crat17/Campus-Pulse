@@ -286,6 +286,8 @@ export async function seedDatabase() {
               nodeId: item.nodeId || item.id,
               avatarUrl: item.avatarUrl || null,
               todaySchedule: item.todaySchedule || [],
+              weeklySchedule: item.weeklySchedule || {},
+              shortCode: item.shortCode || '',
               status: item.status || 'Available in Cabin',
               currentLocation: item.currentLocation || null,
               nextAvailableTime: item.nextAvailableTime || 'Now (Consultation Open)'

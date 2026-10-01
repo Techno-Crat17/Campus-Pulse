@@ -1,5 +1,5 @@
 import { Faculty } from '../models/Faculty.js';
-import { calculateFacultyDynamicStatus } from '../services/facultyStatusService.js';
+import { calculateFacultyDynamicStatus, getFacultyTodaySchedule } from '../services/facultyStatusService.js';
 import { successResponse, errorResponse } from '../utils/apiResponse.js';
 
 export async function getFaculty(req, res, next) {
@@ -24,7 +24,10 @@ export async function getFaculty(req, res, next) {
         currentLocation: dynamic.currentLocation,
         liveStatus: dynamic.liveStatus,
         liveLocation: dynamic.liveLocation,
-        nextAvailableTime: dynamic.liveNextAvailableTime
+        nextAvailableTime: dynamic.liveNextAvailableTime,
+        todaySchedule: dynamic.todaySchedule,
+        currentDay: dynamic.day,
+        currentDayTitle: dynamic.dayTitle
       };
     });
 
@@ -67,7 +70,10 @@ export async function searchFaculty(req, res, next) {
         currentLocation: dynamic.currentLocation,
         liveStatus: dynamic.liveStatus,
         liveLocation: dynamic.liveLocation,
-        nextAvailableTime: dynamic.liveNextAvailableTime
+        nextAvailableTime: dynamic.liveNextAvailableTime,
+        todaySchedule: dynamic.todaySchedule,
+        currentDay: dynamic.day,
+        currentDayTitle: dynamic.dayTitle
       };
     });
 
@@ -93,7 +99,10 @@ export async function getFacultyByDepartment(req, res, next) {
         currentLocation: dynamic.currentLocation,
         liveStatus: dynamic.liveStatus,
         liveLocation: dynamic.liveLocation,
-        nextAvailableTime: dynamic.liveNextAvailableTime
+        nextAvailableTime: dynamic.liveNextAvailableTime,
+        todaySchedule: dynamic.todaySchedule,
+        currentDay: dynamic.day,
+        currentDayTitle: dynamic.dayTitle
       };
     });
 
@@ -117,7 +126,10 @@ export async function getFacultyById(req, res, next) {
       currentLocation: dynamic.currentLocation,
       liveStatus: dynamic.liveStatus,
       liveLocation: dynamic.liveLocation,
-      nextAvailableTime: dynamic.liveNextAvailableTime
+      nextAvailableTime: dynamic.liveNextAvailableTime,
+      todaySchedule: dynamic.todaySchedule,
+      currentDay: dynamic.day,
+      currentDayTitle: dynamic.dayTitle
     };
 
     return successResponse(res, data);
@@ -133,10 +145,16 @@ export async function getFacultySchedule(req, res, next) {
       return errorResponse(res, `Faculty member with ID ${req.params.id} not found`, 'FACULTY_NOT_FOUND', 404);
     }
 
+    const dynamic = calculateFacultyDynamicStatus(faculty, new Date());
     return successResponse(res, {
       id: faculty.id,
       name: faculty.name,
-      todaySchedule: faculty.todaySchedule || []
+      day: dynamic.day,
+      dayTitle: dynamic.dayTitle,
+      date: dynamic.date,
+      currentTime: dynamic.currentTime,
+      timezone: dynamic.timezone,
+      todaySchedule: dynamic.todaySchedule
     });
   } catch (err) {
     next(err);

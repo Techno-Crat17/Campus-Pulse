@@ -31,7 +31,8 @@ import {
 import type { MSRITLocation, MSRITDepartment } from './campusData';
 
 import {
-  getFacultyLiveStatus
+  getFacultyLiveStatus,
+  getCampusISTDate
 } from './statusEngine';
 import type { SimulatedTimeState } from './statusEngine';
 
@@ -1431,9 +1432,8 @@ export function getFacultyAnswer(
       }
     }
 
-    const dayIdx = simulatedTime?.dayOfWeek ?? new Date().getDay();
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const currentDayName = dayNames[dayIdx];
+    const istInfo = getCampusISTDate(simulatedTime?.enabled ? simulatedTime : null);
+    const currentDayName = istInfo.dayTitle; // e.g. "Thursday"
 
     const weekly = fac.weeklySchedule;
     let responseText = '';
@@ -1448,15 +1448,15 @@ export function getFacultyAnswer(
       }
     } else {
       // Default: Prioritize Today's schedule
-      if (currentDayName === 'Sunday' || !weekly) {
-        responseText = `${facDisplayName} — Today's Schedule\n\nNO SCHEDULED CLASSES TODAY`;
+      if (istInfo.isSunday || !weekly) {
+        responseText = `${facDisplayName} — Today's Schedule (${istInfo.dayTitle})\n\nNO SCHEDULED CLASSES TODAY`;
       } else {
         const todaySessions: FacultyDayScheduleItem[] = (weekly[currentDayName as DayKey] as FacultyDayScheduleItem[]) || [];
         if (todaySessions.length > 0) {
           const sessionLines = todaySessions.map((s) => `${s.time}\n${s.subject}`).join('\n\n');
-          responseText = `${facDisplayName} — Today's Schedule\n\n${sessionLines}`;
+          responseText = `${facDisplayName} — Today's Schedule (${istInfo.dayTitle})\n\n${sessionLines}`;
         } else {
-          responseText = `${facDisplayName} — Today's Schedule\n\nNO SCHEDULED CLASSES TODAY`;
+          responseText = `${facDisplayName} — Today's Schedule (${istInfo.dayTitle})\n\nNO SCHEDULED CLASSES TODAY`;
         }
       }
     }

@@ -16,6 +16,8 @@ const FacultySchema = new mongoose.Schema({
   nodeId: { type: String, default: '' },
   avatarUrl: { type: String, default: '' },
   todaySchedule: [ScheduleSchema],
+  weeklySchedule: { type: mongoose.Schema.Types.Mixed, default: {} },
+  shortCode: { type: String, default: '' },
   status: { type: String, default: 'Available in Cabin' },
   currentLocation: { type: String, default: '' },
   nextAvailableTime: { type: String, default: '' },
@@ -24,7 +26,8 @@ const FacultySchema = new mongoose.Schema({
   profileUrl: { type: String, default: '' },
   sourceUrl: { type: String, default: '' }
 }, {
-  timestamps: true
+  timestamps: true,
+  strict: false
 });
 
 // Index for text search

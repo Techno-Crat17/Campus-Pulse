@@ -1,61 +1,63 @@
 /**
  * Dynamic Faculty Status Service
- * Calculates faculty location, availability, and active schedule status based on current working hours.
+ * Authoritative backend service calculating faculty availability, schedule, and presence
+ * using Asia/Kolkata (IST) timezone.
  */
 
-export function getCurrentCampusTime() {
-  const now = new Date();
-  try {
-    const kolkataStr = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-    return new Date(kolkataStr);
-  } catch {
-    return now;
+import {
+  getCampusISTDate,
+  parseScheduleInterval,
+  minutesToFormattedTime,
+  getCurrentCampusTime
+} from '../utils/istTime.js';
+
+export { getCurrentCampusTime };
+
+/**
+ * Returns today's verified schedule for a faculty member based on IST weekday.
+ * Resolves from weeklySchedule for the specific IST day (Monday-Saturday).
+ * On Sunday, returns [] (strictly no classes).
+ */
+export function getFacultyTodaySchedule(facultyRecord, dateOrSimulated) {
+  if (!facultyRecord) return [];
+  const istInfo = getCampusISTDate(dateOrSimulated);
+
+  // Sunday: strictly no scheduled classes
+  if (istInfo.isSunday) {
+    return [];
   }
+
+  const dayTitle = istInfo.dayTitle; // e.g. "Thursday"
+  const weekly = facultyRecord.weeklySchedule;
+
+  if (weekly && typeof weekly === 'object') {
+    const dayList = weekly[dayTitle];
+    if (Array.isArray(dayList)) {
+      return dayList.map((item) => ({
+        time: item.time,
+        subject: item.subject || item.event || '',
+        event: item.subject || item.event || '',
+        room: item.room || ''
+      }));
+    }
+  }
+
+  // Fallback for faculty records that only have todaySchedule array
+  if (Array.isArray(facultyRecord.todaySchedule) && (!weekly || Object.keys(weekly).length === 0)) {
+    return facultyRecord.todaySchedule.map((item) => ({
+      time: item.time,
+      subject: item.subject || item.event || '',
+      event: item.event || item.subject || '',
+      room: item.room || ''
+    }));
+  }
+
+  return [];
 }
 
-export function parseScheduleTime(timeStr) {
-  if (!timeStr) return null;
-  const parts = timeStr.split('-').map(s => s.trim());
-  if (parts.length !== 2) return null;
-
-  const rawStart = parts[0];
-  const rawEnd = parts[1];
-  const isEndPM = /PM/i.test(rawEnd);
-
-  const parseHourMin = (str, isEndPMContext) => {
-    const isPM = /PM/i.test(str);
-    const isAM = /AM/i.test(str);
-    const cleaned = str.replace(/(AM|PM)/i, '').trim();
-    const [hStr, mStr] = cleaned.split(':');
-    let h = parseInt(hStr, 10);
-    const m = parseInt(mStr || '0', 10);
-
-    if (isPM) {
-      if (h < 12) h += 12;
-    } else if (isAM) {
-      if (h === 12) h = 0;
-    } else {
-      if (h >= 1 && h <= 7) h += 12;
-      else if (isEndPMContext && h < 12 && h >= 1 && h <= 7) h += 12;
-    }
-    return h * 60 + m;
-  };
-
-  try {
-    let startMin = parseHourMin(rawStart, isEndPM);
-    let endMin = parseHourMin(rawEnd, isEndPM);
-    if (rawStart.startsWith('11:') && isEndPM) {
-      startMin = 11 * 60 + parseInt(rawStart.split(':')[1] || '0', 10);
-    }
-    return {
-      start: startMin,
-      end: endMin
-    };
-  } catch {
-    return null;
-  }
-}
-
+/**
+ * Derives status type from event title
+ */
 export function deriveStatusFromEvent(event) {
   const ev = (event || '').toLowerCase().trim();
   if (ev.includes('lecture') || ev.includes('class') || ev.includes('theory') || ev.includes('teaching')) {
@@ -84,55 +86,36 @@ export function deriveStatusFromEvent(event) {
 
 export function getStatusTypeFromStatus(status) {
   const s = (status || '').toUpperCase();
-  if (s.includes('CLASS') || s.includes('LECTURE')) return 'class';
-  if (s.includes('LAB')) return 'lab';
-  if (s.includes('MEETING')) return 'meeting';
-  if (s.includes('PROJECT')) return 'project_review';
-  if (s.includes('CONSULTATION')) return 'consultation';
-  if (s.includes('CABIN')) return 'cabin';
-  if (s.includes('SEMINAR')) return 'seminar';
-  if (s.includes('WORKSHOP')) return 'workshop';
-  if (s.includes('CLOSED')) return 'closed';
+  if (s.includes('AVAILABLE') || s.includes('CABIN') || s.includes('FREE')) return 'available';
+  if (s.includes('OFF') || s.includes('CLOSED')) return 'off_campus';
   return 'busy';
 }
 
-function minutesToFormatted(totalMins) {
-  let hours = Math.floor(totalMins / 60);
-  const minutes = totalMins % 60;
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  if (hours === 0) hours = 12;
-  const minsStr = minutes < 10 ? `0${minutes}` : `${minutes}`;
-  return `${hours}:${minsStr} ${ampm}`;
-}
-
+/**
+ * Returns primary status: "AVAILABLE" | "BUSY" | "OFF_CAMPUS" | "ENDING SOON"
+ */
 export function getFacultyStatus(facultyRecord, dateObj) {
-  const targetDate = dateObj instanceof Date ? dateObj : getCurrentCampusTime();
-  const day = targetDate.getDay();
-  const currentMinutes = targetDate.getHours() * 60 + targetDate.getMinutes();
+  const istInfo = getCampusISTDate(dateObj);
+  const currentMinutes = istInfo.totalMinutes;
 
   // Priority 1: Sunday -> OFF CAMPUS
-  if (day === 0) {
+  if (istInfo.isSunday) {
     return 'OFF_CAMPUS';
   }
 
   // Priority 2: Outside faculty campus hours -> OFF CAMPUS (Mon-Fri 09:00–16:30, Sat 09:00–13:00)
-  let isWorkingHours = false;
-  if (day === 6) {
-    isWorkingHours = currentMinutes >= (9 * 60) && currentMinutes < (13 * 60);
-  } else {
-    isWorkingHours = currentMinutes >= (9 * 60) && currentMinutes < (16 * 60 + 30);
-  }
-
-  if (!isWorkingHours) {
+  if (!istInfo.isCampusHours) {
     return 'OFF_CAMPUS';
   }
 
-  // Priority 3: Active schedule event in progress -> BUSY
-  const schedule = facultyRecord.todaySchedule || [];
-  for (const item of schedule) {
-    const range = parseScheduleTime(item.time);
-    if (range && currentMinutes >= range.start && currentMinutes < range.end) {
+  // Priority 3: Active schedule event in progress -> BUSY or ENDING SOON
+  const todaySchedule = getFacultyTodaySchedule(facultyRecord, dateObj);
+  for (const item of todaySchedule) {
+    const interval = parseScheduleInterval(item.time);
+    if (interval && currentMinutes >= interval.startMin && currentMinutes < interval.endMin) {
+      if (interval.endMin - currentMinutes <= 10) {
+        return 'ENDING SOON';
+      }
       return 'BUSY';
     }
   }
@@ -141,20 +124,20 @@ export function getFacultyStatus(facultyRecord, dateObj) {
   return 'AVAILABLE';
 }
 
+/**
+ * Comprehensive Dynamic Status Details
+ */
 export function getFacultyDynamicStatus(facultyRecord, dateObj) {
-  const targetDate = dateObj instanceof Date ? dateObj : getCurrentCampusTime();
-  const day = targetDate.getDay();
-  const currentMinutes = targetDate.getHours() * 60 + targetDate.getMinutes();
-
+  const istInfo = getCampusISTDate(dateObj);
+  const currentMinutes = istInfo.totalMinutes;
   const status = getFacultyStatus(facultyRecord, dateObj);
-  const statusType = status === 'AVAILABLE' ? 'available' : status === 'BUSY' ? 'busy' : 'off_campus';
-
-  const cabin = facultyRecord.cabinLocation || 'AVAILABLE';
+  const cabin = facultyRecord?.cabinLocation || 'Faculty Cabin';
+  const todaySchedule = getFacultyTodaySchedule(facultyRecord, dateObj);
 
   if (status === 'OFF_CAMPUS') {
-    const isSunday = day === 0;
-    const isSaturdayAfternoon = day === 6 && currentMinutes >= 13 * 60;
-    const isWeekdayAfternoon = day >= 1 && day <= 5 && currentMinutes >= (16 * 60 + 30);
+    const isSunday = istInfo.isSunday;
+    const isSaturdayAfternoon = istInfo.isSaturday && currentMinutes >= 13 * 60;
+    const isWeekdayAfternoon = istInfo.isWeekday && currentMinutes >= (16 * 60 + 30);
     const isMorningBeforeHours = currentMinutes < 9 * 60;
 
     let reason = 'Outside official faculty campus hours.';
@@ -191,71 +174,85 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
       isCollegeOpen: false,
       activeEvent: null,
       activeRoom: null,
-      timezone: 'Asia/Kolkata'
+      day: istInfo.dayNormalized,
+      dayTitle: istInfo.dayTitle,
+      date: istInfo.dateString,
+      currentTime: istInfo.timeString,
+      timezone: 'Asia/Kolkata',
+      todaySchedule
     };
   }
 
-  // Check today's schedule for active events
-  const schedule = facultyRecord.todaySchedule || [];
+  // Active event currently in progress
   let activeEvent = null;
-  let activeRange = null;
+  let activeInterval = null;
 
-  for (const item of schedule) {
-    const range = parseScheduleTime(item.time);
-    if (range && currentMinutes >= range.start && currentMinutes < range.end) {
+  for (const item of todaySchedule) {
+    const interval = parseScheduleInterval(item.time);
+    if (interval && currentMinutes >= interval.startMin && currentMinutes < interval.endMin) {
       activeEvent = item;
-      activeRange = range;
+      activeInterval = interval;
       break;
     }
   }
 
-  if (status === 'BUSY' && activeEvent && activeRange) {
+  if ((status === 'BUSY' || status === 'ENDING SOON') && activeEvent && activeInterval) {
     const locationText = activeEvent.room ? activeEvent.room : cabin;
 
-    // Next available time: chain contiguous events
-    let chainEndMin = activeRange.end;
-    for (const other of schedule) {
-      const otherRange = parseScheduleTime(other.time);
-      if (otherRange && otherRange.start <= chainEndMin && otherRange.end > chainEndMin) {
-        chainEndMin = otherRange.end;
+    // Next available time: walk forward through contiguous back-to-back classes
+    let chainEndMin = activeInterval.endMin;
+    for (const other of todaySchedule) {
+      const otherInt = parseScheduleInterval(other.time);
+      if (otherInt && otherInt.startMin <= chainEndMin && otherInt.endMin > chainEndMin) {
+        chainEndMin = otherInt.endMin;
       }
     }
 
-    const nextAvail = minutesToFormatted(chainEndMin);
+    const nextAvail = minutesToFormattedTime(chainEndMin);
+    const isEndingSoon = status === 'ENDING SOON';
 
     return {
-      status: 'BUSY',
+      status: isEndingSoon ? 'ENDING SOON' : 'BUSY',
       statusType: 'busy',
-      statusReason: 'CURRENT_SCHEDULED_ACTIVITY',
-      liveStatus: 'BUSY',
+      statusReason: isEndingSoon ? 'CLASS_ENDING_SOON' : 'CURRENT_SCHEDULED_ACTIVITY',
+      liveStatus: isEndingSoon ? 'ENDING SOON' : 'BUSY',
       liveLocation: locationText,
       currentLocation: locationText,
       currentEvent: activeEvent.event,
-      currentActivity: activeEvent.event,
-      activityEndTime: minutesToFormatted(activeRange.end),
-      scheduleStart: minutesToFormatted(activeRange.start),
-      scheduleEnd: minutesToFormatted(activeRange.end),
+      currentActivity: {
+        subject: activeEvent.subject,
+        startTime: activeInterval.startFormatted,
+        endTime: activeInterval.endFormatted
+      },
+      activityEndTime: activeInterval.endFormatted,
+      scheduleStart: activeInterval.startFormatted,
+      scheduleEnd: activeInterval.endFormatted,
       nextAvailableTime: nextAvail,
       liveNextAvailableTime: nextAvail,
       isCollegeOpen: true,
       activeEvent: activeEvent.event,
       activeRoom: activeEvent.room || null,
-      timezone: 'Asia/Kolkata'
+      day: istInfo.dayNormalized,
+      dayTitle: istInfo.dayTitle,
+      date: istInfo.dateString,
+      currentTime: istInfo.timeString,
+      timezone: 'Asia/Kolkata',
+      todaySchedule
     };
   }
 
   // AVAILABLE
   let nextUpcoming = null;
-  for (const item of schedule) {
-    const range = parseScheduleTime(item.time);
-    if (range && range.start > currentMinutes) {
-      if (!nextUpcoming || range.start < nextUpcoming.start) {
-        nextUpcoming = range;
+  for (const item of todaySchedule) {
+    const interval = parseScheduleInterval(item.time);
+    if (interval && interval.startMin > currentMinutes) {
+      if (!nextUpcoming || interval.startMin < nextUpcoming.startMin) {
+        nextUpcoming = interval;
       }
     }
   }
 
-  const nextAvailStr = nextUpcoming ? `Available until ${minutesToFormatted(nextUpcoming.start)}` : 'Available Now';
+  const nextAvailStr = nextUpcoming ? `Available until ${nextUpcoming.startFormatted}` : 'Available Now';
 
   return {
     status: 'AVAILABLE',
@@ -272,10 +269,15 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
     isCollegeOpen: true,
     activeEvent: null,
     activeRoom: cabin,
-    timezone: 'Asia/Kolkata'
+    day: istInfo.dayNormalized,
+    dayTitle: istInfo.dayTitle,
+    date: istInfo.dateString,
+    currentTime: istInfo.timeString,
+    timezone: 'Asia/Kolkata',
+    todaySchedule
   };
 }
 
 export const calculateFacultyDynamicStatus = getFacultyDynamicStatus;
 export const getFacultyStatusDetails = getFacultyDynamicStatus;
-
+export const getFacultyLiveStatus = getFacultyDynamicStatus;

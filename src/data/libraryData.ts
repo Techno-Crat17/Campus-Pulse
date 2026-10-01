@@ -356,51 +356,26 @@ export function formatOccupancy(value: number): string {
   return `${Math.round(value)}%`;
 }
 
+import { getCampusISTDate } from '../utils/istTime';
+
 export function getCurrentCampusTime(): Date {
-  const now = new Date();
-  try {
-    const kolkataStr = now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-    return new Date(kolkataStr);
-  } catch {
-    return now;
-  }
+  return getCampusISTDate().date;
 }
 
 /**
- * Helper to extract time values from Date or SimulatedTimeState
+ * Helper to extract time values from Date or SimulatedTimeState using IST
  */
 export function parseCurrentTime(currentTime?: Date | SimulatedTimeState | null): {
   day: number;
   hours: number;
   minutes: number;
 } {
-  let day: number;
-  let hours: number;
-  let minutes: number;
-
-  if (currentTime && 'hour' in currentTime && 'minute' in currentTime) {
-    if (currentTime.enabled) {
-      day = currentTime.dayOfWeek;
-      hours = currentTime.hour;
-      minutes = currentTime.minute;
-    } else {
-      const now = getCurrentCampusTime();
-      day = now.getDay();
-      hours = now.getHours();
-      minutes = now.getMinutes();
-    }
-  } else if (currentTime instanceof Date) {
-    day = currentTime.getDay();
-    hours = currentTime.getHours();
-    minutes = currentTime.getMinutes();
-  } else {
-    const now = getCurrentCampusTime();
-    day = now.getDay();
-    hours = now.getHours();
-    minutes = now.getMinutes();
-  }
-
-  return { day, hours, minutes };
+  const istInfo = getCampusISTDate(currentTime);
+  return {
+    day: istInfo.dayOfWeek,
+    hours: istInfo.hours,
+    minutes: istInfo.minutes
+  };
 }
 
 /**

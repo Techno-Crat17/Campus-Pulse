@@ -8,7 +8,7 @@ import {
   searchFaculty
 } from '../data/facultyData';
 import type { MSRITFacultyRecord } from '../data/facultyData';
-import { getFacultyDynamicStatus, getCurrentCampusTime } from '../data/statusEngine';
+import { getFacultyDynamicStatus, getCurrentCampusTime, getCampusISTDate } from '../data/statusEngine';
 import { useTimeContext } from '../context/TimeContext';
 
 interface EditorialFacultyProps {
@@ -39,19 +39,11 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     return () => clearInterval(timer);
   }, []);
 
-  const currentDayName = useMemo<string>(() => {
-    const dayIdx = simulatedTime?.dayOfWeek ?? clockTick.getDay(); // 0 = Sunday, 1 = Monday, ... 6 = Saturday
-    const dayMap: Record<number, string> = {
-      0: 'Sunday',
-      1: 'Monday',
-      2: 'Tuesday',
-      3: 'Wednesday',
-      4: 'Thursday',
-      5: 'Friday',
-      6: 'Saturday'
-    };
-    return dayMap[dayIdx] || 'Sunday';
+  const istInfo = useMemo(() => {
+    return getCampusISTDate(simulatedTime?.enabled ? simulatedTime : clockTick);
   }, [simulatedTime, clockTick]);
+
+  const currentDayNormalized = istInfo.dayNormalized;
 
   // Single authoritative faculty dataset loaded dynamically from faculty_msrit_dynamic.json
   const facultyData = loadFacultyData();
@@ -79,7 +71,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     let list = searchFaculty(search, selectedDept, facultyData);
     if (selectedStatus !== 'ALL') {
       list = list.filter((f) => {
-        const st = getFacultyDynamicStatus(f, simulatedTime || clockTick).status;
+        const st = getFacultyDynamicStatus(f, simulatedTime?.enabled ? simulatedTime : clockTick).status;
         return st === selectedStatus;
       });
     }
@@ -91,9 +83,10 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     const baseList = searchFaculty(search, selectedDept, facultyData);
     const counts = { AVAILABLE: 0, BUSY: 0, OFF_CAMPUS: 0 };
     baseList.forEach((f) => {
-      const st = getFacultyDynamicStatus(f, simulatedTime || clockTick).status;
-      if (st in counts) {
-        counts[st as keyof typeof counts]++;
+      const st = getFacultyDynamicStatus(f, simulatedTime?.enabled ? simulatedTime : clockTick).status;
+      const normalizedStatus = st === 'ENDING SOON' ? 'BUSY' : st;
+      if (normalizedStatus in counts) {
+        counts[normalizedStatus as keyof typeof counts]++;
       }
     });
     return counts;
@@ -130,7 +123,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
     if (s === 'AVAILABLE') {
       return 'border-emerald-600 bg-emerald-500/10 text-emerald-700 font-bold';
     }
-    if (s === 'BUSY') {
+    if (s === 'BUSY' || s === 'ENDING SOON') {
       return 'border-red-600 bg-red-500/10 text-red-700 font-bold';
     }
     if (s === 'OFF_CAMPUS' || s === 'OFF CAMPUS') {
@@ -144,7 +137,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
   };
 
   const renderFacultyCard = (fac: MSRITFacultyRecord, idx: number) => {
-    const dynamicState = getFacultyDynamicStatus(fac, simulatedTime || clockTick);
+    const dynamicState = getFacultyDynamicStatus(fac, simulatedTime?.enabled ? simulatedTime : clockTick);
     const isExpanded = expandedFacultyIds.has(fac.id);
 
     return (
@@ -285,16 +278,14 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
 
                 {/* Faculty Schedule Section (Current Day Only in Asia/Kolkata) */}
                 {(() => {
-                  const todaySessions = fac.weeklySchedule && currentDayName !== 'Sunday'
-                    ? (fac.weeklySchedule[currentDayName as keyof typeof fac.weeklySchedule] || [])
-                    : (fac.todaySchedule?.map((s) => ({ time: s.time, subject: s.event })) || []);
+                  const todaySessions = dynamicState.todaySchedule || [];
 
                   return (
                     <div className="space-y-2.5 font-mono text-xs">
                       <div className="flex items-center justify-between border-b border-[#111111]/10 pb-2">
                         <div className="text-[#DC2626] uppercase font-bold tracking-wider text-[11px] flex items-center gap-2">
                           <Calendar className="w-3.5 h-3.5" />
-                          <span>TODAY — {currentDayName.toUpperCase()}</span>
+                          <span>TODAY — {currentDayNormalized}</span>
                         </div>
                         {todaySessions.length > 0 && (
                           <span className="text-[10px] text-[#666660] font-bold uppercase">
@@ -316,7 +307,7 @@ export const EditorialFaculty: React.FC<EditorialFacultyProps> = ({ onSelectFacu
                                 <span>{sch.time}</span>
                               </div>
                               <div className="font-syne font-bold text-[#111111] text-sm uppercase">
-                                {sch.subject}
+                                {sch.subject || sch.event}
                               </div>
                             </div>
                           ))}

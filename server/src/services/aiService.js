@@ -20,6 +20,7 @@ import {
   filterFacultyByDepartment,
   DEPARTMENT_ALIAS_RECORDS
 } from '../utils/departmentAliasEngine.js';
+import { getCampusISTDate, normalizeDayName } from '../utils/istTime.js';
 
 // ============================================================================
 // CAMPUS PULSE — ASK CAMPUS AI BACKEND QUERY ENGINE
@@ -824,6 +825,66 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     const wantsLocation = intents.includes('FACULTY_LOCATION') || intents.includes('FACULTY_CABIN') || /\b(kaha|kahan|kidhar|where|location|cabin|sitting|milenge|milega)\b/i.test(rawQuery + ' ' + normQuery);
     const wantsDept = intents.includes('FACULTY_DEPARTMENT') || /\b(dept|department)\b/i.test(rawQuery + ' ' + normQuery);
     const wantsAvailability = intents.includes('FACULTY_AVAILABILITY') || /\b(available|free|busy|kya kar rahe|activity|abhi kya|class me hai|lab me hai|meeting me hai)\b/i.test(rawQuery + ' ' + normQuery);
+    const wantsSchedule = intents.includes('FACULTY_SCHEDULE') || /\b(schedule|timetable|classes\s*today|routine|teaching|when\s*is\s*.*teaching|class\s*timing|lecture\s*schedule)\b/i.test(rawQuery + ' ' + normQuery);
+
+    if (wantsSchedule) {
+      const facDisplayName = fac.name.replace(/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i, '');
+      const specificDaysMap = {
+        monday: 'Monday', mon: 'Monday', somwar: 'Monday',
+        tuesday: 'Tuesday', tue: 'Tuesday', mangalwar: 'Tuesday',
+        wednesday: 'Wednesday', wed: 'Wednesday', budhwar: 'Wednesday',
+        thursday: 'Thursday', thu: 'Thursday', guruwar: 'Thursday',
+        friday: 'Friday', fri: 'Friday', shukrawar: 'Friday',
+        saturday: 'Saturday', sat: 'Saturday', shaniwar: 'Saturday'
+      };
+
+      let requestedSpecificDay = null;
+      let requestedDayLabel = '';
+      for (const [key, val] of Object.entries(specificDaysMap)) {
+        if (new RegExp(`\\b${key}\\b`, 'i').test(rawQuery + ' ' + normQuery)) {
+          requestedSpecificDay = val;
+          requestedDayLabel = val;
+          break;
+        }
+      }
+
+      const istInfo = getCampusISTDate();
+      const currentDayName = istInfo.dayTitle; // e.g. "Thursday"
+
+      const weekly = fac.weeklySchedule;
+      let ans = '';
+
+      if (requestedSpecificDay && weekly) {
+        const daySessions = weekly[requestedSpecificDay] || [];
+        if (daySessions.length > 0) {
+          const sessionLines = daySessions.map(s => `${s.time}\n${s.subject}`).join('\n\n');
+          ans = `${facDisplayName} — ${requestedDayLabel}\n\n${sessionLines}`;
+        } else {
+          ans = `${facDisplayName} — ${requestedDayLabel}\n\nNO SCHEDULED CLASSES TODAY`;
+        }
+      } else {
+        // Default: Prioritize Today's schedule
+        if (istInfo.isSunday || !weekly) {
+          ans = `${facDisplayName} — Today's Schedule (${istInfo.dayTitle})\n\nNO SCHEDULED CLASSES TODAY`;
+        } else {
+          const todaySessions = weekly[currentDayName] || [];
+          if (todaySessions.length > 0) {
+            const sessionLines = todaySessions.map(s => `${s.time}\n${s.subject}`).join('\n\n');
+            ans = `${facDisplayName} — Today's Schedule (${istInfo.dayTitle})\n\n${sessionLines}`;
+          } else {
+            ans = `${facDisplayName} — Today's Schedule (${istInfo.dayTitle})\n\nNO SCHEDULED CLASSES TODAY`;
+          }
+        }
+      }
+
+      return {
+        success: true,
+        intent: 'FACULTY_SCHEDULE',
+        answer: ans,
+        data: { facultyId: fac.id, name: fac.name, weeklySchedule: fac.weeklySchedule },
+        actions: [{ type: 'VIEW_ON_MAP', targetId: fac.nodeId || 'block-lhc' }]
+      };
+    }
 
     if (wantsLocation && wantsEmail) {
       const locText = dynStatus.currentEvent ? `${dynStatus.currentLocation} (${dynStatus.currentEvent})` : dynStatus.currentLocation;
