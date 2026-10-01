@@ -20,43 +20,51 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "Room-101"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         }
       ],
       "Tuesday": [
         {
           "time": "09:55–10:50",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-210"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "Room-101"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-210"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "Room-101"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-210"
         }
       ],
       "Saturday": []
@@ -89,46 +97,55 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "Room-101"
         },
         {
           "time": "11:05–12:00",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "DES-106"
         }
       ],
       "Tuesday": [
         {
           "time": "11:05–12:00",
-          "subject": "IDT Lab2"
+          "subject": "IDT Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "IDT Lab2"
+          "subject": "IDT Lab2",
+          "room": "DES-308"
         }
       ],
       "Wednesday": [
         {
           "time": "11:05–12:00",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "DES-106"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         }
       ],
       "Thursday": [],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "Room-101"
         },
         {
           "time": "12:00–12:55",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "DES-106"
         }
       ],
       "Saturday": []
@@ -166,47 +183,56 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-212"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "SDS"
+          "subject": "SDS",
+          "room": "DES-106"
         },
         {
           "time": "12:00–12:55",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-212"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DV LAB"
+          "subject": "DV LAB",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DV LAB"
+          "subject": "DV LAB",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-212"
         }
       ],
       "Thursday": [
         {
           "time": "09:55–10:50",
-          "subject": "SDS"
+          "subject": "SDS",
+          "room": "DES-106"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SDS"
+          "subject": "SDS",
+          "room": "DES-106"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "SDS"
+          "subject": "SDS",
+          "room": "DES-106"
         }
       ],
       "Saturday": []
@@ -244,71 +270,86 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-210"
         },
         {
           "time": "11:05–12:00",
-          "subject": "IS"
+          "subject": "IS",
+          "room": "LHC-301"
         },
         {
           "time": "15:35–16:30",
-          "subject": "EVS"
+          "subject": "EVS",
+          "room": "LHC-210"
         }
       ],
       "Tuesday": [
         {
           "time": "12:00–12:55",
-          "subject": "IS"
+          "subject": "IS",
+          "room": "LHC-301"
         },
         {
           "time": "13:45–14:40",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-210"
         },
         {
           "time": "13:45–14:40",
-          "subject": "IDT lab1"
+          "subject": "IDT lab1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "IDT lab1"
+          "subject": "IDT lab1",
+          "room": "DES-207"
         }
       ],
       "Thursday": [
         {
           "time": "12:00–12:55",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-210"
         },
         {
           "time": "13:45–14:40",
-          "subject": "IS"
+          "subject": "IS",
+          "room": "LHC-301"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Saturday": []
@@ -346,71 +387,86 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "LHC-204"
         },
         {
           "time": "13:45–14:40",
-          "subject": "Prg in C"
+          "subject": "Prg in C",
+          "room": "LHC-206"
         },
         {
           "time": "15:35–16:30",
-          "subject": "EVS"
+          "subject": "EVS",
+          "room": "LHC-210"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "LHC-204"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "LHC-204"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Prg in C"
+          "subject": "Prg in C",
+          "room": "LHC-206"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "Prg in C"
+          "subject": "Prg in C",
+          "room": "LHC-206"
         }
       ],
       "Saturday": []
@@ -448,79 +504,96 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "NPTEL2"
+          "subject": "NPTEL2",
+          "room": "DES-105"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         }
       ],
       "Tuesday": [
         {
           "time": "09:55–10:50",
-          "subject": "ST"
+          "subject": "ST",
+          "room": "LHC-302"
         },
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "NPTEL2"
+          "subject": "NPTEL2",
+          "room": "DES-105"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "11:05–12:00",
-          "subject": "ST"
+          "subject": "ST",
+          "room": "LHC-302"
         },
         {
           "time": "14:40–15:35",
-          "subject": "SE"
+          "subject": "SE",
+          "room": "LHC-212"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "ST"
+          "subject": "ST",
+          "room": "LHC-302"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE"
+          "subject": "SE",
+          "room": "LHC-212"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Saturday": []
@@ -547,67 +620,81 @@
       "Monday": [
         {
           "time": "11:05–12:00",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-212"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-212"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OE-CC"
+          "subject": "OE-CC",
+          "room": "LHC-301"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-208"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OE-CC"
+          "subject": "OE-CC",
+          "room": "LHC-301"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DV LAB"
+          "subject": "DV LAB",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DV LAB"
+          "subject": "DV LAB",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OE-CC"
+          "subject": "OE-CC",
+          "room": "LHC-301"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "TOC"
+          "subject": "TOC",
+          "room": "LHC-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC"
+          "subject": "TOC",
+          "room": "LHC-208"
         }
       ],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "EE"
+          "subject": "EE",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Saturday": []
@@ -640,67 +727,81 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "DM"
+          "subject": "DM",
+          "room": "DES-106"
         },
         {
           "time": "11:05–12:00",
-          "subject": "NPTEL1"
+          "subject": "NPTEL1",
+          "room": "DES-105"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "Room-102"
         }
       ],
       "Tuesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DM"
+          "subject": "DM",
+          "room": "DES-106"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "13:45–14:40",
-          "subject": "NPTEL1"
+          "subject": "NPTEL1",
+          "room": "DES-105"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         }
       ],
       "Wednesday": [
         {
           "time": "12:00–12:55",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "Room-102"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DM"
+          "subject": "DM",
+          "room": "DES-106"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "Room-102"
         }
       ],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "DM"
+          "subject": "DM",
+          "room": "DES-106"
         }
       ],
       "Saturday": []
@@ -738,59 +839,71 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "LHC-204"
         },
         {
           "time": "13:45–14:40",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-208"
         }
       ],
       "Tuesday": [
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "LHC-204"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "RMIPR"
+          "subject": "RMIPR",
+          "room": "LHC-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DCO"
+          "subject": "DCO",
+          "room": "LHC-204"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         }
       ],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "ReactJS"
+          "subject": "ReactJS",
+          "room": "LHC-208"
         }
       ],
       "Saturday": []
@@ -828,63 +941,76 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CC"
+          "subject": "CC",
+          "room": "DES-106"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CC"
+          "subject": "CC",
+          "room": "DES-106"
         }
       ],
       "Tuesday": [
         {
           "time": "11:05–12:00",
-          "subject": "CC"
+          "subject": "CC",
+          "room": "DES-106"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Thursday": [
         {
           "time": "09:55–10:50",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "LHC-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "EE"
+          "subject": "EE",
+          "room": "Room-101"
         }
       ],
       "Saturday": []
@@ -922,79 +1048,96 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "Room-102"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "Room-102"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "Room-102"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DC"
+          "subject": "DC",
+          "room": "LHC-301"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DC"
+          "subject": "DC",
+          "room": "LHC-301"
         },
         {
           "time": "13:45–14:40",
-          "subject": "BD LAB"
+          "subject": "BD LAB",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "BD LAB"
+          "subject": "BD LAB",
+          "room": "DES-308"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         }
       ],
       "Saturday": []
@@ -1032,79 +1175,96 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Tuesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "Room-101"
         },
         {
           "time": "11:05–12:00",
-          "subject": "IDT Lab2"
+          "subject": "IDT Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "IDT Lab2"
+          "subject": "IDT Lab2",
+          "room": "DES-308"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "Room-101"
         },
         {
           "time": "13:45–14:40",
-          "subject": "IDT lab1"
+          "subject": "IDT lab1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "IDT lab1"
+          "subject": "IDT lab1",
+          "room": "DES-207"
         }
       ],
       "Thursday": [
         {
           "time": "09:55–10:50",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "LHC-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "Room-101"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "AI"
+          "subject": "AI",
+          "room": "LHC-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "G-IT"
+          "subject": "G-IT",
+          "room": "LHC-204"
         }
       ],
       "Saturday": []
@@ -1131,71 +1291,86 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-210"
         },
         {
           "time": "11:05–12:00",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-210"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-210"
         },
         {
           "time": "11:05–12:00",
-          "subject": "IDT Lab2"
+          "subject": "IDT Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "IDT Lab2"
+          "subject": "IDT Lab2",
+          "room": "DES-308"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-212"
         },
         {
           "time": "11:05–12:00",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-212"
         },
         {
           "time": "13:45–14:40",
-          "subject": "IDT lab1"
+          "subject": "IDT lab1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "IDT lab1"
+          "subject": "IDT lab1",
+          "room": "DES-207"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-212"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Friday": [
         {
           "time": "12:00–12:55",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-210"
         }
       ],
       "Saturday": []
@@ -1228,89 +1403,108 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-212"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "15:35–16:30",
-          "subject": "EVS"
+          "subject": "EVS",
+          "room": "LHC-210"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB2"
+          "subject": "ML LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB2"
+          "subject": "ML LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "13:45–14:40",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Prg in C"
+          "subject": "Prg in C",
+          "room": "LHC-206"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "Prg in C"
+          "subject": "Prg in C",
+          "room": "LHC-206"
         },
         {
           "time": "13:45–14:40",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-212"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-212"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         }
       ],
       "Saturday": [
         {
           "time": "11:05–12:00",
-          "subject": "Prg in C"
+          "subject": "Prg in C",
+          "room": "LHC-206"
         }
       ]
     }
@@ -1347,83 +1541,101 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "IS"
+          "subject": "IS",
+          "room": "LHC-302"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "11:05–12:00",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "IS"
+          "subject": "IS",
+          "room": "LHC-302"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "IS"
+          "subject": "IS",
+          "room": "LHC-302"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "Room-102"
         }
       ],
       "Thursday": [
         {
           "time": "09:55–10:50",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "Room-102"
         },
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         }
       ],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "Room-102"
         }
       ],
       "Saturday": []
@@ -1461,75 +1673,91 @@
       "Monday": [
         {
           "time": "11:05–12:00",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Tuesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "Room-102"
         },
         {
           "time": "11:05–12:00",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-210"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-210"
         },
         {
           "time": "14:40–15:35",
-          "subject": "UHV"
+          "subject": "UHV",
+          "room": "Room-102"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "SE"
+          "subject": "SE",
+          "room": "LHC-210"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SE"
+          "subject": "SE",
+          "room": "LHC-210"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "Room-102"
         },
         {
           "time": "11:05–12:00",
-          "subject": "UHV"
+          "subject": "UHV",
+          "room": "Room-102"
         }
       ],
       "Saturday": []
@@ -1567,83 +1795,101 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "Room-101"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OE-CC"
+          "subject": "OE-CC",
+          "room": "LHC-302"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB2"
+          "subject": "ML LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB2"
+          "subject": "ML LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OE-CC"
+          "subject": "OE-CC",
+          "room": "LHC-302"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "Room-101"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OE-CC"
+          "subject": "OE-CC",
+          "room": "LHC-302"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "DS"
+          "subject": "DS",
+          "room": "Room-101"
         }
       ],
       "Saturday": []
@@ -1681,91 +1927,111 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "MATHS"
+          "subject": "MATHS",
+          "room": "LHC-204"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC"
+          "subject": "TOC",
+          "room": "LHC-210"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "11:05–12:00",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-210"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-210"
         },
         {
           "time": "13:45–14:40",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-208"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "MATHS"
+          "subject": "MATHS",
+          "room": "LHC-204"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "14:40–15:35",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-208"
         }
       ],
       "Saturday": []
@@ -1792,85 +2058,103 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-204"
         },
         {
           "time": "11:05–12:00",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-212"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-212"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-204"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC"
+          "subject": "TOC",
+          "room": "LHC-212"
         }
       ],
       "Thursday": [
         {
           "time": "09:00–09:55",
-          "subject": "TOC"
+          "subject": "TOC",
+          "room": "LHC-212"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-204"
         }
       ],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "ReactJS"
+          "subject": "ReactJS",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Saturday": [
         {
           "time": "09:00–09:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ]
     }
@@ -1902,71 +2186,86 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "ST"
+          "subject": "ST",
+          "room": "LHC-301"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-208"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB2"
+          "subject": "ML LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB2"
+          "subject": "ML LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "UHV"
+          "subject": "UHV",
+          "room": "Room-101"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         }
       ],
       "Thursday": [
         {
           "time": "12:00–12:55",
-          "subject": "ST"
+          "subject": "ST",
+          "room": "LHC-301"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML"
+          "subject": "ML",
+          "room": "LHC-208"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "UHV"
+          "subject": "UHV",
+          "room": "Room-101"
         }
       ],
       "Saturday": []
@@ -2004,79 +2303,96 @@
       "Monday": [
         {
           "time": "09:55–10:50",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "LHC-204"
         },
         {
           "time": "12:00–12:55",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-208"
         }
       ],
       "Tuesday": [
         {
           "time": "09:55–10:50",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "LHC-204"
         },
         {
           "time": "11:05–12:00",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-208"
         }
       ],
       "Wednesday": [
         {
           "time": "09:55–10:50",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DMS"
+          "subject": "DMS",
+          "room": "LHC-204"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "13:45–14:40",
-          "subject": "CN"
+          "subject": "CN",
+          "room": "LHC-208"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "CN LAB1"
+          "subject": "CN LAB1",
+          "room": "DES-207"
         }
       ],
       "Saturday": []
@@ -2114,81 +2430,98 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "BD LAB2"
+          "subject": "BD LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-210"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         }
       ],
       "Tuesday": [
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "13:45–14:40",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-210"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "LHC-204"
         },
         {
           "time": "13:45–14:40",
-          "subject": "Intro C"
+          "subject": "Intro C",
+          "room": "LHC-210"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "LHC-204"
         },
         {
           "time": "13:45–14:40",
-          "subject": "BD LAB"
+          "subject": "BD LAB",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "BD LAB"
+          "subject": "BD LAB",
+          "room": "DES-308"
         }
       ],
       "Friday": [
         {
           "time": "09:55–10:50",
-          "subject": "OOP"
+          "subject": "OOP",
+          "room": "LHC-204"
         }
       ],
       "Saturday": [
         {
           "time": "09:00–09:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ]
     }
@@ -2225,101 +2558,123 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SE"
+          "subject": "SE",
+          "room": "LHC-208"
         },
         {
           "time": "13:45–14:40",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "11:05–12:00",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "SE"
+          "subject": "SE",
+          "room": "LHC-208"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "GEN AI LAB1"
+          "subject": "GEN AI LAB1",
+          "room": "DES-207"
         },
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "GEN AI LAB2"
+          "subject": "GEN AI LAB2",
+          "room": "DES-308"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DCO LAB3"
+          "subject": "DCO LAB3",
+          "room": "DES-208"
         }
       ],
       "Friday": [
         {
           "time": "11:05–12:00",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "12:00–12:55",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Saturday": [
         {
           "time": "09:00–09:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ]
     }
@@ -2356,85 +2711,103 @@
       "Monday": [
         {
           "time": "12:00–12:55",
-          "subject": "DC"
+          "subject": "DC",
+          "room": "LHC-302"
         },
         {
           "time": "13:45–14:40",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "SE LAB3"
+          "subject": "SE LAB3",
+          "room": "DES-208"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC"
+          "subject": "DC",
+          "room": "LHC-302"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "DC LAB3"
+          "subject": "DC LAB3",
+          "room": "DES-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         }
       ],
       "Thursday": [
         {
           "time": "09:55–10:50",
-          "subject": "DC"
+          "subject": "DC",
+          "room": "LHC-302"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "EE"
+          "subject": "EE",
+          "room": "Room-102"
         }
       ],
       "Saturday": [
         {
           "time": "09:00–09:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ]
     }
@@ -2460,109 +2833,133 @@
       "Monday": [
         {
           "time": "09:00–09:55",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "ML LAB1"
+          "subject": "ML LAB1",
+          "room": "DES-207"
         },
         {
           "time": "11:05–12:00",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-212"
         },
         {
           "time": "12:00–12:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-212"
         },
         {
           "time": "13:45–14:40",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "OOP LAB2"
+          "subject": "OOP LAB2",
+          "room": "DES-308"
         }
       ],
       "Tuesday": [
         {
           "time": "09:00–09:55",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-208"
         },
         {
           "time": "09:55–10:50",
-          "subject": "TOC Tut"
+          "subject": "TOC Tut",
+          "room": "LHC-208"
         },
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "13:45–14:40",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         },
         {
           "time": "14:40–15:35",
-          "subject": "ML LAB3"
+          "subject": "ML LAB3",
+          "room": "DES-208"
         }
       ],
       "Wednesday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "11:05–12:00",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         },
         {
           "time": "12:00–12:55",
-          "subject": "Intro C Lab2"
+          "subject": "Intro C Lab2",
+          "room": "DES-308"
         }
       ],
       "Thursday": [
         {
           "time": "11:05–12:00",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "12:00–12:55",
-          "subject": "OOP LAB1"
+          "subject": "OOP LAB1",
+          "room": "DES-207"
         },
         {
           "time": "13:45–14:40",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         },
         {
           "time": "14:40–15:35",
-          "subject": "DS LAB2"
+          "subject": "DS LAB2",
+          "room": "DES-308"
         }
       ],
       "Friday": [
         {
           "time": "09:00–09:55",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         },
         {
           "time": "09:55–10:50",
-          "subject": "C Prg LAB2"
+          "subject": "C Prg LAB2",
+          "room": "DES-308"
         }
       ],
       "Saturday": [
         {
           "time": "09:00–09:55",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         },
         {
           "time": "09:55–10:50",
-          "subject": "Intro C Lab1"
+          "subject": "Intro C Lab1",
+          "room": "DES-207"
         }
       ]
     }

@@ -932,8 +932,15 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     }
 
     if (wantsAvailability) {
-      const statusIcon = dynStatus.status.includes('AVAILABLE') ? '🟢' : dynStatus.status === 'COLLEGE CLOSED' ? '⚪' : '🔴';
-      const locLine = dynStatus.currentEvent ? `📍 Location: ${dynStatus.currentLocation} (${dynStatus.currentEvent})` : `📍 Cabin: ${dynStatus.currentLocation}`;
+      const statusIcon = dynStatus.status.includes('AVAILABLE') ? '🟢' : dynStatus.status.includes('OFF') ? '⚫' : '🔴';
+      let locLine = '';
+      if (dynStatus.status === 'OFF_CAMPUS') {
+        locLine = 'Status: ⚫ OFF CAMPUS\nOfficial Cabin: ' + (fac.cabinLocation || 'Faculty Cabin');
+      } else if (dynStatus.locationSource === 'ACTIVE_CLASS' || (dynStatus.status === 'BUSY' && dynStatus.currentLocation !== fac.cabinLocation)) {
+        locLine = `📍 Current Location: ${dynStatus.currentLocation} (Active Class)\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`;
+      } else {
+        locLine = `📍 Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`;
+      }
       const ans = `${fac.name}\n${statusIcon} ${dynStatus.status}\n${locLine}\nNext Available: ${dynStatus.nextAvailableTime}`;
       const resObj = {
         success: true,
@@ -947,8 +954,15 @@ export async function processAiQuery(userQuery, sessionId = 'default-session') {
     }
 
     if (wantsLocation) {
-      const locText = dynStatus.currentEvent ? `${dynStatus.currentLocation} (${dynStatus.currentEvent})` : dynStatus.currentLocation;
-      const ans = `${fac.name}\n📍 ${locText}\nStatus: ${dynStatus.status}\nNext Available: ${dynStatus.nextAvailableTime}`;
+      let ans = '';
+      if (dynStatus.status === 'OFF_CAMPUS') {
+        ans = `${fac.name} is currently off campus.\n\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`;
+      } else if (dynStatus.status === 'BUSY' && dynStatus.currentLocation && dynStatus.currentLocation !== fac.cabinLocation && dynStatus.currentLocation !== 'Off-Campus') {
+        ans = `${fac.name} is currently in ${dynStatus.currentLocation} for a class.\n\nStatus: 🔴 BUSY\nNext Available: ${dynStatus.nextAvailableTime}\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`;
+      } else {
+        ans = `${fac.name} is currently in cabin: ${fac.cabinLocation || 'Faculty Cabin'}.\n\nStatus: 🟢 AVAILABLE\nNext Available: ${dynStatus.nextAvailableTime}`;
+      }
+
       const facLocIntent = (intents.includes('FACULTY_CABIN') || /\bcabin\b/i.test(rawQuery + ' ' + normQuery)) ? 'FACULTY_CABIN' : 'FACULTY_LOCATION';
       const resObj = {
         success: true,

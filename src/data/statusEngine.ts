@@ -28,22 +28,41 @@ export { isLibraryOpen, getLibraryOccupancy, calculateLibraryOccupancy };
 
 export type FacultyStatusType = 'AVAILABLE' | 'BUSY' | 'OFF_CAMPUS' | 'ENDING SOON';
 
-export interface FacultyDynamicStatus {
+export interface FacultyLiveScheduleItem {
+  time: string;
+  event: string;
+  subject?: string;
+  room?: string;
+  startTime?: string;
+  endTime?: string;
+}
+
+export type FacultyLocationSource =
+  | 'ACTIVE_CLASS'
+  | 'ACTIVE_SCHEDULE_EVENT'
+  | 'EXPLICIT_LOCATION'
+  | 'CABIN_FALLBACK'
+  | 'OFF_CAMPUS';
+
+export interface FacultyLiveState {
   status: 'AVAILABLE' | 'BUSY' | 'OFF_CAMPUS' | 'ENDING SOON';
   statusType: 'available' | 'busy' | 'off_campus';
   statusReason?: string;
   currentLocation: string;
+  locationSource: FacultyLocationSource;
+  activeSchedule: FacultyLiveScheduleItem | null;
   currentEvent: string | null;
   currentActivity?: {
     subject: string;
     startTime?: string;
     endTime?: string;
+    room?: string;
   } | null;
   scheduleStart?: string;
   scheduleEnd?: string;
   nextAvailableTime: string;
   isCollegeOpen: boolean;
-  todaySchedule: Array<{ time: string; event: string; subject?: string; room?: string }>;
+  todaySchedule: Array<{ time: string; event: string; subject: string; room?: string }>;
   day: NormalizedCampusDay;
   dayTitle: TitleCampusDay;
   date: string;
@@ -58,7 +77,8 @@ export interface FacultyDynamicStatus {
   activeRoom: string | null;
 }
 
-export type CalculatedFacultyLiveStatus = FacultyDynamicStatus;
+export type FacultyDynamicStatus = FacultyLiveState;
+export type CalculatedFacultyLiveStatus = FacultyLiveState;
 
 export interface CampusOperatingHours {
   dayOfWeek: number;
@@ -71,6 +91,32 @@ export interface CampusOperatingHours {
   openTimeStr: string;
   closeTimeStr: string;
   scheduleSummary: string;
+}
+
+/**
+ * Normalizes room values for display and consistency (e.g. LHC204 -> LHC-204, DES203 -> DES-203).
+ */
+export function normalizeRoomName(room?: string): string {
+  if (!room || typeof room !== 'string') return '';
+  const trimmed = room.trim();
+  if (!trimmed) return '';
+
+  const lhcMatch = trimmed.match(/^LHC[-\s]?([0-9]+[A-Z]?)$/i);
+  if (lhcMatch) return `LHC-${lhcMatch[1].toUpperCase()}`;
+
+  const desMatch = trimmed.match(/^DES[-\s]?([0-9]+[A-Z]?)$/i);
+  if (desMatch) return `DES-${desMatch[1].toUpperCase()}`;
+
+  const abMatch = trimmed.match(/^AB[-\s]?([0-9]+[A-Z]?)$/i);
+  if (abMatch) return `AB-${abMatch[1].toUpperCase()}`;
+
+  const roomMatch = trimmed.match(/^Room[-\s]?([0-9]+[A-Z]?)$/i);
+  if (roomMatch) return `Room-${roomMatch[1].toUpperCase()}`;
+
+  const esbMatch = trimmed.match(/^ESB[-\s]?([0-9]+[A-Z]?)$/i);
+  if (esbMatch) return `ESB-${esbMatch[1].toUpperCase()}`;
+
+  return trimmed;
 }
 
 /**
@@ -184,12 +230,13 @@ export function getStatusTypeFromStatus(status: string): 'available' | 'busy' | 
 /**
  * Resolves today's schedule for a faculty member dynamically according to current IST day.
  * - On Sunday: strictly []
- * - Mon-Sat: extracts faculty.weeklySchedule[currentDayTitle]
+ * - Mon-Sat: extracts faculty.weeklySchedule[currentDayTitle] with room numbers
  */
 export function getTodayFacultySchedule(
   faculty: MSRITFacultyRecord,
   currentDateTime?: Date | SimulatedTimeState | null
 ): Array<{ time: string; event: string; subject: string; room?: string }> {
+  if (!faculty) return [];
   const istInfo = getCampusISTDate(currentDateTime);
 
   // Sunday: strictly no scheduled classes
@@ -199,13 +246,13 @@ export function getTodayFacultySchedule(
 
   const weekly = faculty.weeklySchedule;
   const dayTitle = istInfo.dayTitle; // e.g. "Thursday"
-  if (weekly && dayTitle in weekly) {
-    const list = (weekly as unknown as Record<string, Array<{ time: string; subject: string }>>)[dayTitle] || [];
+  if (weekly && typeof weekly === 'object' && dayTitle in weekly) {
+    const list = (weekly as unknown as Record<string, Array<{ time: string; subject: string; event?: string; room?: string }>>)[dayTitle] || [];
     return list.map((s) => ({
       time: s.time,
-      event: s.subject,
-      subject: s.subject,
-      room: ''
+      event: s.event || s.subject || '',
+      subject: s.subject || s.event || '',
+      room: s.room || ''
     }));
   }
 
@@ -225,12 +272,6 @@ export function getTodayFacultySchedule(
 /**
  * Primary status evaluation function:
  * Returns ONLY "AVAILABLE", "BUSY", "OFF_CAMPUS", or "ENDING SOON".
- *
- * Deterministic Priority:
- * 1. Is today Sunday? -> YES -> OFF CAMPUS
- * 2. Outside campus presence window? (Mon-Fri 09:00–16:30, Sat 09:00–13:00) -> YES -> OFF CAMPUS
- * 3. Active schedule event currently in progress? (startTime <= now && now < endTime) -> YES -> BUSY (or ENDING SOON if <= 10 min left)
- * 4. Otherwise -> AVAILABLE
  */
 export function getFacultyStatus(
   faculty: MSRITFacultyRecord,
@@ -266,23 +307,31 @@ export function getFacultyStatus(
 }
 
 /**
- * Detailed status evaluation function:
- * Calculates status along with location, schedule, and telemetry details.
+ * Centralized getFacultyLiveState function:
+ * Returns dynamic status, live location, active schedule, and location source.
+ *
+ * Location Priority Order:
+ * 1. Active class from today's verified schedule (ACTIVE_CLASS)
+ * 2. Reliable explicit meeting/lab/event location from today's active schedule (ACTIVE_SCHEDULE_EVENT)
+ * 3. Reliable explicit off-campus status (OFF_CAMPUS)
+ * 4. Existing faculty current location if verified (EXPLICIT_LOCATION)
+ * 5. Faculty cabin location as fallback (CABIN_FALLBACK)
  */
-export function getFacultyStatusDetails(
+export function getFacultyLiveState(
   faculty: MSRITFacultyRecord,
   currentDateTime?: Date | SimulatedTimeState | null
-): FacultyDynamicStatus {
+): FacultyLiveState {
   const istInfo = getCampusISTDate(currentDateTime);
   const currentTotalMins = istInfo.totalMinutes;
   const primaryStatus = getFacultyStatus(faculty, currentDateTime);
-  const cabin = faculty.cabinLocation || 'Faculty Cabin';
+  const cabin = faculty?.cabinLocation || 'Faculty Cabin';
   const todaySchedule = getTodayFacultySchedule(faculty, currentDateTime);
 
+  // Status: OFF_CAMPUS
   if (primaryStatus === 'OFF_CAMPUS') {
     const isSunday = istInfo.isSunday;
     const isSaturdayAfternoon = istInfo.isSaturday && currentTotalMins >= 13 * 60;
-    const isWeekdayAfternoon = istInfo.isWeekday && currentTotalMins >= (16 * 60 + 30);
+    const isWeekdayAfternoon = istInfo.isWeekday && currentTotalMins >= 16 * 60 + 30;
     const isMorningBeforeHours = currentTotalMins < 9 * 60;
 
     let reason = 'Outside official faculty campus hours.';
@@ -296,11 +345,12 @@ export function getFacultyStatusDetails(
       reason = 'Faculty campus hours start at 9:00 AM.';
     }
 
-    const nextAvailableTime = (isSunday || isSaturdayAfternoon)
-      ? 'Monday at 09:00 AM'
-      : isMorningBeforeHours
-      ? 'Today at 09:00 AM'
-      : 'Next Working Day at 09:00 AM';
+    const nextAvailableTime =
+      isSunday || isSaturdayAfternoon
+        ? 'Monday at 09:00 AM'
+        : isMorningBeforeHours
+        ? 'Today at 09:00 AM'
+        : 'Next Working Day at 09:00 AM';
 
     const location = 'Off-Campus';
 
@@ -309,6 +359,8 @@ export function getFacultyStatusDetails(
       statusType: 'off_campus',
       statusReason: reason,
       currentLocation: location,
+      locationSource: 'OFF_CAMPUS',
+      activeSchedule: null,
       currentEvent: null,
       currentActivity: null,
       nextAvailableTime,
@@ -327,21 +379,62 @@ export function getFacultyStatusDetails(
     };
   }
 
-  // Check today's schedule for active events
+  // Check today's schedule for active entries
+  // If multiple overlap unexpectedly, select the most specific active entry (e.g. with room)
   let activeEvent: { event: string; subject: string; room?: string; time: string } | null = null;
   let activeInterval: { startMin: number; endMin: number; startFormatted: string; endFormatted: string } | null = null;
+
+  const matchingActiveItems: Array<{
+    item: { event: string; subject: string; room?: string; time: string };
+    interval: { startMin: number; endMin: number; startFormatted: string; endFormatted: string };
+  }> = [];
 
   for (const item of todaySchedule) {
     const interval = parseScheduleInterval(item.time);
     if (interval && currentTotalMins >= interval.startMin && currentTotalMins < interval.endMin) {
-      activeEvent = item;
-      activeInterval = interval;
-      break;
+      matchingActiveItems.push({ item, interval });
     }
   }
 
+  if (matchingActiveItems.length > 0) {
+    if (matchingActiveItems.length > 1) {
+      console.warn(`[FacultyLiveState] Schedule conflict for ${faculty.name}: ${matchingActiveItems.length} overlapping active items found.`);
+      // Deterministically pick the item with a verified room or most specific event
+      activeEvent = matchingActiveItems.find((m) => m.item.room && m.item.room.trim().length > 0)?.item || matchingActiveItems[0].item;
+      activeInterval = matchingActiveItems.find((m) => m.item.room && m.item.room.trim().length > 0)?.interval || matchingActiveItems[0].interval;
+    } else {
+      activeEvent = matchingActiveItems[0].item;
+      activeInterval = matchingActiveItems[0].interval;
+    }
+  }
+
+  // Active schedule event exists (Priority 1 & 2)
   if ((primaryStatus === 'BUSY' || primaryStatus === 'ENDING SOON') && activeEvent && activeInterval) {
-    const location = cabin;
+    const normalizedRoom = normalizeRoomName(activeEvent.room);
+    const hasRoom = Boolean(normalizedRoom && normalizedRoom.length > 0);
+
+    let location = cabin;
+    let locationSource: FacultyLocationSource = 'CABIN_FALLBACK';
+
+    if (hasRoom) {
+      const eventLower = (activeEvent.event || activeEvent.subject || '').toLowerCase();
+      if (
+        eventLower.includes('meeting') ||
+        eventLower.includes('lab') ||
+        eventLower.includes('seminar') ||
+        eventLower.includes('workshop') ||
+        eventLower.includes('review')
+      ) {
+        locationSource = 'ACTIVE_SCHEDULE_EVENT';
+      } else {
+        locationSource = 'ACTIVE_CLASS';
+      }
+      location = normalizedRoom;
+    } else {
+      locationSource = 'CABIN_FALLBACK';
+      location = cabin;
+    }
+
     const isEndingSoon = primaryStatus === 'ENDING SOON';
 
     // Calculate next available time: walk forward through contiguous back-to-back schedules
@@ -355,16 +448,28 @@ export function getFacultyStatusDetails(
 
     const nextAvail = minutesToFormattedTime(chainEndMin);
 
+    const liveActiveSchedule: FacultyLiveScheduleItem = {
+      time: activeEvent.time,
+      event: activeEvent.event,
+      subject: activeEvent.subject,
+      room: normalizedRoom || undefined,
+      startTime: activeInterval.startFormatted,
+      endTime: activeInterval.endFormatted
+    };
+
     return {
       status: isEndingSoon ? 'ENDING SOON' : 'BUSY',
       statusType: 'busy',
       statusReason: isEndingSoon ? 'CLASS_ENDING_SOON' : 'CURRENT_SCHEDULED_ACTIVITY',
       currentLocation: location,
+      locationSource,
+      activeSchedule: liveActiveSchedule,
       currentEvent: activeEvent.event,
       currentActivity: {
         subject: activeEvent.subject || activeEvent.event,
         startTime: activeInterval.startFormatted,
-        endTime: activeInterval.endFormatted
+        endTime: activeInterval.endFormatted,
+        room: normalizedRoom || undefined
       },
       scheduleStart: activeInterval.startFormatted,
       scheduleEnd: activeInterval.endFormatted,
@@ -374,7 +479,7 @@ export function getFacultyStatusDetails(
       liveLocation: location,
       liveNextAvailableTime: nextAvail,
       activeEvent: activeEvent.event,
-      activeRoom: null,
+      activeRoom: normalizedRoom || null,
       todaySchedule,
       day: istInfo.dayNormalized,
       dayTitle: istInfo.dayTitle,
@@ -384,7 +489,7 @@ export function getFacultyStatusDetails(
     };
   }
 
-  // Within working hours, no active schedule -> AVAILABLE
+  // Priority 4 & 5: Within working hours, no active schedule -> AVAILABLE
   let nextUpcoming: { startMin: number; endMin: number; startFormatted: string; endFormatted: string } | null = null;
   for (const item of todaySchedule) {
     const interval = parseScheduleInterval(item.time);
@@ -397,17 +502,23 @@ export function getFacultyStatusDetails(
 
   const nextAvailableStr = nextUpcoming ? `Available until ${nextUpcoming.startFormatted}` : 'Available Now';
 
+  // Check if faculty has explicit verified location other than cabin
+  const locationSource: FacultyLocationSource = 'CABIN_FALLBACK';
+  const location = cabin;
+
   return {
     status: 'AVAILABLE',
     statusType: 'available',
     statusReason: 'ON_CAMPUS_NO_ACTIVE_SCHEDULE',
-    currentLocation: cabin,
+    currentLocation: location,
+    locationSource,
+    activeSchedule: null,
     currentEvent: null,
     currentActivity: null,
     nextAvailableTime: nextAvailableStr,
     isCollegeOpen: true,
     liveStatus: 'AVAILABLE',
-    liveLocation: cabin,
+    liveLocation: location,
     liveNextAvailableTime: nextAvailableStr,
     activeEvent: null,
     activeRoom: cabin,
@@ -420,14 +531,16 @@ export function getFacultyStatusDetails(
   };
 }
 
-export const getFacultyDynamicStatus = getFacultyStatusDetails;
-export const getFacultyLiveStatus = getFacultyStatusDetails;
-export const getCurrentFacultyStatus = getFacultyStatusDetails;
+export const getFacultyStatusDetails = getFacultyLiveState;
+export const getFacultyDynamicStatus = getFacultyLiveState;
+export const getFacultyLiveStatus = getFacultyLiveState;
+export const getCurrentFacultyStatus = getFacultyLiveState;
 
 export function getFacultyLiveLocation(
   faculty: MSRITFacultyRecord,
   simulatedTime?: SimulatedTimeState | null
 ): string {
-  const statusInfo = getFacultyStatusDetails(faculty, simulatedTime);
+  const statusInfo = getFacultyLiveState(faculty, simulatedTime);
   return statusInfo.currentLocation;
 }
+

@@ -1535,19 +1535,27 @@ export function getFacultyAnswer(
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['FACULTY_LOCATION'],
-        responseText: `**${fac.name} — AVAILABLE**\nOn campus · No current scheduled activity.\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+        responseText: `${fac.name} is currently in cabin: **${fac.cabinLocation || 'Faculty Cabin'}**.\n\nStatus: 🟢 AVAILABLE (On campus · No active scheduled class)`,
         subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
         matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
         actionTargetId: bldgId
       };
     }
 
-    if (liveInfo.status === 'BUSY') {
+    if (liveInfo.status === 'BUSY' || liveInfo.status === 'ENDING SOON') {
+      const isClass = liveInfo.locationSource === 'ACTIVE_CLASS' || (liveInfo.activeEvent || '').toLowerCase().includes('class') || (liveInfo.activeEvent || '').toLowerCase().includes('lecture');
+      const subjectName = liveInfo.activeSchedule?.subject || liveInfo.currentActivity?.subject || liveInfo.activeEvent;
+      const classDesc = subjectName ? `${subjectName}` : 'a class';
+
+      const responseText = liveInfo.currentLocation && liveInfo.currentLocation !== 'Off-Campus'
+        ? `${fac.name} is currently in **${liveInfo.currentLocation}** for ${isClass ? 'a class' : classDesc}.\n\nStatus: 🔴 BUSY\nNext Available: ${liveInfo.nextAvailableTime}\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`
+        : `${fac.name} is currently busy.\n\nStatus: 🔴 BUSY\nNext Available: ${liveInfo.nextAvailableTime}\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`;
+
       return {
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['FACULTY_LOCATION'],
-        responseText: `**${fac.name} — BUSY**\nCurrently in ${liveInfo.activeEvent || 'Scheduled Session'} · ${liveInfo.currentLocation}\nUntil: ${liveInfo.nextAvailableTime}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+        responseText,
         subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
         matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
         actionTargetId: bldgId
@@ -1559,7 +1567,7 @@ export function getFacultyAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_LOCATION'],
-      responseText: `**${fac.name} — OFF CAMPUS**\n${liveInfo.statusReason || 'Faculty campus hours ended at 4:30 PM.'}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+      responseText: `${fac.name} is currently off campus.\n\n${liveInfo.statusReason || 'Outside official faculty campus hours.'}\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`,
       subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId
@@ -1580,13 +1588,16 @@ export function getFacultyAnswer(
       };
     }
 
-    if (liveInfo.status === 'BUSY') {
-      const followUpText = `Current ${liveInfo.activeEvent || 'class'} ${liveInfo.nextAvailableTime} tak hai. Uske baad next scheduled activity nahi hai, so he is expected to be AVAILABLE.`;
+    if (liveInfo.status === 'BUSY' || liveInfo.status === 'ENDING SOON') {
+      const isClass = liveInfo.locationSource === 'ACTIVE_CLASS' || (liveInfo.activeEvent || '').toLowerCase().includes('class') || (liveInfo.activeEvent || '').toLowerCase().includes('lecture');
+      const subjectName = liveInfo.activeSchedule?.subject || liveInfo.currentActivity?.subject || liveInfo.activeEvent;
+      const followUpText = `Current ${isClass ? 'class' : 'scheduled activity'} ends at ${liveInfo.nextAvailableTime}. Afterwards, expected to be AVAILABLE.`;
+
       return {
         queryText: rawQuery,
         normalizedQuery: normQ,
         intents: ['FACULTY_AVAILABILITY'],
-        responseText: `**${fac.name} — BUSY**\nCurrently in ${liveInfo.activeEvent || 'Scheduled Activity'} · ${liveInfo.currentLocation}\nUntil ${liveInfo.nextAvailableTime}.\n\n*${followUpText}*`,
+        responseText: `**${fac.name} — BUSY**\nCurrently in ${liveInfo.currentLocation ? `**${liveInfo.currentLocation}**` : ''} for ${subjectName || 'a class'}\nUntil ${liveInfo.nextAvailableTime}.\n\n*${followUpText}*\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`,
         subText: `Department: ${fac.department} • Official Cabin: ${fac.cabinLocation}`,
         matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
         actionTargetId: bldgId
@@ -1598,7 +1609,7 @@ export function getFacultyAnswer(
       queryText: rawQuery,
       normalizedQuery: normQ,
       intents: ['FACULTY_AVAILABILITY'],
-      responseText: `**${fac.name} — OFF CAMPUS**\n${liveInfo.statusReason || 'Faculty campus hours ended at 4:30 PM.'}\nNext available: ${liveInfo.nextAvailableTime}\nOfficial location: ${fac.cabinLocation || 'Faculty Cabin'}`,
+      responseText: `**${fac.name} — OFF CAMPUS**\n${liveInfo.statusReason || 'Faculty campus hours ended.'}\nOfficial Cabin: ${fac.cabinLocation || 'Faculty Cabin'}`,
       subText: `Department: ${fac.department} • Building: ${fac.primaryBuilding || 'LHC Block'}`,
       matchedFaculty: { ...fac, status: liveInfo.status, currentLocation: liveInfo.currentLocation, isCollegeOpen: liveInfo.isCollegeOpen },
       actionTargetId: bldgId

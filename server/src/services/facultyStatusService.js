@@ -1,4 +1,30 @@
 /**
+ * Normalizes room values for display and consistency (e.g. LHC204 -> LHC-204, DES203 -> DES-203).
+ */
+export function normalizeRoomName(room) {
+  if (!room || typeof room !== 'string') return '';
+  const trimmed = room.trim();
+  if (!trimmed) return '';
+
+  const lhcMatch = trimmed.match(/^LHC[-\s]?([0-9]+[A-Z]?)$/i);
+  if (lhcMatch) return `LHC-${lhcMatch[1].toUpperCase()}`;
+
+  const desMatch = trimmed.match(/^DES[-\s]?([0-9]+[A-Z]?)$/i);
+  if (desMatch) return `DES-${desMatch[1].toUpperCase()}`;
+
+  const abMatch = trimmed.match(/^AB[-\s]?([0-9]+[A-Z]?)$/i);
+  if (abMatch) return `AB-${abMatch[1].toUpperCase()}`;
+
+  const roomMatch = trimmed.match(/^Room[-\s]?([0-9]+[A-Z]?)$/i);
+  if (roomMatch) return `Room-${roomMatch[1].toUpperCase()}`;
+
+  const esbMatch = trimmed.match(/^ESB[-\s]?([0-9]+[A-Z]?)$/i);
+  if (esbMatch) return `ESB-${esbMatch[1].toUpperCase()}`;
+
+  return trimmed;
+}
+
+/**
  * Dynamic Faculty Status Service
  * Authoritative backend service calculating faculty availability, schedule, and presence
  * using Asia/Kolkata (IST) timezone.
@@ -36,7 +62,7 @@ export function getFacultyTodaySchedule(facultyRecord, dateOrSimulated) {
       return dayList.map((item) => ({
         time: item.time,
         subject: item.subject || item.event || '',
-        event: item.subject || item.event || '',
+        event: item.event || item.subject || '',
         room: item.room || ''
       }));
     }
@@ -125,9 +151,17 @@ export function getFacultyStatus(facultyRecord, dateObj) {
 }
 
 /**
- * Comprehensive Dynamic Status Details
+ * Centralized getFacultyLiveState function:
+ * Authoritative logic returning status, location, schedule, and locationSource.
+ *
+ * Location Priority Order:
+ * 1. Active class from today's verified schedule (ACTIVE_CLASS)
+ * 2. Reliable explicit meeting/lab/event location from today's active schedule (ACTIVE_SCHEDULE_EVENT)
+ * 3. Reliable explicit off-campus status (OFF_CAMPUS)
+ * 4. Existing faculty current location if verified (EXPLICIT_LOCATION)
+ * 5. Faculty cabin location as fallback (CABIN_FALLBACK)
  */
-export function getFacultyDynamicStatus(facultyRecord, dateObj) {
+export function getFacultyLiveState(facultyRecord, dateObj) {
   const istInfo = getCampusISTDate(dateObj);
   const currentMinutes = istInfo.totalMinutes;
   const status = getFacultyStatus(facultyRecord, dateObj);
@@ -137,7 +171,7 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
   if (status === 'OFF_CAMPUS') {
     const isSunday = istInfo.isSunday;
     const isSaturdayAfternoon = istInfo.isSaturday && currentMinutes >= 13 * 60;
-    const isWeekdayAfternoon = istInfo.isWeekday && currentMinutes >= (16 * 60 + 30);
+    const isWeekdayAfternoon = istInfo.isWeekday && currentMinutes >= 16 * 60 + 30;
     const isMorningBeforeHours = currentMinutes < 9 * 60;
 
     let reason = 'Outside official faculty campus hours.';
@@ -151,11 +185,12 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
       reason = 'Faculty campus hours start at 9:00 AM.';
     }
 
-    const nextAvailableTime = (isSunday || isSaturdayAfternoon)
-      ? 'Monday at 09:00 AM'
-      : isMorningBeforeHours
-      ? 'Today at 09:00 AM'
-      : 'Next Working Day at 09:00 AM';
+    const nextAvailableTime =
+      isSunday || isSaturdayAfternoon
+        ? 'Monday at 09:00 AM'
+        : isMorningBeforeHours
+        ? 'Today at 09:00 AM'
+        : 'Next Working Day at 09:00 AM';
 
     const location = 'Off-Campus';
 
@@ -166,6 +201,8 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
       liveStatus: 'OFF_CAMPUS',
       liveLocation: location,
       currentLocation: location,
+      locationSource: 'OFF_CAMPUS',
+      activeSchedule: null,
       currentEvent: null,
       currentActivity: null,
       activityEndTime: null,
@@ -184,20 +221,54 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
   }
 
   // Active event currently in progress
-  let activeEvent = null;
-  let activeInterval = null;
+  const matchingActiveItems = [];
 
   for (const item of todaySchedule) {
     const interval = parseScheduleInterval(item.time);
     if (interval && currentMinutes >= interval.startMin && currentMinutes < interval.endMin) {
-      activeEvent = item;
-      activeInterval = interval;
-      break;
+      matchingActiveItems.push({ item, interval });
+    }
+  }
+
+  let activeEvent = null;
+  let activeInterval = null;
+
+  if (matchingActiveItems.length > 0) {
+    if (matchingActiveItems.length > 1) {
+      console.warn(`[FacultyLiveState] Overlapping schedule for ${facultyRecord?.name}: using most specific entry`);
+      activeEvent = matchingActiveItems.find((m) => m.item.room && m.item.room.trim().length > 0)?.item || matchingActiveItems[0].item;
+      activeInterval = matchingActiveItems.find((m) => m.item.room && m.item.room.trim().length > 0)?.interval || matchingActiveItems[0].interval;
+    } else {
+      activeEvent = matchingActiveItems[0].item;
+      activeInterval = matchingActiveItems[0].interval;
     }
   }
 
   if ((status === 'BUSY' || status === 'ENDING SOON') && activeEvent && activeInterval) {
-    const locationText = activeEvent.room ? activeEvent.room : cabin;
+    const normalizedRoom = normalizeRoomName(activeEvent.room);
+    const hasRoom = Boolean(normalizedRoom && normalizedRoom.length > 0);
+
+    let locationText = cabin;
+    let locationSource = 'CABIN_FALLBACK';
+
+    if (hasRoom) {
+      const eventLower = (activeEvent.event || activeEvent.subject || '').toLowerCase();
+      if (
+        eventLower.includes('meeting') ||
+        eventLower.includes('lab') ||
+        eventLower.includes('seminar') ||
+        eventLower.includes('workshop') ||
+        eventLower.includes('review')
+      ) {
+        locationSource = 'ACTIVE_SCHEDULE_EVENT';
+      } else {
+        locationSource = 'ACTIVE_CLASS';
+      }
+      locationText = normalizedRoom;
+    } else {
+      locationSource = 'CABIN_FALLBACK';
+      locationText = cabin;
+    }
 
     // Next available time: walk forward through contiguous back-to-back classes
     let chainEndMin = activeInterval.endMin;
@@ -211,6 +282,15 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
     const nextAvail = minutesToFormattedTime(chainEndMin);
     const isEndingSoon = status === 'ENDING SOON';
 
+    const liveActiveSchedule = {
+      time: activeEvent.time,
+      event: activeEvent.event,
+      subject: activeEvent.subject,
+      room: normalizedRoom || undefined,
+      startTime: activeInterval.startFormatted,
+      endTime: activeInterval.endFormatted
+    };
+
     return {
       status: isEndingSoon ? 'ENDING SOON' : 'BUSY',
       statusType: 'busy',
@@ -218,11 +298,14 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
       liveStatus: isEndingSoon ? 'ENDING SOON' : 'BUSY',
       liveLocation: locationText,
       currentLocation: locationText,
+      locationSource,
+      activeSchedule: liveActiveSchedule,
       currentEvent: activeEvent.event,
       currentActivity: {
         subject: activeEvent.subject,
         startTime: activeInterval.startFormatted,
-        endTime: activeInterval.endFormatted
+        endTime: activeInterval.endFormatted,
+        room: normalizedRoom || undefined
       },
       activityEndTime: activeInterval.endFormatted,
       scheduleStart: activeInterval.startFormatted,
@@ -231,7 +314,7 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
       liveNextAvailableTime: nextAvail,
       isCollegeOpen: true,
       activeEvent: activeEvent.event,
-      activeRoom: activeEvent.room || null,
+      activeRoom: normalizedRoom || null,
       day: istInfo.dayNormalized,
       dayTitle: istInfo.dayTitle,
       date: istInfo.dateString,
@@ -253,6 +336,7 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
   }
 
   const nextAvailStr = nextUpcoming ? `Available until ${nextUpcoming.startFormatted}` : 'Available Now';
+  const locationSource = 'CABIN_FALLBACK';
 
   return {
     status: 'AVAILABLE',
@@ -261,6 +345,8 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
     liveStatus: 'AVAILABLE',
     liveLocation: cabin,
     currentLocation: cabin,
+    locationSource,
+    activeSchedule: null,
     currentEvent: null,
     currentActivity: null,
     activityEndTime: null,
@@ -278,6 +364,8 @@ export function getFacultyDynamicStatus(facultyRecord, dateObj) {
   };
 }
 
-export const calculateFacultyDynamicStatus = getFacultyDynamicStatus;
-export const getFacultyStatusDetails = getFacultyDynamicStatus;
-export const getFacultyLiveStatus = getFacultyDynamicStatus;
+export const getFacultyDynamicStatus = getFacultyLiveState;
+export const calculateFacultyDynamicStatus = getFacultyLiveState;
+export const getFacultyStatusDetails = getFacultyLiveState;
+export const getFacultyLiveStatus = getFacultyLiveState;
+

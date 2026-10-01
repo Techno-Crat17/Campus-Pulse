@@ -3,6 +3,8 @@ import facultyMsritDynamicData from './faculty_msrit_dynamic.json';
 export interface FacultyDayScheduleItem {
   time: string;
   subject: string;
+  event?: string;
+  room?: string;
 }
 
 export interface WeeklySchedule {
